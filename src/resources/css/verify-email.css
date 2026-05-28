@@ -1,0 +1,68 @@
+/* 📄 src/resources/css/verify-email.css（見本完全一致版） */
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #fff; /* 💡 背景を完全な白にします */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 💡 画面中央に配置するためのコンテナ */
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* 💡 見本の通り、外側の四角いボックス（背景や影）を完全に消去しました */
+.verify-box {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* メッセージのテキスト */
+.message {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #000;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+/* 💡 見本通りの四角くて薄いグレーのボタン */
+.btn-verify {
+    background-color: #d9d9d9;
+    color: #000;
+    border: 1px solid #999;
+    padding: 14px 50px;
+    border-radius: 6px;
+    font-size: 1.05em;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-verify:hover {
+    background-color: #ccc;
+}
+
+/* 💡 見本通りの薄い青色の再送リンク */
+.resend-link {
+    background: none;
+    border: none;
+    color: #4a90e2;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.95em;
+    margin-top: 40px;
+    display: inline-block;
+}
+
+.resend-link:hover {
+    text-decoration: underline;
+}

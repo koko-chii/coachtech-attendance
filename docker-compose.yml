@@ -1,0 +1,72 @@
+version: '3.8'
+
+networks:
+  coachtech-network:
+    driver: bridge
+
+services:
+  # WEBサーバー (Nginx)
+  web:
+    image: nginx:alpine
+    container_name: coachtech-web
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - coachtech-network
+
+  # アプリケーションサーバー (PHP & Node.js)
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: coachtech-app
+    user: "1000:1000"
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - coachtech-network
+
+  # データベース (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: coachtech-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: coachtech_attendance
+      MYSQL_ROOT_PASSWORD: root_password  # ←これがそのままrootのパスワードになります
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - coachtech-network
+
+  # データベース管理ツール (phpMyAdmin)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: coachtech-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+    depends_on:
+      - db
+    networks:
+      - coachtech-network
+
+    # メールテストツール (MailHog)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: coachtech-mailhog
+    ports:
+      - "8025:8025" # ← ブラウザで届いたメールを見るためのポート
+      - "1025:1025" # ← Laravelからメールを送るためのポート
+    networks:
+      - coachtech-network
