@@ -1,36 +1,88 @@
-/* 📄 src/resources/css/attendance.css */
-.container {
-    text-align: center;
-    margin-top: 80px;
+/* 📄 resources/css/attendance.css */
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #ededed; /* 💡 背景のグレーをもう一段階しっかりと濃くしました */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
+.container {
+    text-align: center;
+    padding-top: 80px;
+    flex: 1;
+}
+
+/* 💡 背景が濃くなったのに合わせてタグのグレーも微調整 */
 .status-tag {
-    background-color: #dfdfdf;
-    padding: 4px 15px;
-    border-radius: 20px;
     display: inline-block;
+    background-color: #dbdbdb;
+    color: #666;
+    padding: 6px 18px;
+    border-radius: 20px;
     font-size: 0.8em;
+    font-weight: bold;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+/* 日付と時刻 */
+.date {
+    font-size: 1.15em;
+    color: #333;
+    font-weight: bold;
     margin-bottom: 15px;
 }
 
-.date {
-    font-size: 1.2em;
-    color: #333;
-    margin-bottom: 5px;
-}
-
 .time {
-    font-size: 3em;
+    font-size: 3.8em;
     font-weight: bold;
-    margin-bottom: 30px;
+    color: #000;
+    margin-bottom: 50px;
 }
 
-.btn {
+/* すべてのボタンの共通の大きさ・四角い形 */
+.btn-attendance {
+    width: 140px;
+    padding: 14px 0;
+    font-size: 0.95em;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+/* 退勤ボタン（真っ黒な背景に白い文字） */
+.btn-black {
     background-color: #000;
     color: #fff;
     border: none;
-    padding: 12px 60px;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-black:hover {
+    background-color: #222;
+}
+
+/* 休憩入・休憩戻ボタン（真っ白な背景に黒い文字＋細い枠線） */
+.btn-white {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.btn-white:hover {
+    background-color: #fafafa;
+}
+
+/* 退勤後のメッセージ */
+.attendance-end-message {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #000;
+    margin-top: 20px;
 }

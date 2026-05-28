@@ -19,17 +19,13 @@ Route::get('/', function () {
 // ==========================================
 // 🧪 メール認証の学習テスト用（強制パスルート）
 // ==========================================
-
-// 💡 仕様3・4-b・4-c: 誘導画面の「認証はこちらから」ボタンから呼び出されます
 Route::post('/email/bypass', function () {
     $user = Auth::user();
 
-    // データベースの email_verified_at に現在日時を書き込んで保存（強制パス）
     if ($user && !$user->hasVerifiedEmail()) {
         $user->markEmailAsVerified();
     }
 
-    // 認証完了（パス）後、ダイレクトに勤怠登録画面（d）へ遷移
     return redirect()->route('attendance.index');
 })->middleware('auth')->name('email.bypass');
 
@@ -58,7 +54,7 @@ Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])
     ->middleware(['auth', 'verified'])
     ->name('attendance.clock-out');
 
-// 5. 休憩ボタンを押したときの保存処理
+// 5. 💡 【追記】休憩入・休憩戻ボタンを押したときの保存処理
 Route::post('/attendance/break', [AttendanceController::class, 'break'])
     ->middleware(['auth', 'verified'])
     ->name('attendance.break');
