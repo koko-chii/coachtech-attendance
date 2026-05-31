@@ -12,14 +12,18 @@
 <body>
         <!-- 🖤 共通の黒ヘッダーバー -->
     <header class="header">
-        <!-- 💡 ログインしているユーザーの名前を自動で表示させます -->
-        <div class="logo">COACHTECH </div>
-        <nav class="nav">
-            <a href="/attendance">勤怠</a>
-            <a href="#">勤怠一覧</a>
-            <a href="#">申請</a>
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
-        </nav>
+        <div class="header-inner">
+            <!-- 💡 文字の「COACHTECH」を <img> タグ（画像）に書き換えます -->
+            <div class="logo">
+                <img src="{{ asset('img/logo.png') }}" alt="COACHTECH">
+            </div>
+            <nav class="nav">
+                <a href="/attendance">勤怠</a>
+                <a href="#">勤怠一覧</a>
+                <a href="#">申請</a>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
+            </nav>
+        </div>
     </header>
 
     <!-- ログアウト用の隠しフォーム -->

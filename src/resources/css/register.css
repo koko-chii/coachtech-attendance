@@ -76,6 +76,12 @@ p {
 }
 
 p a {
-    color: #000;
-    text-decoration: underline;
+    color: #4a90e2 !important;
+    text-decoration: none;     /* 👈 下線はいったん消します */
+}
+
+/* 💡 マウスを乗せたときの設定 */
+p a:hover {
+    color: #2563eb !important; /* 少し濃い青色になります */
+    text-decoration: underline; /* マウスを乗せたときだけ下線を出す */
 }

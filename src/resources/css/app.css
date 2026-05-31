@@ -16,23 +16,45 @@ body {
     background-color: #f7f7f7;
 }
 
+/*以下、見本に近づけたヘッダーのコードです */
+/* 📄 src/resources/css/app.css */
+
+/* 💡 【修正】高さを180pxから見本通りのスッキリした「60px」に修正します */
 .header {
     background-color: #000;
     color: #fff;
-    padding: 15px 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 💡 【修正】内側の枠も、余白を含めてスッキリと収まるように戻します */
+.header-inner {
+    padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .logo {
-    font-weight: bold;
-    font-size: 1.2em;
+    display: flex;
+    align-items: center;
 }
 
+/* 💡 ロゴ画像のサイズ（見本のすっきりした大きさに戻します） */
+.logo img {
+    height: 30px;
+    width: 400px;
+    display: block;
+}
+
+/* 💡 ナビゲーションメニュー */
 .nav a {
     color: #fff;
     text-decoration: none;
-    margin-left: 20px;
-    font-size: 0.9em;
+    margin-left: 50px;       /* 👈 間隔を 25px から「45px」に広げてゆったりさせます */
+    font-size: 1.45em;       /* 👈 文字サイズを 1.45em に一回り大きくします */
+    font-weight: bold;
+    letter-spacing: 0.5px;   /* 文字の横幅をわずかに広げて美しく見せます */
 }

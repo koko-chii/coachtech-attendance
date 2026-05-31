@@ -18,13 +18,16 @@
             </div>
 
             <!-- 💡 仕様3・4-c: 「認証はこちらから」ボタン -->
-            <!-- ボタンを押すと、裏で日時を指定（パス）して勤怠画面（d）へ直行します -->
-            <form method="POST" action="{{ route('email.bypass') }}">
-                @csrf
-                <button type="submit" class="btn-verify">
-                    認証はこちらから
-                </button>
-            </form>
+            <a href="/email/go-to-mailpit" class="btn-verify" target="_blank">
+                認証はこちらから
+            </a>
+
+            <!-- 💡 再送が成功したときにお知らせを表示する -->
+            @if (session('status') == 'verification-link-sent')
+                <div class="alert-success">
+                    新しい認証メールを再送信しました！
+                </div>
+            @endif
 
             <!-- 💡 見本の下部にある「認証メールを再送する」リンク（Laravel標準機能） -->
             <form method="POST" action="{{ route('verification.send') }}">

@@ -75,7 +75,14 @@ p {
     font-size: 0.9em;
 }
 
+/* 💡 下部のリンクを青色にする設定 */
 p a {
-    color: #000;
+    color: #4a90e2 !important;
+    text-decoration: none;     /* 最初は下線を消しておきます */
+}
+
+/* 💡 マウスを乗せたときに少し濃い青にして下線を出す設定 */
+p a:hover {
+    color: #2563eb !important;
     text-decoration: underline;
 }

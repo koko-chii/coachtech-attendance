@@ -1,70 +1,86 @@
-/* 📄 resources/css/attendance.css */
+/* 📄 src/resources/css/attendance.css（見本完全一致調整版） */
 
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: #ededed; /* 💡 背景のグレーをもう一段階しっかりと濃くしました */
+    background-color: #ededed; /* 💡 背景のグレー */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
 
+/* 💡 mainタグに高さを広げる命令を持たせます（app.css側と連動） */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* 📄 src/resources/css/attendance.css */
+
 .container {
     text-align: center;
-    padding-top: 80px;
+    padding-top: 20vh; /* 👈 ここを 80px から 20vh に書き換えます */
     flex: 1;
 }
 
-/* 💡 背景が濃くなったのに合わせてタグのグレーも微調整 */
 .status-tag {
     display: inline-block;
     background-color: #dbdbdb;
     color: #666;
-    padding: 6px 18px;
+    padding: 8px 24px;
     border-radius: 20px;
-    font-size: 0.8em;
+    font-size: 1.05em;
     font-weight: bold;
-    margin-bottom: 25px;
-    letter-spacing: 1px;
+    margin-bottom: 35px;
 }
 
-/* 日付と時刻 */
+/* 日付 */
 .date {
-    font-size: 1.15em;
+    font-size: 2.1em;
     color: #333;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
 }
 
+/* 時刻（08:00） */
 .time {
-    font-size: 3.8em;
+    font-size: 7.2em; /* ほどよく大きかったサイズに調整 */
     font-weight: bold;
     color: #000;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
+    letter-spacing: 2px;
 }
 
-/* すべてのボタンの共通の大きさ・四角い形 */
+/* ボタンサイズ */
 .btn-attendance {
-    width: 140px;
-    padding: 14px 0;
-    font-size: 0.95em;
+    width: 240px;
+    padding: 16px 0;
+    font-size: 1.1em;
     font-weight: bold;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     box-sizing: border-box;
     transition: all 0.2s;
 }
 
-/* 退勤ボタン（真っ黒な背景に白い文字） */
+/* 出勤・退勤ボタン（真っ黒な背景に白い文字） */
 .btn-black {
     background-color: #000;
     color: #fff;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    font-size: 1.25em;
+    letter-spacing: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    width: 200px;
+    margin-right: 15px; /* 休憩入・休憩戻ボタンとの間隔を広げます */
 }
 
 .btn-black:hover {
-    background-color: #222;
+    background-color: #222 !important;
 }
 
 /* 休憩入・休憩戻ボタン（真っ白な背景に黒い文字＋細い枠線） */
@@ -72,16 +88,23 @@ body {
     background-color: #fff;
     color: #000;
     border: 1px solid #ccc;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    /* 💡 ここを追加：見本に合わせて角丸を「20px」に広げて、より丸くします */
+    border-radius: 20px;
+    font-size: 1.25em;
+    letter-spacing: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+    width: 200px;
+    margin-left: 15px; /* 出勤・退勤ボタンとの間隔を広げます */
 }
 
 .btn-white:hover {
-    background-color: #fafafa;
+    background-color: #fafafa !important;
 }
 
 /* 退勤後のメッセージ */
 .attendance-end-message {
-    font-size: 1.1em;
+    font-size: 2.5em;
     font-weight: bold;
     color: #000;
     margin-top: 20px;

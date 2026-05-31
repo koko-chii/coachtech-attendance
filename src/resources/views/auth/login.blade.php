@@ -39,7 +39,7 @@
                 <label>パスワード</label>
                 <input type="password" name="password">
                 @error('password')
-                    @div class="error-message">{{ $message }}</div>
+                    <div class="error-message">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -47,7 +47,7 @@
             <button type="submit" class="btn">ログイン</button>
         </form>
 
-        <p><a href="/register">会員登録画面へ</a></p>
+        <p><a href="/register" class="login-link">会員登録はこちら</a></p>
     </div>
 
 </body>

@@ -16,6 +16,11 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+// 💡 ログイン後に「http://localhost/email/go-to-mailpit」にアクセスするとMailpitの画面へリダイレクト
+Route::get('/email/go-to-mailpit', function () {
+    return redirect('http://localhost:8025'); // Mailpitの画面へリダイレクト
+});
+
 // ==========================================
 // 🧪 メール認証の学習テスト用（強制パスルート）
 // ==========================================
@@ -36,7 +41,8 @@ Route::post('/email/bypass', function () {
 
 // 1. ダッシュボード
 Route::get('/dashboard', function () {
-    return view('layouts.authenticated');
+    // 認証が完了していれば勤怠画面へ進む
+    return redirect()->route('attendance.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // 2. 打刻画面を表示するルート

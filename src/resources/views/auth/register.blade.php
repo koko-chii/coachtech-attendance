@@ -52,7 +52,7 @@
             <button type="submit" class="btn">登録</button>
         </form>
 
-        <p><a href="/login">ログイン画面へ</a></p>
+        <p><a href="/login" class="login-link">ログインはこちら</a></p>
     </div>
 
 </body>
