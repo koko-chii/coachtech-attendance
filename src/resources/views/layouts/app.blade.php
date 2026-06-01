@@ -17,19 +17,23 @@
             <div class="logo">
                 <img src="{{ asset('img/logo.png') }}" alt="COACHTECH">
             </div>
+            @auth
             <nav class="nav">
                 <a href="/attendance">勤怠</a>
                 <a href="#">勤怠一覧</a>
                 <a href="#">申請</a>
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
             </nav>
+            @endauth
         </div>
     </header>
 
+    @auth
     <!-- ログアウト用の隠しフォーム -->
     <form id="logout-form" action="/logout" method="POST" style="display: none;">
         @csrf
     </form>
+    @endauth
 
     <!-- 💡 ここに各画面（出勤画面や一覧画面）の中身がパッと挟み込まれます -->
     <main>

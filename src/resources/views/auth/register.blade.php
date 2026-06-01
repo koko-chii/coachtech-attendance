@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>会員登録（一般ユーザー）</title>
-    <!-- ⚡ 会員登録専用の外部CSSを読み込む -->
-    @vite(['resources/css/register.css'])
-</head>
-<body>
+@extends('layouts.app') <!-- 👈 これで共通の黒ヘッダーと app.css が自動で読み込まれます -->
 
-    <!-- 💡 ボックスで囲むクラスを追加しました -->
+@section('title', '会員登録（一般ユーザー）')
+
+@section('css')
+    <!-- 💡 app.css は親が読み込むので、ここでは会員登録専用のCSSだけを指定します -->
+    @vite(['resources/css/register.css'])
+@endsection
+
+@section('content')
+    <!-- 💡 もともとの <body> 内にあった中身をここにすべて収めます -->
     <div class="register-box">
         <h1>会員登録</h1>
 
@@ -54,7 +54,4 @@
 
         <p><a href="/login" class="login-link">ログインはこちら</a></p>
     </div>
-
-</body>
-</html>
-y
+@endsection

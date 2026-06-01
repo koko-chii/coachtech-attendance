@@ -1,3 +1,4 @@
+/* 📄 src/resources/css/app.css */
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -10,26 +11,23 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-body {
+/* 💡 【修正】html body と重ねることで、大元の余白（隙間）を確実にゼロにします */
+html body {
     margin: 0;
+    padding: 0;
     font-family: sans-serif;
-    background-color: #f7f7f7;
 }
 
-/*以下、見本に近づけたヘッダーのコードです */
-/* 📄 src/resources/css/app.css */
-
-/* 💡 【修正】高さを180pxから見本通りのスッキリした「60px」に修正します */
-.header {
-    background-color: #000;
-    color: #fff;
+/* 💡 ヘッダーバー：優先順位を上げるため、すべて「html body」から書き始めます */
+html body .header {
+    background-color: #000000;
+    color: #ffffff;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* 💡 【修正】内側の枠も、余白を含めてスッキリと収まるように戻します */
-.header-inner {
-    padding: 20px 40px;
+html body .header-inner {
+    padding: 20px 40px;          /* 👈 見本に合わせた少しゆったりした上下余白 */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,24 +35,24 @@ body {
     box-sizing: border-box;
 }
 
-.logo {
+html body .logo {
     display: flex;
     align-items: center;
 }
 
-/* 💡 ロゴ画像のサイズ（見本のすっきりした大きさに戻します） */
-.logo img {
+/* 💡 【修正】ロゴ画像のサイズ（見本通りの「横幅400px・高さ30px」に強制固定します） */
+html body .logo img {
     height: 30px;
     width: 400px;
     display: block;
 }
 
 /* 💡 ナビゲーションメニュー */
-.nav a {
-    color: #fff;
+html body .nav a {
+    color: #ffffff;
     text-decoration: none;
-    margin-left: 50px;       /* 👈 間隔を 25px から「45px」に広げてゆったりさせます */
-    font-size: 1.45em;       /* 👈 文字サイズを 1.45em に一回り大きくします */
+    margin-left: 45px;
+    font-size: 1.25em;
     font-weight: bold;
-    letter-spacing: 0.5px;   /* 文字の横幅をわずかに広げて美しく見せます */
+    letter-spacing: 0.5px;
 }

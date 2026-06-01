@@ -1,8 +1,15 @@
-/* 📄 src/resources/css/verify-email.css（見本完全一致版） */
-body {
+/* 📄 src/resources/css/verify-email.css */
+
+/* 💡 Tailwind v4のデフォルト設定に負けないように、
+   1行目にこの新ルールを必ず記述して詳細度を揃えます */
+@reference "app.css";
+
+/* 💡 htmlとbodyをセットで指定し、上の隙間（不要なマージン）を確実にゼロにします */
+html body {
     margin: 0;
+    padding: 0;
     font-family: sans-serif;
-    background-color: #fff; /* 💡 背景を完全な白にします */
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -13,11 +20,14 @@ body {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 20px;
+    /* 💡 見本のように真ん中より「少しだけ上」に配置するために、
+       上下中央（center）から一歩手前の「flex-start（上寄り）」に変え、適度な余白を設けます */
+    align-items: flex-start;
+    padding: 25vh 20px 20px 20px; /* 上側に画面全体の25%分のゆったりした余白を確保 */
+    box-sizing: border-box;
 }
 
-/* 💡 見本の通り、外側の四角いボックス（背景や影）を完全に消去しました */
+/* 💡 外側の四角いボックスを消去した中身のエリア */
 .verify-box {
     width: 100%;
     max-width: 600px;
@@ -33,7 +43,7 @@ body {
     margin-bottom: 40px;
 }
 
-/* 💡 見本通りの四角くて薄いグレーのボタン */
+/* 💡 元のコードを活かした薄いグレーのボタン */
 .btn-verify {
     background-color: #d9d9d9;
     color: #000;
@@ -48,18 +58,18 @@ body {
     text-align: center;
 }
 
-/* 💡 再送完了メッセージのスタイル */
+.btn-verify:hover {
+    background-color: #ccc;
+}
+
+/* 💡 再送完了メッセージ */
 .alert-success {
     color: green;
     margin-bottom: 15px;
     text-align: center;
 }
 
-.btn-verify:hover {
-    background-color: #ccc;
-}
-
-/* 💡 見本通りの薄い青色の再送リンク */
+/* 💡 薄い青色の再送リンク */
 .resend-link {
     background: none;
     border: none;
@@ -75,7 +85,7 @@ body {
     text-decoration: underline;
 }
 
-/* 💡 画面全体のレイアウトを整えるためのスタイル */
+/* 画面全体の補助スタイル */
 main {
     flex: 1;
     display: flex;

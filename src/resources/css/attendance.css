@@ -1,5 +1,12 @@
 /* 📄 src/resources/css/attendance.css（見本完全一致調整版） */
 
+@reference "app.css";
+
+/* 💡 1. 勤怠登録画面全体の背景を「グレー」に固定します */
+html, body, main {
+    background-color: #f7f7f7 !important;
+}
+
 body {
     margin: 0;
     font-family: sans-serif;

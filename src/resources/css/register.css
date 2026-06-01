@@ -1,87 +1,104 @@
 /* 📄 src/resources/css/register.css */
-body {
+@reference "app.css";
+
+/* 💡 【修正】「body」から「html body」に変更しました。
+   これで優先順位が上がり、!important なしで上の隙間（不要な余白）を完全にゼロにします */
+html body {
+    background-color: #ffffff;
     margin: 0;
+    padding: 0;
     font-family: sans-serif;
-    background-color: #f7f7f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-/* 画面中央に配置する白いボックス */
-.register-box {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-}
-
-h1 {
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.8em;
-    color: #333;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #555;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     box-sizing: border-box;
+    position: relative;
+    min-height: 100vh;
 }
 
-/* Figma風の黒いボタン */
-.btn {
+/* 💡 2. 登録ボックスの配置：
+    頭に「body」をつなげて「body .register-box」と書くことで、
+   Tailwindのユーティリティクラスよりも優先順位（詳細度）が高くなり、!important なしで影や枠線を消せます */
+html body .register-box {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: #ffffff;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: none; /* 💡 !important なしで上書き */
+    border: none;     /* 💡 !important なしで上書き */
+    box-sizing: border-box;
+    padding: 0 20px;
+}
+
+/* 💡 3. タイトル「会員登録」の文字 */
+.register-box h1 {
+    margin-top: 0;
+    margin-bottom: 40px;
+    font-size: 1.8em;
+    color: #000000;
+    text-align: center;
+    font-weight: bold;
+}
+
+.register-box .form-group {
+    margin-bottom: 30px;
+}
+
+.register-box .form-group label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: bold;
+    font-size: 1rem;
+    color: #000000;
+}
+
+/* 💡 見本に合わせた、角の丸みのない黒枠の入力欄 */
+.register-box .form-group input {
     width: 100%;
-    background-color: #000;
-    color: #fff;
-    border: none;
     padding: 12px;
-    border-radius: 4px;
-    font-size: 1em;
+    border: 1px solid #000000;
+    border-radius: 0px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+/* 💡 4. 見本通りの真っ黒な「登録」ボタン：こちらも詳細度を高めて上書き */
+html body .register-box .btn {
+    width: 100%;
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 16px;
+    border-radius: 0px;
+    font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
-.btn:hover {
-    background-color: #333;
+body .register-box .btn:hover {
+    opacity: 0.8;
 }
 
-.error-message {
+.register-box .error-message {
     color: red;
     font-size: 0.85em;
     margin-top: 5px;
 }
 
-p {
+.register-box p {
     text-align: center;
-    margin-top: 20px;
-    font-size: 0.9em;
+    margin-top: 30px;
+    font-size: 0.95em;
 }
 
-p a {
-    color: #4a90e2 !important;
-    text-decoration: none;     /* 👈 下線はいったん消します */
+.register-box p a {
+    color: #4a90e2;
+    text-decoration: none;
 }
 
-/* 💡 マウスを乗せたときの設定 */
-p a:hover {
-    color: #2563eb !important; /* 少し濃い青色になります */
-    text-decoration: underline; /* マウスを乗せたときだけ下線を出す */
+.register-box p a:hover {
+    color: #2563eb;
+    text-decoration: underline;
 }

@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ログイン（一般ユーザー）</title>
-    <!-- ⚡ ログイン専用の外部CSSを読み込む -->
-    @vite(['resources/css/login.css'])
-</head>
-<body>
+@extends('layouts.app') <!-- 👈 これで共通の黒ヘッダーと app.css が自動で読み込まれます -->
 
-    <!-- 💡 白いボックスで囲むクラスを追加しました -->
+@section('title', 'ログイン（一般ユーザー）')
+
+@section('css')
+    <!-- 💡 app.css は親が読み込むので、ここではログイン専用のCSSだけを指定します -->
+    @vite(['resources/css/login.css'])
+@endsection
+
+@section('content')
+    <!-- 💡 もともとの <body> 内にあった中身をここにすべて収めます -->
     <div class="login-box">
         <h1>ログイン</h1>
 
@@ -49,6 +49,4 @@
 
         <p><a href="/register" class="login-link">会員登録はこちら</a></p>
     </div>
-
-</body>
-</html>
+@endsection
