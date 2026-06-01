@@ -1,26 +1,32 @@
 <?php
 
+//laravelのfortifyがこのファイルを見つけれるように、このファイルの住所がかいてある
 namespace App\Actions\Fortify;
 
+//データーベースのuser情報を扱うためにuserモデルを呼出している
 use App\Models\User;
-use App\Http\Requests\Auth;
+//ユーザーが入力したデータを受取り、バリデーションチェックをしてもらうために呼び出している
+use App\Http\Requests\Auth\RegisterRequest;
+//パスワードを暗号化するために呼び出している
 use Illuminate\Support\Facades\Hash;
+//laravelのCreatesNewUsersのルールを呼出しcreateメソッドを実装するよう書いてある
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+// バリデーションを実行する機能を呼び出している
+use Illuminate\Support\Facades\Validator;
 
+//laravelのCreateNewUsersrルールを実装するクラス
 class CreateNewUser implements CreatesNewUsers
 {
-    /**
-     * 会員登録の処理を行うメインメソッド
-     */
+    //ユーザー情報を新規作成するため(データの受取・チェック・保存)を1つにまとめたcreateメソッド
     public function create(array $input): User
     {
-        // 💡 独自に作成した RegisterRequest のバリデーションルールを手動で実行します
-        $request = new \App\Http\Requests\Auth\RegisterRequest();
+        //ユーザーが入力したデータを受取り、バリデーションチェックをしてもらう
+        $request = new RegisterRequest();
 
-        // データの検証を実行（ルール違反があれば自動的に画面へ弾かれます）
-        \Illuminate\Support\Facades\Validator::make($input, $request->rules(), $request->messages())->validate();
+        // バリデーションを実行。ルール違反があれば設定したエラーメッセージを表示
+        Validator::make($input, $request->rules(), $request->messages())->validate();
 
-        // バリデーションを通過した場合、ユーザーをデータベース（usersテーブル）に登録
+        // パスワードは安全に暗号化し、ユーザー情報をデータベース（usersテーブル）に登録
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
