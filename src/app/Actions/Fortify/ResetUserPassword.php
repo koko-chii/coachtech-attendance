@@ -17,7 +17,7 @@ class ResetUserPassword implements ResetsUserPasswords
     //PassWordValidationRulesで作成したトレイト(パスワードルール)を呼出す
     use PasswordValidationRules;
 
-    //ユーザーのパスワードをリセットするための関数(箱)
+    //ユーザーのパスワードをリセットするための関数(機能)
     public function reset(User $user, array $input): void
     {
        // 画面から直接データが届かない場所のためRequestファイルは動かせない。

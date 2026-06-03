@@ -2,38 +2,49 @@
 
 namespace App\Http\Controllers;
 
+//リクエスト機能を使うための呼び出し
 use Illuminate\Http\Request;
+//認証機能を使うための呼び出し
 use Illuminate\Support\Facades\Auth;
+//データーベースの情報を使うための呼び出し
 use Illuminate\Support\Facades\DB;
+//現在の時刻の取得や、勤務時間の計算機能を使うための呼び出し
 use Carbon\Carbon;
+//勤務時間の打刻機能を使うための呼び出し
 use App\Models\AttendanceRecord;
 
+//勤怠管理コントローラーを作成するためのクラス(設置)
 class AttendanceController extends Controller
 {
-    /**
-     * FN018・FN019: 勤怠登録画面を表示する
-     */
+    //勤怠管理画面を表示するための関数(機能)
     public function index()
     {
+        //ログイン済みユーザー情報を取得し、user変数(箱)に入れる
         $user = Auth::user();
+        //今日の日付情報を取得し、today変数(箱)に入れる
         $today = Carbon::today();
 
-        // 今日の出勤レコードを取得
+        //ユーザー情報と出勤データーを探し、勤怠管理変数(箱)に入れる
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
-        // 現在「休憩中」かどうかを判定するフラグ
+        // 休憩中ではないフラグ状態を変数(箱)に入れる
         $is_breaking = false;
 
+        //出退勤情報と休憩中の情報を取得し、休憩戻りがまだか調べる
+        //(直訳)もし出勤していて退勤していなければ
+        // データーベースの休憩中データーを箱にしまう。
+        // 勤怠管理データーから探し出し休憩から戻ってないか調べる。　
         if ($attendance && !$attendance->clock_out) {
-            // 💡 確実に「breaks」テーブル内で break_out（休憩終了）が空のレコードがあるかダイレクトにチェック
             $is_breaking = DB::table('breaks')
                 ->where('attendance_record_id', $attendance->id)
                 ->whereNull('break_out')
                 ->exists();
         }
 
+        //出勤情報と休憩中情報、今日の日付と表示方法をを箱にしまい、
+        // 勤怠管理画面に表示する
         return view('attendance', [
             'attendance'  => $attendance,
             'is_breaking' => $is_breaking,
@@ -41,18 +52,20 @@ class AttendanceController extends Controller
         ]);
     }
 
-    /**
-     * FN020: 出勤ボタンを押したときの保存処理
-     */
+    //出勤ボタンが押されたときの関数(機能)
     public function clockIn()
     {
+        //ログインしているユーザー情報をuser変数(箱)にしまう
         $user = Auth::user();
+        //今日の日時情報を取得計算し、today変数(箱)にしまう
         $today = Carbon::today();
 
+        //今日出勤しているユーザーデータを調べexixts変数(箱)にしまう(重複を防ぐため)
         $exists = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->exists();
 
+        //もし出勤していなかったらユーザー情報と出勤日時を日付形式にして新たに作成する
         if (!$exists) {
             AttendanceRecord::create([
                 'user_id'  => $user->id,
@@ -61,65 +74,72 @@ class AttendanceController extends Controller
             ]);
         }
 
+        //ダイレクトに返す
         return redirect()->back();
     }
 
-    /**
-     * FN022: 退勤ボタンを押したときの保存処理
-     */
+    //退勤ボタンが押されたときの関数(機能)
     public function clockOut()
     {
+        //ログインしているユーザー情報をuser変数(箱)にいれる
         $user = Auth::user();
+        //今日の日時情報を取得し、today変数(箱)にいれる
         $today = Carbon::today();
 
+        //今日出勤しているユーザーデーターを1つ探しattendance変数(箱)にいれる
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
+        //もし出勤していて退勤がまだなら退勤日時を日付形式にして更新する
         if ($attendance && !$attendance->clock_out) {
             $attendance->update([
                 'clock_out' => Carbon::now()->toTimeString(),
             ]);
         }
 
+        //ダイレクトに返す
         return redirect()->back();
     }
 
-    /**
-     * FN021: 休憩入 / 休憩戻 ボタンを押したときの保存処理
-     */
+    //休憩ボタンが押されたときの関数(機能)
     public function break()
     {
+        //ログインしているユーザーをuser変数(箱)に入れる
         $user = Auth::user();
+        //今日の日付を取得してtoday変数(箱)にいれる
         $today = Carbon::today();
+        //今現在の日付と正確な時刻を取得してnow変数(箱)に入れる
         $now = Carbon::now();
 
-        // 今日の出勤レコードを確実に取得
+        // 今日出勤しているユーザー情報を1つ探し出す
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
-        // 出勤していない、または既に退勤している場合は何もしない
+        // 出勤していない、または既に退勤している場合は戻し返す
         if (!$attendance || $attendance->clock_out) {
             return redirect()->back();
         }
 
-        // 💡 進行中の休憩（break_outが空のもの）があるかチェック
+        // 休憩ボタンが押され休憩戻はまだの情報が1件でもあるか探し出す
         $activeBreak = DB::table('breaks')
             ->where('attendance_record_id', $attendance->id)
             ->whereNull('break_out')
             ->first();
 
+        //もしたくさんの休憩情報のなかに休憩中を見つけたらactiveBreak変数(箱)へしまう
+        //休憩戻を押したら、now変数(箱)のデータを現在の時刻形式で更新する
         if ($activeBreak) {
-            // ⭕️ 【休憩戻】の処理（進行中の休憩を終了させる）
             DB::table('breaks')
                 ->where('id', $activeBreak->id)
                 ->update([
                     'break_out'  => $now->toTimeString(),
                     'updated_at' => $now,
                 ]);
+　　　  //休憩中情報が無かったら、新しく休憩中テーブル
+        // 勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報を登録する
         } else {
-            // ⭕️ 【休憩入】の処理（新規に休憩レコードを登録する）
             DB::table('breaks')->insert([
                 'attendance_record_id' => $attendance->id,
                 'break_in'             => $now->toTimeString(),
@@ -127,7 +147,7 @@ class AttendanceController extends Controller
                 'updated_at'           => $now,
             ]);
         }
-
+        //元の画面に戻す
         return redirect()->back();
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Validator;
 class CreateNewUser implements CreatesNewUsers
 {
     //ユーザー情報を新規作成するため(データの受取・チェック・保存)を1つにまとめたcreateメソッド
+    //public 公開範囲(誰でも自由に)　function関数(機能)　create(この関数の名前。今回は新規作成)
     public function create(array $input): User
     {
         //ユーザーが入力したデータを受取り、バリデーションチェックをしてもらう

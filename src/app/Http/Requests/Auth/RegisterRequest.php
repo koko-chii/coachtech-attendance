@@ -4,21 +4,22 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+//FormRequest機能を継承したオリジナル会員登録機能を作成するためのクラス(設置)
 class RegisterRequest extends FormRequest
 {
-    /**
-     * 🛠️ 1. 誰でもこの入力チェックを通れるように true に変更します
-     */
+    //入力チェックの許可を判定するための関数(機能)
     public function authorize(): bool
     {
+        //誰でも許可する
         return true;
     }
 
-    /**
-     * 🛠️ 2. 要件定義に基づいた入力チェックのルール（FN002）
-     */
+    //入力チェックのルールをきめるための関数(機能)
     public function rules(): array
     {
+        //名前の入力必須、文字列、255字以内
+        //メールアドレスの入力必須、文字列、メール形式、255字以内、未登録のアドレス
+        //パスワードの入力必須、文字列、8字以内、確認用パスワードとの一致
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -26,24 +27,25 @@ class RegisterRequest extends FormRequest
         ];
     }
 
-    /**
-     * 🛠️ 3. 【最重要】要件定義で必ず守るよう指定されたエラーメッセージ（FN003）
-     */
+    //エラーメッセージを決めるための関数(機能)
     public function messages(): array
     {
+        //名前とメールアドレスと、パスワードが未入力の場合
         return [
-            // 1. 未入力の場合
             'name.required' => 'お名前を入力してください',
             'email.required' => 'メールアドレスを入力してください',
             'password.required' => 'パスワードを入力してください',
 
-            // 2. メール形式ではない場合
+            // メール形式ではない場合
             'email.email' => 'メールアドレスはメール形式で入力してください',
 
-            // 3. パスワードの入力規則違反の場合
+            //すでに登録されているメールアドレスの場合
+            'email.unique' => 'このメールアドレスは既に登録されています。',
+
+            // パスワードの入力数が7字以下の場合
             'password.min' => 'パスワードは8文字以上で入力してください',
 
-            // 4. 確認用パスワードの入力規則違反（不一致）の場合
+            // 確認用パスワードと不一致の場合
             'password.confirmed' => 'パスワードと一致しません',
         ];
     }

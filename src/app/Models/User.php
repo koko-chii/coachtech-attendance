@@ -3,44 +3,40 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+//ユーザーテストデーターを作成するための呼び出し
 use Database\Factories\UserFactory;
+//大量のテストデーターを作成するための呼び出し
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+//勤怠管理画面に認証機能をするための呼出し
 use Illuminate\Foundation\Auth\User as Authenticatable;
+//ユーザー（従業員）にメールや画面で通知(ノティファイアブル)を送るための機能を呼び出し
 use Illuminate\Notifications\Notifiable;
+//メール認証機能の呼び出し
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVerifyEmail
+//勤怠管理のユーザーにメール認証機能をするためのクラス(設置)
+class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<UserFactory> */
+    //テストデータの大量生産と通知機能を組合わせる
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    //名前とメールアドレス、パスワードはユーザーは書き換え可能
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    //パスワードと自動ログインはガードされている(ヒドゥン)
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    //データの形式を正しく変換するための関数(機能)
     protected function casts(): array
     {
+        //メール認証の日時を日付形式に、パスワードは暗号化に変換して返す
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
