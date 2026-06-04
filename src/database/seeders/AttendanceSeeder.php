@@ -2,18 +2,22 @@
 
 namespace Database\Seeders;
 
+//laravel標準機能のSeeder機能(初期データー投入機能)の読み込み
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Admin;
+//laravelがMYSQLデーターベースへ直接命令を送る機能の読み込み
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+//日時を取得・計算するための機能の読み込み
 use Carbon\Carbon;
 
+//Seeder機能を継承したオリジナルの勤怠管理初期データー投入機能を作成するためのクラス(設置)
 class AttendanceSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. ユーザー情報・管理者情報の作成 (要件通り)
+        // ユーザー情報1　の名前、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻
         $user1 = User::create([
             'name' => 'ユーザー1',
             'email' => 'user1@example.com',
@@ -21,6 +25,7 @@ class AttendanceSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        //ユーザー情報2　
         User::create([
             'name' => 'ユーザー2',
             'email' => 'user2@example.com',
@@ -28,21 +33,28 @@ class AttendanceSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // ※管理者（admin_status=trueの代わりにadminsテーブルへ登録）
+        // ユーザー情報3(管理者テーブルへ保存)　メール認証不要
         Admin::create([
             'name' => 'ユーザー3(管理者)',
             'email' => 'user3@example.com',
             'password' => Hash::make('password'),
         ]);
 
-        // 2. ★ user1 の意図的データの作成
+        // 今現在の日時を取得してnow変数(箱)へしまう
         $now = Carbon::now();
 
-        // --- 過去5ヶ月分のデータ作成 (平日15日 × 5ヶ月 = 75日 通常勤務) ---
+        // 過去5ヶ月分のデータを順番に作成(5か月前、4か月前....1か月前)
+        //現在から5か月前に戻り、月初めの1日から作成する
+        //出勤日数のカウント開始のためにリセットする
         for ($i = 5; $i >= 1; $i--) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
 
+            //ユーザー1へのデーター投入
+            // 平日15日分データーができるまで打刻を繰り返す
+            // 9時から18時の勤務のデーターを登録する
+            //平日9時18時の勤務で1回分増やしてcreatedDays変数(箱)にしまう
+            //ズレるのを防ぐため毎日、日付を1日進めて$monthDateを上書きする
             while ($createdDays < 15) {
                 if (!$monthDate->isWeekend()) {
                     $this->createRecord($user1->id, $monthDate, '09:00:00', '18:00:00');
@@ -52,7 +64,7 @@ class AttendanceSeeder extends Seeder
             }
         }
 
-        // --- 当月のデータ作成 (計17日分の特殊パターン) ---
+        //当月のデータ作成 (特殊パターン)
         $currentMonthDate = (clone $now)->startOfMonth();
         $patterns = [
             ...array_fill(0, 10, ['09:00:00', '18:00:00']), // 通常 10日
@@ -62,8 +74,8 @@ class AttendanceSeeder extends Seeder
             ...array_fill(0, 1,  ['08:00:00', '21:00:00']), // 長時間労働 1日 (8:00-21:00)
         ];
 
+        //
         foreach ($patterns as $pattern) {
-            // 平日のみに配置する
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }

@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 
+//laravel標準装備のServiceProviderを継承したオリジナルのFortifyServiceProviderを作成するた目のクラス(設置)
 class FortifyServiceProvider extends ServiceProvider
 {
     /**
@@ -24,40 +25,48 @@ class FortifyServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+    //起動したとき自動で実行するための関数(機能)
     public function boot(): void
     {
+        //会員登録画面が起動したら自動で会員登録画面を表示する
         Fortify::registerView(function () {
             return view('auth.register');
         });
 
+        //ログイン画面が起動したら自動でログイン画面を表示する
         Fortify::loginView(function () {
             return view('auth.login');
         });
 
-        // ⭕️ 【仕様2・b】未認証時に「メール認証誘導画面」へ遷移させる設定を復活させます
+        // 未認証時に「メール認証誘導画面」へ遷移させる設定
         Fortify::verifyEmailView(function () {
             return view('auth.verify-email');
         });
 
+        //会員登録ボタンが押されたら、ユーザーの新規作成をするクラス
         Fortify::createUsersUsing(CreateNewUser::class);
+        //プロフィールの更新ボタンが押されたら、会員情報を書き換えるクラス
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
+        //パスワードが更新ボタンが押されたら、ユーザーのパスワード情報を更新するクラス
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
+        //パスワードがリセットボタンが押されたら、ユーザーのパスワード情報をリセットするクラス
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+        //2段階認証が設定されているユーザーを、専用画面へ移動させる設定
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
 
+        //ログイン認証チェックで5回間違えるとロックがかかる
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });
 
+        //ログイン時に２段階認証を設定している場合、5回間違えるとロックがかかる
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
+        //パスキー認証(顔や指紋の認証)を1分間に10回間違えた場合ロックがかかる
         RateLimiter::for('passkeys', function (Request $request) {
             $credentialId = $request->input('credential.id');
 

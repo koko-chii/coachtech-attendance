@@ -6,16 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        //勤怠管理テーブルを作成するための設計指示
+        //勤怠管理テーブルにしまうカラムの定義
+        //勤怠管理テーブルID、ユーザーID(従業員テーブルと紐づける外部キー)、
+        // 勤務日・出退勤時間(出社時の退勤時間は空っぽOKでも)、打刻データ登録の変更された日時形式
         Schema::create('attendance_records', function (Blueprint $table) {
             $table->id();
-            // 💡 一般ユーザー（usersテーブル）と紐付けるための外部キーです
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            // 💡 勤務日、出勤時間、退勤時間を保存します（退勤は最初は空なのでnullableにします）
             $table->date('date');
             $table->time('clock_in');
             $table->time('clock_out')->nullable();
@@ -23,11 +22,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        //マイグレーションを削除するときに勤怠管理テーブルもまとめて消す
         Schema::dropIfExists('attendance_records');
     }
 };

@@ -21,12 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // 💡 ログインしていないユーザーが弾かれた時の移動先を「/login」に固定します
+        // ログインしていないユーザーが弾かれた時の移動先を「/login」に固定
         Authenticate::redirectUsing(function ($request) {
             return route('login');
         });
 
-        // 💡 メール認証していないユーザーがログインしようとした時の移動先を「メール認証誘導画面（/email/verify）」に固定します
+        // メール認証していないユーザーがログインしようとした時の移動先を「メール認証誘導画面（/email/verify）」に固定
         EnsureEmailIsVerified::redirectTo('email/verify');
     }
 }
