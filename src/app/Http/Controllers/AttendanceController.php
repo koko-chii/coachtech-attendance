@@ -137,9 +137,10 @@ class AttendanceController extends Controller
                     'break_out'  => $now->toTimeString(),
                     'updated_at' => $now,
                 ]);
-　　　  //休憩中情報が無かったら、新しく休憩中テーブル
-        // 勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報を登録する
-        } else {
+        }
+        //休憩中情報が無かったら、新しく休憩中テーブル
+        //勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報を登録する
+        else {
             DB::table('breaks')->insert([
                 'attendance_record_id' => $attendance->id,
                 'break_in'             => $now->toTimeString(),

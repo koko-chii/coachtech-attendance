@@ -74,7 +74,12 @@ class AttendanceSeeder extends Seeder
             ...array_fill(0, 1,  ['08:00:00', '21:00:00']), // 長時間労働 1日 (8:00-21:00)
         ];
 
-        //
+        //ユーザー1へのデーター投入
+        //特殊パターンの出勤17日分を繰り返す
+        //土日の場合スキップする
+        //土日は1日進める
+        //平日になったら出退勤打刻を登録する
+        //カレンダーを1日進めておく
         foreach ($patterns as $pattern) {
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
@@ -84,13 +89,14 @@ class AttendanceSeeder extends Seeder
         }
     }
 
-    // レコード作成用のお助けメソッド (固定休憩も自動付与)
+    //ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
     private function createRecord($userId, $date, $startTime, $endTime)
     {
+        //年月日をデーター形式でdateStr変数(箱)にしまう
         $dateStr = $date->format('Y-m-d');
 
-        // まだテーブルが作成されていない場合はエラーを防ぐため仮のテーブル名にしています
-        // 必要に応じてマイグレーション完了後に実際のテーブル名に合わせてください
+        //勤怠管理テーブルに打刻データーを登録し、そのIDを取得する
+        //従業員ID、勤務日時形式、出退勤時刻(出勤時の退勤は空っぽでOK)、新規作成・更新を保存する
         $attendanceId = DB::table('attendance_records')->insertGetId([
             'user_id' => $userId,
             'date' => $dateStr,
@@ -100,6 +106,8 @@ class AttendanceSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        //休憩テーブルに打刻データを登録する
+        //休憩入戻時刻、新規作成・更新データーを保存する
         DB::table('breaks')->insert([
             'attendance_record_id' => $attendanceId,
             'break_in' => '12:00:00',
