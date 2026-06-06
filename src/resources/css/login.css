@@ -1,8 +1,7 @@
-/* 📄 src/resources/css/login.css */
+/* src/resources/css/login.css */
 
 @reference "app.css";
 
-/* 💡 1. ログイン画面全体の背景を「真っ白」に固定して上の隙間をゼロにします */
 html body {
     background-color: #ffffff;
     margin: 0;
@@ -13,29 +12,27 @@ html body {
     min-height: 100vh;
 }
 
-/* 💡 2. 会員登録画面と同じように、影や外枠の線を一切なくしたフラットなログインボックス */
 html body .login-box {
     position: absolute;
-    top: 50%;                  /* 👈 余白が気になる場合は 50% や 48% に微調整してください */
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
     background-color: #ffffff;
     width: 90%;
-    max-width: 550px;           /* 会員登録画面と横幅を統一 */
-    box-shadow: none;           /* 影を完全に消去 */
-    border: none;               /* 枠線を完全に消去 */
+    max-width: 550px;
+    box-shadow: none;
+    border: none;
     box-sizing: border-box;
     padding: 0 20px;
 }
 
-/* 💡 3. タイトル「ログイン」の文字 */
 .login-box h1 {
     margin-top: 0;
     margin-bottom: 40px;
     font-size: 1.8em;
     color: #000000;
-    text-align: center;         /* 文字を中央寄せ */
+    text-align: center;
     font-weight: bold;
 }
 
@@ -51,24 +48,22 @@ html body .login-box {
     color: #000000;
 }
 
-/* 💡 見本に合わせた、角の丸みのない黒枠の入力欄 */
 .login-box .form-group input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #000000;  /* はっきりした黒い線 */
-    border-radius: 0px;         /* 角の丸みをなくしてシャープに */
+    border: 1px solid #000000;
+    border-radius: 0px;
     box-sizing: border-box;
     font-size: 1rem;
 }
 
-/* 💡 見本通りの真っ黒な「ログイン」ボタン */
 body .login-box .btn {
     width: 100%;
     background-color: #000000;
     color: #ffffff;
     border: none;
     padding: 16px;
-    border-radius: 0px;         /* ボタンの角の丸みもなし */
+    border-radius: 0px;
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
@@ -85,7 +80,6 @@ body .login-box .btn:hover {
     margin-top: 5px;
 }
 
-/* 会員登録はこちら リンク */
 .login-box p {
     text-align: center;
     margin-top: 30px;

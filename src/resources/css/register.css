@@ -1,8 +1,6 @@
-/* 📄 src/resources/css/register.css */
+/* src/resources/css/register.css */
 @reference "app.css";
 
-/* 💡 【修正】「body」から「html body」に変更しました。
-   これで優先順位が上がり、!important なしで上の隙間（不要な余白）を完全にゼロにします */
 html body {
     background-color: #ffffff;
     margin: 0;
@@ -13,9 +11,6 @@ html body {
     min-height: 100vh;
 }
 
-/* 💡 2. 登録ボックスの配置：
-    頭に「body」をつなげて「body .register-box」と書くことで、
-   Tailwindのユーティリティクラスよりも優先順位（詳細度）が高くなり、!important なしで影や枠線を消せます */
 html body .register-box {
     position: absolute;
     top: 52%;
@@ -25,13 +20,12 @@ html body .register-box {
     background-color: #ffffff;
     width: 90%;
     max-width: 550px;
-    box-shadow: none; /* 💡 !important なしで上書き */
-    border: none;     /* 💡 !important なしで上書き */
+    box-shadow: none;
+    border: none;
     box-sizing: border-box;
     padding: 0 20px;
 }
 
-/* 💡 3. タイトル「会員登録」の文字 */
 .register-box h1 {
     margin-top: 0;
     margin-bottom: 40px;
@@ -53,7 +47,6 @@ html body .register-box {
     color: #000000;
 }
 
-/* 💡 見本に合わせた、角の丸みのない黒枠の入力欄 */
 .register-box .form-group input {
     width: 100%;
     padding: 12px;
@@ -63,7 +56,6 @@ html body .register-box {
     font-size: 1rem;
 }
 
-/* 💡 4. 見本通りの真っ黒な「登録」ボタン：こちらも詳細度を高めて上書き */
 html body .register-box .btn {
     width: 100%;
     background-color: #000000;

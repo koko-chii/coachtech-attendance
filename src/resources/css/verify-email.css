@@ -1,10 +1,7 @@
-/* 📄 src/resources/css/verify-email.css */
+/* src/resources/css/verify-email.css */
 
-/* 💡 Tailwind v4のデフォルト設定に負けないように、
-   1行目にこの新ルールを必ず記述して詳細度を揃えます */
 @reference "app.css";
 
-/* 💡 htmlとbodyをセットで指定し、上の隙間（不要なマージン）を確実にゼロにします */
 html body {
     margin: 0;
     padding: 0;
@@ -15,26 +12,21 @@ html body {
     min-height: 100vh;
 }
 
-/* 💡 画面中央に配置するためのコンテナ */
 .container {
     flex: 1;
     display: flex;
     justify-content: center;
-    /* 💡 見本のように真ん中より「少しだけ上」に配置するために、
-       上下中央（center）から一歩手前の「flex-start（上寄り）」に変え、適度な余白を設けます */
     align-items: flex-start;
-    padding: 25vh 20px 20px 20px; /* 上側に画面全体の25%分のゆったりした余白を確保 */
+    padding: 25vh 20px 20px 20px;
     box-sizing: border-box;
 }
 
-/* 💡 外側の四角いボックスを消去した中身のエリア */
 .verify-box {
     width: 100%;
     max-width: 600px;
     text-align: center;
 }
 
-/* メッセージのテキスト */
 .message {
     font-size: 1.1em;
     font-weight: bold;
@@ -43,7 +35,6 @@ html body {
     margin-bottom: 40px;
 }
 
-/* 💡 元のコードを活かした薄いグレーのボタン */
 .btn-verify {
     background-color: #d9d9d9;
     color: #000;
@@ -62,14 +53,12 @@ html body {
     background-color: #ccc;
 }
 
-/* 💡 再送完了メッセージ */
 .alert-success {
     color: green;
     margin-bottom: 15px;
     text-align: center;
 }
 
-/* 💡 薄い青色の再送リンク */
 .resend-link {
     background: none;
     border: none;
@@ -85,7 +74,6 @@ html body {
     text-decoration: underline;
 }
 
-/* 画面全体の補助スタイル */
 main {
     flex: 1;
     display: flex;

@@ -1,14 +1,13 @@
-@extends('layouts.app') <!-- 👈 これで共通の黒ヘッダーと app.css が自動で読み込まれます -->
+@extends('layouts.app') 
 
 @section('title', '会員登録（一般ユーザー）')
 
 @section('css')
-    <!-- 💡 app.css は親が読み込むので、ここでは会員登録専用のCSSだけを指定します -->
     @vite(['resources/css/register.css'])
 @endsection
 
 @section('content')
-    <!-- 💡 もともとの <body> 内にあった中身をここにすべて収めます -->
+<!--　会員登録メインエリア  -->
     <div class="register-box">
         <h1>会員登録</h1>
 
@@ -18,7 +17,10 @@
             <!-- お名前入力欄 -->
             <div class="form-group">
                 <label>お名前</label>
+                <!-- old('name')は認証失敗時も入力内容を保持 -->
                 <input type="text" name="name" value="{{ old('name') }}">
+
+                <!-- 入力欄下　エラーメッセージの表示 -->
                 @error('name')
                     <div class="error-message">{{ $message }}</div>
                 @enderror
@@ -48,10 +50,11 @@
                 <input type="password" name="password_confirmation">
             </div>
 
-            <!-- 黒ボタン用のクラスを追加 -->
+            <!-- デザイン要件に従った黒ボタン-->
             <button type="submit" class="btn">登録</button>
         </form>
 
+        <!-- ログイン画面へ遷移リンク -->
         <p><a href="/login" class="login-link">ログインはこちら</a></p>
     </div>
 @endsection

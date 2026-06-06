@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ブラウザのタブにタイトルを表示する -->
     <title>@yield('title', 'COACHTECH')</title>
-    <!-- 共通のCSSをここで1回だけ読み込みます -->
+    <!-- 対応CSSを読み込む Vite(高速なフロントエンド構築ツール) -->
     @vite(['resources/css/app.css'])
-    <!-- 各画面ごとの専用CSSを読み込む場所を作っておきます -->
+    <!-- 親が子を読み込む場所-->
     @yield('css')
 </head>
+
 <body>
-        <!-- 🖤 共通の黒ヘッダーバー -->
+    <!-- 共通の黒ヘッダーバー -->
     <header class="header">
+        <!-- ヘッダーの内側 -->
         <div class="header-inner">
-            <!-- 💡 文字の「COACHTECH」を <img> タグ（画像）に書き換えます -->
+            <!-- COACHTECH ロゴを 画像で挿入 -->
             <div class="logo">
                 <img src="{{ asset('img/logo.png') }}" alt="COACHTECH">
             </div>
+            <!-- ログインユーザー用のヘッダーに表示 -->
             @auth
             <nav class="nav">
-                <a href="/attendance">勤怠</a>
-                <a href="#">勤怠一覧</a>
-                <a href="#">申請</a>
+                <a href="{{ route('attendance.index') }}">勤怠</a>
+                <a href="/attendance/list">勤怠一覧</a>
+                <a href="/stamp_correction_request/list">申請</a>
+                <!-- ログアウト用の隠しフォームを送信させ安全にログアウトする -->
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
             </nav>
             @endauth
         </div>
     </header>
 
+    <!-- ログインユーザー用のヘッダーに表示 -->
     @auth
     <!-- ログアウト用の隠しフォーム -->
     <form id="logout-form" action="/logout" method="POST" style="display: none;">
+        <!-- cookie自動送信を悪用した攻撃を防ぐための@csrf(セキュリティトークン) -->
         @csrf
     </form>
     @endauth
 
-    <!-- 💡 ここに各画面（出勤画面や一覧画面）の中身がパッと挟み込まれます -->
+    <!-- 親が子を読み込む場所 -->
     <main>
         @yield('content')
     </main>

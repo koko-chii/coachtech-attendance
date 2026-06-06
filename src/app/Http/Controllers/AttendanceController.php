@@ -60,7 +60,7 @@ class AttendanceController extends Controller
         //今日の日時情報を取得計算し、today変数(箱)にしまう
         $today = Carbon::today();
 
-        //今日出勤しているユーザーデータを調べexixts変数(箱)にしまう(重複を防ぐため)
+        //今日出勤しているユーザーデータを調べexists変数(箱)にしまう(重複を防ぐため)
         $exists = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->exists();
@@ -139,7 +139,7 @@ class AttendanceController extends Controller
                 ]);
         }
         //休憩中情報が無かったら、新しく休憩中テーブル
-        //勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報を登録する
+        //(勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報)を登録する
         else {
             DB::table('breaks')->insert([
                 'attendance_record_id' => $attendance->id,

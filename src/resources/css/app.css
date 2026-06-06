@@ -1,4 +1,4 @@
-/* 📄 src/resources/css/app.css */
+/* src/resources/css/app.css */
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -11,14 +11,12 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* 💡 【修正】html body と重ねることで、大元の余白（隙間）を確実にゼロにします */
 html body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
 }
 
-/* 💡 ヘッダーバー：優先順位を上げるため、すべて「html body」から書き始めます */
 html body .header {
     background-color: #000000;
     color: #ffffff;
@@ -27,7 +25,7 @@ html body .header {
 }
 
 html body .header-inner {
-    padding: 20px 40px;          /* 👈 見本に合わせた少しゆったりした上下余白 */
+    padding: 20px 40px;          
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,14 +38,12 @@ html body .logo {
     align-items: center;
 }
 
-/* 💡 【修正】ロゴ画像のサイズ（見本通りの「横幅400px・高さ30px」に強制固定します） */
 html body .logo img {
     height: 30px;
     width: 400px;
     display: block;
 }
 
-/* 💡 ナビゲーションメニュー */
 html body .nav a {
     color: #ffffff;
     text-decoration: none;
