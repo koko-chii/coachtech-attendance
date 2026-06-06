@@ -17,7 +17,7 @@ class AttendanceSeeder extends Seeder
 {
     public function run(): void
     {
-        // ユーザー情報1　の名前、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻
+        // ユーザー情報1 の名前、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻
         $user1 = User::create([
             'name' => 'ユーザー1',
             'email' => 'user1@example.com',
@@ -25,7 +25,7 @@ class AttendanceSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        //ユーザー情報2　
+        //ユーザー情報2
         User::create([
             'name' => 'ユーザー2',
             'email' => 'user2@example.com',
@@ -33,7 +33,7 @@ class AttendanceSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
-        // ユーザー情報3(管理者テーブルへ保存)　メール認証不要
+        // ユーザー情報3(管理者テーブルへ保存) メール認証不要
         Admin::create([
             'name' => 'ユーザー3(管理者)',
             'email' => 'user3@example.com',
