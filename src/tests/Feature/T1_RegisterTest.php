@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 //テスト機能の基本機能の呼び出し
 use Tests\TestCase;
 //日本語の関数のためシステムにテストだと認識させる目印を読み込み
-//(larabelのテスト機能はPHPUnitシステムをベースに動く)
+//(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //テスト機能(TestCase)を継承した(RegisterTest)オリジナルテスト機能を作成するためのクラス(設置)
