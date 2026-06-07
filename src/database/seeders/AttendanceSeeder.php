@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 //laravel標準機能のSeeder機能(初期データー投入機能)の読み込み
 use Illuminate\Database\Seeder;
+//ユーザー情報のデーターベース操作機能(Userモデル)を使うための読み込み
 use App\Models\User;
+//管理者情報のデーターベース操作機能(Adminモデル)を使うための読み込み
 use App\Models\Admin;
 //laravelがMYSQLデーターベースへ直接命令を送る機能の読み込み
 use Illuminate\Support\Facades\DB;
