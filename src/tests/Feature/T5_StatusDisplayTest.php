@@ -14,6 +14,7 @@ use Carbon\Carbon;
 //(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
+//TestCaseを継承したオリジナルステータス表示機能を作成するためのクラス(設置)
 class T5_StatusDisplayTest extends TestCase
 {
     use RefreshDatabase;
@@ -70,9 +71,9 @@ class T5_StatusDisplayTest extends TestCase
             'clock_out' => null,
         ]);
 
-        //テスト用休憩中データーを直接データーベースに登録
+        //テスト用休憩中データーを直接データーベースに登録(素早く本題テスト実行するため)
         //(勤怠データー、休憩入時刻を取得しセット、休憩戻時刻は空欄、
-        // 現在時刻を取得しカラム作成、現在時刻を取得しカラム更新)
+        // データ作成日時、データ更新日時)
         DB::table('breaks')->insert([
             'attendance_record_id' => $attendance->id,
             'break_in' => Carbon::now()->toTimeString(),
@@ -94,9 +95,9 @@ class T5_StatusDisplayTest extends TestCase
     {
         //テスト用ユーザーを1件作成
         $user = User::factory()->create();
-        //テスト用勤怠データーのさくせい
+        //テスト用勤怠データの作成
         //(ユーザー情報、今日の日付、
-        // 8時間前の出勤時刻を取得しカラムを作成、現在の退勤時刻を取得しカラムを作成)
+        // 8時間前の出勤時刻を取得しセット、現在の退勤時刻を取得しセット)
         AttendanceRecord::create([
             'user_id' => $user->id,
             'date' => Carbon::today()->toDateString(),
