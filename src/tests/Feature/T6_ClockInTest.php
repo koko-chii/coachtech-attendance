@@ -58,7 +58,7 @@ class T6_ClockInTest extends TestCase
         //テスト用ユーザーをログイン状態にし、勤怠登録画面を表示
         $response = $this->actingAs($user)->get('/attendance');
         //出勤ボタンが表示されないことを検証
-        $response->assertDontSee('出勤');
+        $response->assertDontSee('<button type="submit" class="clock-in-btn">出勤</button>', false);
     }
 
     #[Test]

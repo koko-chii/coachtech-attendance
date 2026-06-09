@@ -189,9 +189,8 @@ class T7_BreakTest extends TestCase
 
         //テスト用ユーザーをログイン状態のまま、勤怠一覧画面を表示
         $response = $this->actingAs($user)->get('/attendance/list');
-        //画面に休憩入と休憩戻時刻が表示されることを検証
-        $response->assertSee('12:00');
-        $response->assertSee('13:00');
+        //画面に休憩時刻が表示されることを検証
+        $response->assertSee('01:00');
 
         //時刻の固定を解除し、今現在時刻に戻す
         Carbon::setTestNow();

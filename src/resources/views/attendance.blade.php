@@ -43,8 +43,10 @@
                 <form action="{{ route('attendance.clock-in') }}" method="POST">
                     <!-- cookie自動送信を悪用した攻撃を防ぐための@csrf(セキュリティトークン) -->
                     @csrf
-                    <!-- 出勤ボタン表示し、クリック時に出勤ルートへデータを送信する -->
-                    <button type="submit" class="btn-attendance btn-black">出勤</button>
+                    <!-- もしまだ出勤してないなら、出勤ボタン表示し、クリック時に出勤ルートへデータを送信する -->
+                    @if(!$attendance)
+                        <button type="submit" class="clock-in-btn">出勤</button>
+                    @endif
                 </form>
 
             <!-- 退勤してない場合 -->

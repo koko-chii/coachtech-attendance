@@ -3,8 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\User;
+//laravel標準のFactory(テスト機能)を使うための読み込み
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
+//laravel標準のStr(文字列Stringをランダム生成したりする機能)を使うための読み込み
 use Illuminate\Support\Str;
 
 //laravel標準装備のFactory機能を継承したオリジナルのダミーデーターを作成するためのクラス(設置)
