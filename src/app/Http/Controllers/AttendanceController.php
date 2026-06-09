@@ -151,4 +151,47 @@ class AttendanceController extends Controller
         //元の画面に戻す
         return redirect()->back();
     }
+
+    //勤怠一覧画面でユーザーから送られてきたリクエストを実行するための関数(機能)
+    public function showList(Request $request)
+        {
+        //ログインユーザーの情報を取得
+        $user = Auth::user();
+
+        //ユーザーが指定した年月を取得
+        $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
+        //取得した年月の1日を取得
+        $currentMonth = Carbon::parse($currentMonthStr . '-01');
+
+        //ユーザーが指定した年月の前月の情報を取得し、変数(箱)prevMonthにしまう
+        $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
+        //ユーザーが指定した年月の翌月情報を取得し、変数(箱)nextMonthにしまう
+        $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
+
+        //勤怠登録データーからこのユーザー情報を探す
+        //ユーザーが指定した年月データーを取ってきて
+        // 日付をキー(見出し)にして箱(attendances)に整理する
+        $attendances = AttendanceRecord::where('user_id', $user->id)
+            ->whereYear('date', $currentMonth->year)
+            ->whereMonth('date', $currentMonth->month)
+            ->get()
+            ->keyBy('date');
+
+        //日付を昇順に並べる
+        $daysInMonth = [];
+        $daysCount = $currentMonth->daysInMonth;
+        for ($i = 1; $i <= $daysCount; $i++) {
+            $daysInMonth[] = $currentMonth->copy()->day($i);
+        }
+
+        //勤怠一覧画面を表示する
+        //(ユーザーがして指定した年月、日付け一覧、前月、翌月)
+        return view('attendance_list', [
+            'daysInMonth'  => $daysInMonth,
+            'attendances'  => $attendances,
+            'currentMonth' => $currentMonth->format('Y年m月'),
+            'prevMonth'    => $prevMonth,
+            'nextMonth'    => $nextMonth,
+        ]);
+    }
 }

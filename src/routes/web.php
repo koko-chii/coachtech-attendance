@@ -50,3 +50,14 @@ Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])
 Route::post('/attendance/break', [AttendanceController::class, 'break'])
     ->middleware(['auth', 'verified'])
     ->name('attendance.break');
+
+//勤怠一覧画面を表示するルート
+Route::get('/attendance/list', [AttendanceController::class, 'showList'])
+    ->middleware(['auth', 'verified'])
+    ->name('attendance.list');
+
+//勤怠一覧詳細画面を表示するルート
+Route::get('/attendance/detail/{id}', [AttendanceController::class, 'showDetail'])
+    ->middleware(['auth', 'verified'])
+    ->name('attendance.detail');
+

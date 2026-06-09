@@ -3,7 +3,7 @@
 <!-- ブラウザのタブにタイトルを表示する -->
 @section('title', 'ログイン（一般ユーザー）')
 
-<!-- ログイン専用のCSSを読み込み Vite(高速なフロントエンド構築ツール) -->
+<!-- 専用のCSSを読み込み Vite(高速なフロントエンド構築ツール) -->
 @section('css')
     @vite(['resources/css/login.css'])
 @endsection

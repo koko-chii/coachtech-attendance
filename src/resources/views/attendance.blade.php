@@ -1,11 +1,13 @@
-@extends('layouts.app')
+@extends('layouts.app')<!-- 共通の親ヘッダーと app.css を読み込む -->
 
-@section('title', '勤怠登録画面')
+@section('title', '勤怠登録画面')<!-- ブラウザのタブにタイトルを表示する -->
 
+<!-- 専用のCSSを読み込み Vite(高速なフロントエンド構築ツール) -->
 @section('css')
     @vite(['resources/css/attendance.css'])
 @endsection
 
+<!-- 親ファイルのcontentスペースに流し込む -->
 @section('content')
     <!-- 勤怠登録画面全体のレイアウトを整えるコンテナ -->
     <div class="container">
