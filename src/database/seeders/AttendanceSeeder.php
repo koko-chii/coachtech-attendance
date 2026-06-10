@@ -8,8 +8,10 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 //管理者情報のデーターベース操作機能(Adminモデル)を使うための読み込み
 use App\Models\Admin;
-//laravelがMYSQLデーターベースへ直接命令を送る機能の読み込み
-use Illuminate\Support\Facades\DB;
+//データーベースの休憩データーを操作するBreakLogモデルを使うための読み込み
+use App\Models\BreakLog;
+//勤怠管理のモデルを使うための読み込み
+use App\Models\AttendanceRecord;
 use Illuminate\Support\Facades\Hash;
 //日時を取得・計算するための機能の読み込み
 use Carbon\Carbon;
@@ -92,30 +94,26 @@ class AttendanceSeeder extends Seeder
     }
 
     //ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
-    private function createRecord($userId, $date, $startTime, $endTime)
+    private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void
     {
         //年月日をデーター形式でdateStr変数(箱)にしまう
         $dateStr = $date->format('Y-m-d');
 
         //勤怠管理テーブルに打刻データーを登録し、そのIDを取得する
         //従業員ID、勤務日時形式、出退勤時刻(出勤時の退勤は空っぽでOK)、新規作成・更新を保存する
-        $attendanceId = DB::table('attendance_records')->insertGetId([
+        $attendance = AttendanceRecord::create([
             'user_id' => $userId,
             'date' => $dateStr,
             'clock_in' => $startTime,
             'clock_out' => $endTime,
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         //休憩テーブルに打刻データを登録する
         //休憩入戻時刻、新規作成・更新データーを保存する
-        DB::table('breaks')->insert([
-            'attendance_record_id' => $attendanceId,
+        BreakLog::create([
+            'attendance_record_id' => $attendance->id,
             'break_in' => '12:00:00',
             'break_out' => '13:00:00',
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
     }
 }

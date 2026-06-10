@@ -57,7 +57,12 @@ Route::get('/attendance/list', [AttendanceController::class, 'showList'])
     ->name('attendance.list');
 
 //勤怠一覧詳細画面を表示するルート
-Route::get('/attendance/detail/{id}', [AttendanceController::class, 'showDetail'])
+Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])
     ->middleware(['auth', 'verified'])
     ->name('attendance.detail');
+
+//修正ボタンが押されたときの更新処理を実行するルート
+Route::patch('/attendance/update/{id}', [AttendanceController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('attendance.update');
 

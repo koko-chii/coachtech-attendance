@@ -6,18 +6,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 //認証機能を使うための呼び出し
 use Illuminate\Support\Facades\Auth;
-//データーベースの情報を使うための呼び出し
-use Illuminate\Support\Facades\DB;
 //現在の時刻の取得や、勤務時間の計算機能を使うための呼び出し
 use Carbon\Carbon;
 //勤務時間の打刻機能を使うための呼び出し
 use App\Models\AttendanceRecord;
+//Laravel標準のView機能を使うための読み込み
+use Illuminate\Contracts\View\View;
+//データーベースの休憩データーを操作する休憩情報モデルを使うための読み込み
+use App\Models\BreakLog;
+//laravel標準の画面切り替え機能を使うための読み込み
+use Illuminate\Http\RedirectResponse;
 
 //勤怠管理コントローラーを作成するためのクラス(設置)
 class AttendanceController extends Controller
 {
     //勤怠管理画面を表示するための関数(機能)
-    public function index()
+    public function index(): View
     {
         //ログイン済みユーザー情報を取得し、user変数(箱)に入れる
         $user = Auth::user();
@@ -34,14 +38,13 @@ class AttendanceController extends Controller
 
         //出退勤情報と休憩中の情報を取得し、休憩戻りがまだか調べる
         //(直訳)もし出勤していて退勤していなければ
-        // データーベースの休憩中データーを箱にしまう。
         // 勤怠管理データーから探し出し休憩から戻ってないか調べる。　
         if ($attendance && !$attendance->clock_out) {
-            $is_breaking = DB::table('breaks')
-                ->where('attendance_record_id', $attendance->id)
+            $is_breaking = BreakLog::where('attendance_record_id', $attendance->id)
                 ->whereNull('break_out')
                 ->exists();
         }
+
 
         //出勤情報と休憩中情報、今日の日付と表示方法をを箱にしまい、
         // 勤怠管理画面に表示する
@@ -53,7 +56,7 @@ class AttendanceController extends Controller
     }
 
     //出勤ボタンが押されたときの関数(機能)
-    public function clockIn()
+    public function clockIn(): RedirectResponse
     {
         //ログインしているユーザー情報をuser変数(箱)にしまう
         $user = Auth::user();
@@ -74,12 +77,12 @@ class AttendanceController extends Controller
             ]);
         }
 
-        //ダイレクトに返す
+        //元の画面に戻す
         return redirect()->back();
     }
 
     //退勤ボタンが押されたときの関数(機能)
-    public function clockOut()
+    public function clockOut(): RedirectResponse
     {
         //ログインしているユーザー情報をuser変数(箱)にいれる
         $user = Auth::user();
@@ -98,12 +101,12 @@ class AttendanceController extends Controller
             ]);
         }
 
-        //ダイレクトに返す
+        //元の画面に戻す
         return redirect()->back();
     }
 
     //休憩ボタンが押されたときの関数(機能)
-    public function break()
+    public function break(): RedirectResponse
     {
         //ログインしているユーザーをuser変数(箱)に入れる
         $user = Auth::user();
@@ -123,25 +126,23 @@ class AttendanceController extends Controller
         }
 
         // 休憩ボタンが押され休憩戻はまだの情報が1件でもあるか探し出す
-        $activeBreak = DB::table('breaks')
-            ->where('attendance_record_id', $attendance->id)
+        $activeBreak = BreakLog::where('attendance_record_id', $attendance->id)
             ->whereNull('break_out')
             ->first();
+
 
         //もしたくさんの休憩情報のなかに休憩中を見つけたらactiveBreak変数(箱)へしまう
         //休憩戻を押したら、now変数(箱)のデータを現在の時刻形式で更新する
         if ($activeBreak) {
-            DB::table('breaks')
-                ->where('id', $activeBreak->id)
-                ->update([
-                    'break_out'  => $now->toTimeString(),
-                    'updated_at' => $now,
-                ]);
+            $activeBreak->update([
+                'break_out'  => $now->toTimeString(),
+                'updated_at' => $now,
+            ]);
         }
         //休憩中情報が無かったら、新しく休憩中テーブル
         //(勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報)を登録する
         else {
-            DB::table('breaks')->insert([
+            BreakLog::create([
                 'attendance_record_id' => $attendance->id,
                 'break_in'             => $now->toTimeString(),
                 'created_at'           => $now,
@@ -153,8 +154,8 @@ class AttendanceController extends Controller
     }
 
     //勤怠一覧画面でユーザーから送られてきたリクエストを実行するための関数(機能)
-    public function showList(Request $request)
-        {
+    public function showList(Request $request): View
+    {
         //ログインユーザーの情報を取得
         $user = Auth::user();
 
@@ -168,10 +169,11 @@ class AttendanceController extends Controller
         //ユーザーが指定した年月の翌月情報を取得し、変数(箱)nextMonthにしまう
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
-        //勤怠登録データーからこのユーザー情報を探す
+        //勤怠登録データーからこのユーザー情報を探す(休憩データも一緒に取得N+1問題防止)
         //ユーザーが指定した年月データーを取ってきて
         // 日付をキー(見出し)にして箱(attendances)に整理する
-        $attendances = AttendanceRecord::where('user_id', $user->id)
+        $attendances = AttendanceRecord::with('breakLogs')
+            ->where('user_id', $user->id)
             ->whereYear('date', $currentMonth->year)
             ->whereMonth('date', $currentMonth->month)
             ->get()
@@ -193,5 +195,17 @@ class AttendanceController extends Controller
             'prevMonth'    => $prevMonth,
             'nextMonth'    => $nextMonth,
         ]);
+    }
+
+    //勤怠詳細画面を表示するための関数(機能)
+    public function show(int $id): View
+    {
+        //ログインユーザー情報から勤怠登録データと一緒に休憩データを持ってきて変数(箱)にしまう
+        $record = AttendanceRecord::with('breakLogs')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        //勤怠詳細画面を表示する
+        return view('attendance_detail', compact('record'));
     }
 }

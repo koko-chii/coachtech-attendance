@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 //ユーザーテストデーターを作成するための呼び出し
 use Database\Factories\UserFactory;
 //大量のテストデーターを作成するための呼び出し
@@ -13,6 +12,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 //メール認証機能の呼び出し
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+//laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
+use Illuminate\Database\Eloquent\Relations\HasMany;
+//データーベースの勤怠登録データーを操作するAttendanceRecordモデルを使うための読み込み
+use App\Models\AttendanceRecord;
 
 //勤怠管理のユーザーにメール認証機能をするためのクラス(設置)
 class User extends Authenticatable implements MustVerifyEmail
@@ -41,5 +44,12 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    //1対多のリレーションを使うための関数(機能)
+    public function attendanceRecords(): HasMany
+    {
+        // ユーザーは複数存在する勤怠データ(1対多のリレーション)を引っ張ってくる
+        return $this->hasMany(AttendanceRecord::class, 'user_id');
     }
 }

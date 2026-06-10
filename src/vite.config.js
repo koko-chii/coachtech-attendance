@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/css/verify-email.css',
                 'resources/css/attendance.css',
                 'resources/css/attendance_list.css',
+                'resources/attendance_detail.css',
                 'resources/js/app.js',
             ],
             refresh: true,
