@@ -12,7 +12,7 @@ use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 
 //テスト機能(TestCase)を継承した(RegisterTest)オリジナルテスト機能を作成するためのクラス(設置)
-class T1_RegisterTest extends TestCase
+class T01_RegisterTest extends TestCase
 {
     //テスト実効時にデーターベースを初期化する
     use RefreshDatabase;

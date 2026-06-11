@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルな退勤ボタンテスト機能を作成するクラス(設置)
-class T8_ClockOutTest extends TestCase
+class T08_ClockOutTest extends TestCase
 {
     //テスト実行時に時に初期化する
     use RefreshDatabase;

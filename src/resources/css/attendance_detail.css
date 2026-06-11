@@ -86,7 +86,7 @@
 .dateDisplayGroup {
     display: flex;
     align-items: center;
-    gap: 33px;
+    gap: 24px;
 }
 
 .dateYearText {
@@ -94,7 +94,6 @@
     text-align: left;
     box-sizing: border-box;
     order: 1;
-    padding-left: 14px;
 }
 
 .dateDisplayGroup::before {
@@ -131,6 +130,10 @@
     text-align: center;
 }
 
+.inputTimeField:invalid::-webkit-datetime-edit {
+    color: transparent !important;
+}
+
 .inputTimeField::-webkit-calendar-picker-indicator {
     display: none !important;
     -webkit-appearance: none !important;
@@ -154,7 +157,7 @@
 .textareaRemarksField {
     width: 100%;
     max-width: 420px;
-    height: 80px;
+    height: 44px;
     padding: 0 16px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
@@ -194,4 +197,42 @@
 
 .submitUpdateButton:hover {
     opacity: 0.8;
+}
+
+.approvalPendingMessage {
+    color: #ff4d4f;
+    font-size: 14px;
+    text-align: right;
+    margin-top: 24px;
+    margin-bottom: 0;
+    font-weight: normal;
+    display: block;
+    width: 100%;
+    clear: both;
+}
+
+.inputErrorMessage {
+    color: #ff4d4f;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-bottom: 0;
+    display: block;
+    text-align: left;
+}
+
+.inputTimeField {
+    color: #333333;
+    opacity: 1;
+}
+
+.inputTimeField::-webkit-calendar-picker-indicator {
+    opacity: 1;
+}
+
+.inputTimeField::-webkit-datetime-edit-text,
+.inputTimeField::-webkit-datetime-edit-hour-field,
+.inputTimeField::-webkit-datetime-edit-minute-field {
+    color: #333333;
+    opacity: 1;
 }

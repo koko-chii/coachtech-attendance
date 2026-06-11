@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルな出勤ボタンテスト機能を作成するクラス(設置)
-class T6_ClockInTest extends TestCase
+class T06_ClockInTest extends TestCase
 {
     //テスト実行時に初期化する
     use RefreshDatabase;

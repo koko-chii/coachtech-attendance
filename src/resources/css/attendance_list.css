@@ -1,6 +1,6 @@
 @import url('https://googleapis.com');
 
-.attendanceDetailMain {
+#attendance-list-container {
     width: 100%;
     background-color: #f3f4f6;
     min-height: calc(100vh - 70px);
@@ -9,162 +9,158 @@
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }
 
-.attendanceDetailForm {
+#attendance-list-container h1 {
     width: 70%;
     max-width: 1000px;
     min-width: 800px;
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-
-.attendanceDetailTitle {
+    margin: 0 auto 30px auto;
     font-size: 24px;
     font-weight: 900;
     border-left: 4px solid #4b5563;
     padding-left: 12px;
     letter-spacing: 0.05em;
     color: #4b5563;
-    margin: 0 0 30px 0;
     box-sizing: border-box;
 }
 
-.alertMessage {
-    background-color: #ffebeb;
-    color: #ff0000;
-    padding: 14px 20px;
+#month-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 12px 60px;
     border-radius: 8px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    border: 1px solid #ffd1d1;
-    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e5e5;
+    width: 70%;
+    max-width: 1000px;
+    min-width: 800px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
 }
 
-.attendanceTable {
-    width: 100%;
+#month-selector .nav-btn:first-child {
+    flex: 1;
+    text-align: left;
+}
+
+#month-selector .current-month-display {
+    flex: 1;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #4b5563;
+    padding-right: 0px;
+}
+
+#month-selector .nav-btn:last-child {
+    flex: 1;
+    text-align: right;
+}
+
+#month-selector .nav-btn {
+    color: #9ca3af;
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#month-selector .nav-btn:hover {
+    color: #4b5563;
+}
+
+.table-wrapper {
+    width: 70%;
+    max-width: 1000px;
+    min-width: 800px;
+    margin: 0 auto;
     background-color: #ffffff;
     border: 1px solid #e5e5e5;
     border-radius: 8px;
-    border-collapse: collapse;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
-    margin-bottom: 24px;
 }
 
-.attendanceTable tr {
-    border-bottom: 1px solid #e5e5e5;
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
-.attendanceTable tr:last-child {
-    border-bottom: none;
-}
-
-.attendanceTable th,
-.attendanceTable td {
+.table-wrapper th,
+.table-wrapper td {
     font-size: 16px;
-    padding: 24px 0;
+    font-weight: 800;
+    padding: 12px 0;
+    text-align: center;
     vertical-align: middle;
 }
 
-.attendanceTable th {
-    width: 25%;
+.table-wrapper th {
     color: #9ca3af;
-    font-weight: 800;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.table-wrapper td {
+    border-bottom: 1px solid #e5e5e5;
+    color: #4b5563;
+}
+
+.table-wrapper th:nth-child(1),
+.table-wrapper td:nth-child(1) {
+    width: 22%;
     text-align: left;
     padding-left: 60px;
 }
 
-.attendanceTable td {
-    width: 75%;
+.table-wrapper th:nth-child(2),
+.table-wrapper td:nth-child(2) {
+    width: 15%;
+}
+
+.table-wrapper th:nth-child(3),
+.table-wrapper td:nth-child(3) {
+    width: 15%;
+}
+
+.table-wrapper th:nth-child(4),
+.table-wrapper td:nth-child(4) {
+    width: 14%;
+}
+
+.table-wrapper th:nth-child(5),
+.table-wrapper td:nth-child(5) {
+    width: 14%;
+}
+
+.table-wrapper th:nth-child(6),
+.table-wrapper td:nth-child(6) {
+    width: 20%;
+    text-align: right;
+    padding-right: 90px;
+}
+
+.table-wrapper tr:last-child td {
+    border-bottom: none;
+}
+
+.table-wrapper tr:hover td {
+    background-color: #fafafa;
+}
+
+.table-wrapper .detail-link {
     color: #4b5563;
     font-weight: 900;
-    text-align: left;
-    padding-left: 40px;
-    padding-right: 60px;
-}
-
-.timeRangeGroup {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-
-.inputTimeField {
-    width: 130px;
-    height: 40px;
-    padding: 0 12px;
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #4b5563;
-    background-color: #ffffff;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.inputTimeField::-webkit-calendar-picker-indicator {
-    display: none !important;
-    -webkit-appearance: none !important;
-}
-
-.inputTimeField:disabled {
-    background-color: #f9fafb;
-    color: #9ca3af;
-    cursor: not-allowed;
-    border-color: #e5e5e5;
-}
-
-.timeSeparator {
-    color: #4b5563;
-    font-weight: normal;
+    text-decoration: none;
     font-size: 16px;
 }
 
-.textareaRemarksField {
-    width: 100%;
-    max-width: 340px;
-    height: 48px;
-    padding: 12px 16px;
-    border: 1px solid #e5e5e5;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #4b5563;
-    background-color: #ffffff;
-    box-sizing: border-box;
-    resize: none;
-    line-height: 1.6;
-    display: block;
-}
-
-.textareaRemarksField:disabled {
-    background-color: #f9fafb;
-    color: #9ca3af;
-    cursor: not-allowed;
-    border-color: #e5e5e5;
-}
-
-.formActionsPanel {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    margin-top: 20px;
-    box-sizing: border-box;
-}
-
-.submitUpdateButton {
-    background-color: #000000;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 900;
-    padding: 12px 60px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-}
-
-.submitUpdateButton:hover {
-    opacity: 0.8;
+.table-wrapper .detail-link:hover {
+    text-decoration: underline;
 }

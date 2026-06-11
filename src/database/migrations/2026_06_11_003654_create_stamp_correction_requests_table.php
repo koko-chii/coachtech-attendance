@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+//laravel標準のデーターベーステーブル構造の設計図機能を読み込み
+use Illuminate\Database\Schema\Blueprint;
+//laravel標準のデーターベーステーブルの操作をする機能の読み込み
+use Illuminate\Support\Facades\Schema;
+
+//マイグレーション機能を継承した名前のないクラス(設置)を返す
+return new class extends Migration {
+    
+    //修正(更新)するための関数(機能)
+    public function up(): void {
+        //勤怠修正申請のテーブルを設計を作成して操作
+        //(勤怠修正申請情報、ユーザー情報、勤怠情報、承認待ち・承認済み情報、備考、日時)
+        Schema::create('stamp_correction_requests', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('attendance_record_id')->constrained()->onDelete('cascade');
+            $table->string('status')->default('pending');
+            $table->text('reason');
+            $table->timestamps();
+        });
+    }
+
+    //修正申請を取り消すための関数(機能)
+    public function down(): void {
+        //勤怠修正申請を削除するための機能
+        Schema::dropIfExists('stamp_correction_requests');
+    }
+};

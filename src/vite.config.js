@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/css/attendance.css',
                 'resources/css/attendance_list.css',
                 'resources/attendance_detail.css',
+                'resources/stamp_correction_list.css',
                 'resources/js/app.js',
             ],
             refresh: true,

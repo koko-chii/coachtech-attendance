@@ -1,0 +1,118 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f6f8fa;
+    color: #333333;
+}
+
+.container-fluid {
+    width: 100%;
+    max-width: 1540px;
+    min-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+.request-management {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.page-title::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 24px;
+    background-color: #000000;
+    margin-right: 12px;
+}
+
+.tab-navigation {
+    display: flex;
+    gap: 40px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 30px;
+    padding-left: 10px;
+}
+
+.tab-item {
+    font-size: 16px;
+    font-weight: bold;
+    color: #888888;
+    padding-bottom: 12px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.tab-item.is-active {
+    color: #000000;
+    border-bottom: 3px solid #000000;
+    margin-bottom: -2px;
+}
+
+.table-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    padding: 10px 20px;
+}
+
+.table-request {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table-request th,
+.table-request td {
+    padding: 18px 15px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.table-request th {
+    color: #888888;
+    font-weight: normal;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table-request tbody tr {
+    border-bottom: 1px solid #f6f8fa;
+}
+
+.table-request tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table-request td {
+    color: #333333;
+}
+
+.button-link {
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.button-link:hover {
+    opacity: 0.6;
+}
+
+.empty-message {
+    text-align: center;
+    color: #888888;
+    padding: 40px 0;
+    font-size: 15px;
+}

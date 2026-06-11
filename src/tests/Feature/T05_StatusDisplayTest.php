@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルステータス表示機能を作成するためのクラス(設置)
-class T5_StatusDisplayTest extends TestCase
+class T05_StatusDisplayTest extends TestCase
 {
     use RefreshDatabase;
 

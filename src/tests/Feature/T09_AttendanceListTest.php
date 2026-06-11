@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 //laravel標準のテスト基本機能を継承した独自の勤怠一覧テスト機能を作成するクラス(設置)
-class T9_AttendanceListTest extends TestCase
+class T09_AttendanceListTest extends TestCase
 {
     //テスト機能実行時に初期化
     use RefreshDatabase;

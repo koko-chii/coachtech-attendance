@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナル日時取得機能を作成するためのクラス(設置)
-class T4_DateTimeDisplayTest extends TestCase
+class T04_DateTimeDisplayTest extends TestCase
 {
     use RefreshDatabase;
 

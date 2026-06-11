@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
 
 //テスト機能を継承したオリジナルログインテスト機能を作成するための関数(設置)
-class T2_UserLoginTest extends TestCase
+class T02_UserLoginTest extends TestCase
 {
     //テスト機能実行時にデーターベースを初期化する
     use RefreshDatabase;

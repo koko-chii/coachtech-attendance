@@ -8,7 +8,7 @@ use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
 
-class T3_AdminLoginTest extends TestCase
+class T03_AdminLoginTest extends TestCase
 {
     use RefreshDatabase;
 

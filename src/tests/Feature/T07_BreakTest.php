@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルな休憩ボタンテスト機能を作成するクラス(設置)
-class T7_BreakTest extends TestCase
+class T07_BreakTest extends TestCase
 {
     //テスト実行時に時に初期化する
     use RefreshDatabase;

@@ -16,6 +16,10 @@ use Illuminate\Contracts\View\View;
 use App\Models\BreakLog;
 //laravel標準の画面切り替え機能を使うための読み込み
 use Illuminate\Http\RedirectResponse;
+//修正申請データを操作するモデルの読み込み
+use App\Models\StampCorrectionRequest;
+//修正申請データーを操作するモデルの読み込み
+use App\Http\Requests\UpdateAttendanceRequest;
 
 //勤怠管理コントローラーを作成するためのクラス(設置)
 class AttendanceController extends Controller
@@ -207,5 +211,46 @@ class AttendanceController extends Controller
 
         //勤怠詳細画面を表示する
         return view('attendance_detail', compact('record'));
+    }
+
+    // 修正ボタン押下後の画面切り替え機能を使うための関数(機能)
+    public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
+    {
+        // 備考欄の未入力チェック、出勤・退勤時間の前後関係の入力チェックを行う
+        $request->validate([
+            'remarks'   => ['required'],
+            'clock_in'  => ['required'],
+            'clock_out' => ['required', 'after:clock_in'],
+        ], [
+            'remarks.required' => '備考を記入してください',
+            'clock_out.after'  => '出勤時間が不適切な値です',
+        ]);
+
+        // もし休憩データの修正がある場合、退勤時間より後になっていないか不適切な値をチェック
+        if ($request->has('breaks')) {
+            foreach ($request->input('breaks') as $breakId => $breakData) {
+                // 安全対策：データが存在するときだけ比較を行うように判定（isset）を追加
+                if (isset($breakData['break_in']) && $breakData['break_in'] > $request->input('clock_out')) {
+                    return back()->withErrors(['breaks.' . $breakId . '.break_in' => '休憩時間が不適切な値です']);
+                }
+                if (isset($breakData['break_out']) && $breakData['break_out'] > $request->input('clock_out')) {
+                    return back()->withErrors(['breaks.' . $breakId . '.break_out' => '休憩時間もしくは退勤時間が不適切な値です']);
+                }
+            }
+        }
+
+        // 勤怠登録データからユーザーの修正する情報を見つける
+        $record = AttendanceRecord::findOrFail($id);
+
+        // 元の勤怠は書き換えず、勤怠修正申請データを承認待ちとして作成する
+        StampCorrectionRequest::create([
+            'user_id'              => auth()->id(),
+            'attendance_record_id' => $record->id,
+            'status'               => 'pending',
+            'reason'               => $request->input('remarks'),
+        ]);
+
+        // 申請一覧画面へ遷移する
+        return redirect('/stamp_correction_request/list');
     }
 }

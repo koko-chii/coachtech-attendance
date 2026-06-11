@@ -4,6 +4,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceController;
+//勤怠修正申請データを操作するコントローラーの読み込み
+use App\Http\Controllers\StampCorrectionRequestController;
 
 // ログインせずにアプリのトップ（/）にアクセスした場合は、自動的にログイン画面へ転送
 Route::get('/', function () {
@@ -29,40 +31,35 @@ Route::post('/email/bypass', function () {
     return redirect()->route('attendance.index');
 })->middleware('auth')->name('email.bypass');
 
-// 勤怠登録画面(打刻画面)を表示するルート
-//ログイン認証とメール認証が済みのユーザーがアクセス可能
-//打刻画面呼び出し用ルート
-Route::get('/attendance', [AttendanceController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.index');
+// ログイン認証（auth）とメール認証（verified）が必須のルートをここにまとめます
+Route::middleware(['auth', 'verified'])->group(function () {
 
-// 出勤ボタンを押したときの保存処理
-Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.clock-in');
+    // 勤怠登録画面(打刻画面)を表示するルート
+    //ログイン認証とメール認証が済みのユーザーがアクセス可能
+    //打刻画面呼び出し用ルート
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
 
-// 退勤ボタンを押したときの保存処理
-Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.clock-out');
+    // 出勤ボタンを押したときの保存処理
+    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clock-in');
 
-// 休憩入・休憩戻ボタンを押したときの保存処理
-Route::post('/attendance/break', [AttendanceController::class, 'break'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.break');
+    // 退勤ボタンを押したときの保存処理
+    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clock-out');
 
-//勤怠一覧画面を表示するルート
-Route::get('/attendance/list', [AttendanceController::class, 'showList'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.list');
+    // 休憩入・休憩戻ボタンを押したときの保存処理
+    Route::post('/attendance/break', [AttendanceController::class, 'break'])->name('attendance.break');
 
-//勤怠一覧詳細画面を表示するルート
-Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.detail');
+    //勤怠一覧画面を表示するルート
+    Route::get('/attendance/list', [AttendanceController::class, 'showList'])->name('attendance.list');
 
-//修正ボタンが押されたときの更新処理を実行するルート
-Route::patch('/attendance/update/{id}', [AttendanceController::class, 'update'])
-    ->middleware(['auth', 'verified'])
-    ->name('attendance.update');
+    //勤怠一覧詳細画面を表示するルート
+    Route::get('/attendance/detail/{id}', [AttendanceController::class, 'show'])->name('attendance.detail');
 
+    //修正ボタンが押されたときの更新処理を実行するルート
+    Route::patch('/attendance/detail/update/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+
+    //申請一覧画面を表示するルート
+    Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])
+    ->name('attendance_correction_request.index');
+
+
+});
