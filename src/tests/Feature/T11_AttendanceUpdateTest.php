@@ -34,7 +34,7 @@ class T11_AttendanceUpdateTest extends TestCase
             'remarks' => 'テスト備考',
         ]);
 
-        $response->assertSessionHasErrors(['clock_out' => '出勤時間が不適切な値です']);
+        $response->assertSessionHasErrors(['clock_in' => '出勤時間もしくは退勤時間が不適切な値です']);
     }
 
     #[Test]

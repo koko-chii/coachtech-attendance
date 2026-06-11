@@ -47,7 +47,7 @@ class UpdateAttendanceRequest extends FormRequest
             // 出勤時間が退勤時間より後、退勤時間が出勤時間より前の場合
             if (filled($clockIn) && filled($clockOut)) {
                 if ($clockIn > $clockOut) {
-                    $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
+                    $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
                 }
             }
 
@@ -66,15 +66,13 @@ class UpdateAttendanceRequest extends FormRequest
                     }
 
                     if (filled($breakIn) && filled($breakOut)) {
-                        // 休憩終了時間が退勤時間より後になっている場合、開始が終了より後のとき
-                        if ((filled($clockOut) && $breakOut > $clockOut) || $breakIn > $breakOut) {
+                        //まず休憩開始時間の不適切チェックを一番最初に行う
+                        if ((filled($clockIn) && $breakIn < $clockIn) || (filled($clockOut) && $breakIn > $clockOut)) {
+                            $validator->errors()->add('breaks.' . $index . '.break_in', '休憩時間が不適切な値です');
+                        }
+                        // その次に、休憩終了時間が退勤より後、または開始が終了より後のチェックを行う
+                        elseif ((filled($clockOut) && $breakOut > $clockOut) || $breakIn > $breakOut) {
                             $validator->errors()->add('breaks.' . $index . '.break_out', '休憩時間もしくは退勤時間が不適切な値です');
-                        } 
-                        // 休憩開始時間が出勤時間より前、退勤時間より後になっている場合
-                        else {
-                            if ((filled($clockIn) && $breakIn < $clockIn) || (filled($clockOut) && $breakIn > $clockOut)) {
-                                $validator->errors()->add('breaks.' . $index . '.break_in', '休憩時間が不適切な値です');
-                            }
                         }
                     }
                 }
