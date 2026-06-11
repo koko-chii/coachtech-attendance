@@ -52,3 +52,13 @@ html body .nav a {
     font-weight: bold;
     letter-spacing: 0.5px;
 }
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 32px;
+    padding-right: 32px;
+    box-sizing: border-box;
+}
