@@ -45,6 +45,9 @@
                                         <span class="timeSeparator">〜</span>
                                         <input type="time" name="clock_out" class="inputTimeField" value="{{ old('clock_out', $record->clock_out ? \Carbon\Carbon::parse($record->clock_out)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}>
                                     </div>
+                                    @error('clock_in')
+                                        <p class="inputErrorMessage">{{ $message }}</p>
+                                    @enderror
                                     @error('clock_out')
                                         <p class="inputErrorMessage">{{ $message }}</p>
                                     @enderror
@@ -54,12 +57,10 @@
                             <!-- 休憩時刻の修正申請入力欄 承認待ち申請詳細は修正不可 -->
                             @foreach($record->breakLogs as $index => $break)
                                 <tr>
-                                    <!-- データー順が0から開始のため -->
                                     <th>{{ $index === 0 ? '休憩' : '休憩' . ($index + 1) }}</th>
                                     <td>
                                         <div class="timeRangeGroup">
                                             <input type="hidden" name="breaks[{{ $index }}][id]" value="{{ $break->id }}">
-                                            <!-- 1回目の休憩と2回目の休憩に番号の名前をつけてコントローラーへ送る(休憩回数分繰り返す) -->
                                             <input type="time" name="breaks[{{ $index }}][break_in]" class="inputTimeField" value="{{ old('breaks.'.$index.'.break_in', $break->break_in ? \Carbon\Carbon::parse($break->break_in)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'disabled' : '' }}>
                                             <span class="timeSeparator">〜</span>
                                             <input type="time" name="breaks[{{ $index }}][break_out]" class="inputTimeField" value="{{ old('breaks.'.$index.'.break_out', $break->break_out ? \Carbon\Carbon::parse($break->break_out)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'disabled' : '' }}>
@@ -74,12 +75,10 @@
                                 </tr>
                             @endforeach
 
-                            <!-- もし承認待ちでないなら新たな変更申請できるよう休憩(追加)を表示 -->
-                            @if(optional($record->stampCorrectionRequest)->status !== 'pending')
+                            @if(!$record->stampCorrectionRequest || $record->stampCorrectionRequest->status !== 'pending')
                                 <tr>
-                                    <th>休憩{{ count($record->breakLogs) + 1 }}</th>
+                                    <th>休憩{{ count($record->breakLogs) === 0 ? '' : count($record->breakLogs) + 1 }}</th>
                                     <td>
-                                        <!-- 休憩2の入力欄は空欄の場合、何も表示しない（クリック時にtime型へ切り替える仕組み） -->
                                         <div class="timeRangeGroup">
                                             <input type="time" name="new_break_in" class="inputTimeField" value="{{ old('new_break_in') }}">
                                             <span class="timeSeparator">〜</span>
