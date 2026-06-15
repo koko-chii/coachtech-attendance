@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('css')
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=M+PLUS+1p:wght@400;500;700&display=swap" rel="stylesheet">
+
     @vite(['resources/css/stamp_correction_list.css']) 
 @endsection
 
