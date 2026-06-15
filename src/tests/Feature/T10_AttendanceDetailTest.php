@@ -63,7 +63,7 @@ class T10_AttendanceDetailTest extends TestCase
         $record = AttendanceRecord::factory()->create([
             'user_id'   => $user->id,
             'date'      => '2026-06-11',
-            'clock_in'  => '2026-06-11 09:15:00', // テスト用に特徴的な時間にする
+            'clock_in'  => '2026-06-11 09:15:00',
             'clock_out' => '2026-06-11 18:45:00',
         ]);
 
@@ -86,10 +86,9 @@ class T10_AttendanceDetailTest extends TestCase
             'clock_out' => '2026-06-11 18:00:00',
         ]);
 
-        // factoryエラーを回避するため直接create保存
         BreakLog::create([
             'attendance_record_id' => $record->id,
-            'break_in'             => '2026-06-11 12:15:00', // テスト用に特徴的な時間にする
+            'break_in'             => '2026-06-11 12:15:00',
             'break_out'            => '2026-06-11 13:45:00',
         ]);
 

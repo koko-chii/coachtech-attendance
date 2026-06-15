@@ -14,6 +14,9 @@ use App\Models\BreakLog;
 use App\Models\StampCorrectionRequest;
 //1対多のリレーション機能を使うための読み込み
 use Illuminate\Database\Eloquent\Relations\HasOne;
+//Laravel標準の勤怠データの持ち主ユーザーを取得するための機能を読み込む
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\User;
 
 //勤怠管理モデルを作成するためのクラス(設置)
 class AttendanceRecord extends Model
@@ -42,5 +45,11 @@ class AttendanceRecord extends Model
     public function stampCorrectionRequest(): HasOne
     {
         return $this->hasOne(StampCorrectionRequest::class, 'attendance_record_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        // 勤怠データは1人のユーザーに属する
+        return $this->belongsTo(User::class);
     }
 }

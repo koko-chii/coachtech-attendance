@@ -24,14 +24,18 @@ class StampCorrectionRequestController extends Controller
 
         //取得したデータの中から承認待ちデーターを抽出
         $pendingRequests = $allRequests->filter(
-            fn (StampCorrectionRequest $request): bool => $request->status === 'pending'
+            function (StampCorrectionRequest $request): bool {
+                return $request->status === 'pending';
+            }
         );
 
         //取得したデータの中から承認済みデーターを抽出
         $approvedRequests = $allRequests->filter(
-            fn (StampCorrectionRequest $request): bool => $request->status === 'approved'
+            function (StampCorrectionRequest $request): bool {
+                return $request->status === 'approved';
+            }
         );
-
+        
         //勤怠申請一覧画面で承認待ちと承認済みを表示する
         return view('stamp_correction_request.list', compact('pendingRequests', 'approvedRequests'));
     }

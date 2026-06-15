@@ -6,13 +6,17 @@ body {
     color: #333333;
 }
 
-.container-fluid {
+.requestListMain {
     width: 100%;
-    max-width: 1540px;
-    min-width: 1400px;
-    margin: 0 auto;
-    padding: 0 40px;
+    min-height: calc(100vh - 70px);
+    background-color: #f6f8fa;
     box-sizing: border-box;
+}
+
+.requestListForm {
+    width: 55%;
+    max-width: 1450px;
+    margin: 0 auto;
 }
 
 .request-management {
@@ -21,51 +25,49 @@ body {
 }
 
 .page-title {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     display: flex;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
 }
 
 .page-title::before {
     content: "";
     display: inline-block;
-    width: 4px;
-    height: 24px;
+    width: 8px;
+    height: 28px;
     background-color: #000000;
-    margin-right: 12px;
+    margin-right: 16px;
 }
 
 .tab-navigation {
     display: flex;
-    gap: 40px;
-    border-bottom: 2px solid #e0e0e0;
-    margin-bottom: 30px;
-    padding-left: 10px;
+    gap: 80px;
+    border-bottom: 1px solid #000000;
+    margin-bottom: 40px;
+    padding-bottom: 12px;
 }
 
 .tab-item {
     font-size: 16px;
     font-weight: bold;
     color: #888888;
-    padding-bottom: 12px;
-    cursor: pointer;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .tab-item.is-active {
     color: #000000;
-    border-bottom: 3px solid #000000;
-    margin-bottom: -2px;
 }
 
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    padding: 10px 20px;
+    padding: 10px 0px;
 }
 
 .table-request {
@@ -76,19 +78,19 @@ body {
 
 .table-request th,
 .table-request td {
-    padding: 18px 15px;
-    font-size: 14px;
+    padding: 24px 20px;
+    font-size: 15px;
     vertical-align: middle;
 }
 
 .table-request th {
     color: #888888;
     font-weight: normal;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 2px solid #f0f2f5;
 }
 
 .table-request tbody tr {
-    border-bottom: 1px solid #f6f8fa;
+    border-bottom: 1px solid #f0f2f5;
 }
 
 .table-request tbody tr:last-child {
@@ -103,11 +105,10 @@ body {
     color: #000000;
     font-weight: bold;
     text-decoration: none;
-    transition: opacity 0.2s ease;
 }
 
 .button-link:hover {
-    opacity: 0.6;
+    text-decoration: underline;
 }
 
 .empty-message {

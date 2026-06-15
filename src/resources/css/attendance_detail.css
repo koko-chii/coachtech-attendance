@@ -4,6 +4,9 @@
     width: 100%;
     background-color: #f3f4f6;
     min-height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 40px 0;
     box-sizing: border-box;
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
@@ -20,7 +23,7 @@
 .attendanceDetailTitle {
     font-size: 24px;
     font-weight: 900;
-    border-left: 4px solid #4b5563;
+    border-left: 8px solid #4b5563;
     padding-left: 12px;
     letter-spacing: 0.05em;
     color: #4b5563;
@@ -157,7 +160,7 @@
 .textareaRemarksField {
     width: 100%;
     max-width: 420px;
-    height: 44px;
+    height: 80px;
     padding: 0 16px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
@@ -201,7 +204,7 @@
 
 .approvalPendingMessage {
     color: #ff4d4f;
-    font-size: 14px;
+    font-size: 20px;
     text-align: right;
     margin-top: 24px;
     margin-bottom: 0;
