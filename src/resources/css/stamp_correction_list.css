@@ -42,6 +42,10 @@ body {
     margin-right: 16px;
 }
 
+.tab-switch {
+    display: none;
+}
+
 .tab-navigation {
     display: flex;
     gap: 80px;
@@ -56,10 +60,27 @@ body {
     color: #888888;
     text-decoration: none;
     cursor: pointer;
+    user-select: none;
 }
 
-.tab-item.is-active {
+#tab-pending:checked ~ .tab-navigation .label-pending {
     color: #000000;
+}
+
+#tab-approved:checked ~ .tab-navigation .label-approved {
+    color: #000000;
+}
+
+.request-section {
+    display: none;
+}
+
+#tab-pending:checked ~ .content-pending {
+    display: block;
+}
+
+#tab-approved:checked ~ .content-approved {
+    display: block;
 }
 
 .table-wrapper {
@@ -85,7 +106,7 @@ body {
 
 .table-request th {
     color: #888888;
-    font-weight: 700;
+    font-weight: 500;
     border-bottom: 2px solid #f0f2f5;
 }
 
@@ -99,7 +120,7 @@ body {
 
 .table-request td {
     color: #333333;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .button-link {
