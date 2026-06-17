@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminLoginRequest;
+//laravelの認証機能を使うためのインポート
+use Illuminate\Support\Facades\Auth;
+//バリデーションエラー時の例外処理に使うためのインポート
+use Illuminate\Validation\ValidationException;
+//別のページへ移動する機能を使うためのインポート
+use Illuminate\Http\RedirectResponse;
+//画面表示機能を使うためのインポート
+use Illuminate\View\View;
+use Illuminate\Http\Request;
+
+//laravelのコントローラー機能を継承したクラス
+class AdminLoginController extends Controller
+{
+    //管理者ログイン画面を表示するメソッド
+    public function showLoginForm(): View
+    {
+        //管理者ログイン画面を表示
+        return view('admin.auth.login');
+    }
+
+    //管理者ログイン認証を行うメソッド
+    public function login(AdminLoginRequest $request): RedirectResponse
+    {
+        //メールアドレスとパスワードを取得
+        $credentials = $request->only('email', 'password');
+        //管理者アカウントのみ認証対象にする
+        $credentials['admin_status'] = true;
+
+        //認証されたら管理者用勤怠一覧画面に遷移
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->route('admin.attendance.list');
+        }
+
+        //認証失敗時はエラーメッセージを返す
+        throw ValidationException::withMessages([
+            'login_failed' => 'ログイン情報が登録されていません',
+        ]);
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        // ログイン時の認証ガードからログアウト
+        Auth::guard('web')->logout();
+
+        // 現在のセッションを無効化し、トークンを作り直す
+        //CSRFトークン 正規の画面から送信されたことを証明する秘密の文字列
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // ログアウト後は管理者ログイン画面へ戻る
+        return redirect()->route('admin.login');
+    }
+
+}

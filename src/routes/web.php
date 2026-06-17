@@ -6,9 +6,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceController;
 //勤怠修正申請データを操作するコントローラーの読み込み
 use App\Http\Controllers\StampCorrectionRequestController;
+//管理者ログイン用コントローラーの読み込み
+use App\Http\Controllers\Admin\AdminLoginController;
+//管理者用勤怠一覧コントローラーの読み込み
+use App\Http\Controllers\Admin\AdminAttendanceController;
 
-// ログインせずにアプリのトップ（/）にアクセスした場合は、自動的にログイン画面へ転送
+// ログイン済みの場合は勤怠登録画面へ、未ログインの場合はログイン画面へ自動転送
 Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('attendance.index');
+    }
     return redirect('/login');
 });
 
@@ -58,8 +65,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/attendance/detail/update/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
 
     //申請一覧画面を表示するルート
-    Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])
-    ->name('attendance_correction_request.index');
+    Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])->name('attendance_correction_request.index');
 
+});
 
+//管理者向け:ログイン認証
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
+
+    //管理者ログアウト
+    Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+    //勤怠一覧画面(管理者)
+    Route::get('/attendance/list', [AdminAttendanceController::class, 'showDailyList'])->name('attendance.list');
+
+    //勤怠詳細画面(管理者)
+    Route::get('/attendance/{id}', [AdminAttendanceController::class, 'showDetail'])->name('attendance.detail');
 });
