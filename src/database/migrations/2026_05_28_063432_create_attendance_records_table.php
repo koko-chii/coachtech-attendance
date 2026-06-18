@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        //勤怠管理テーブルを作成するための設計指示
-        //勤怠管理テーブルにしまうカラムの定義
-        //勤怠管理テーブルID、ユーザーID(従業員テーブルと紐づける外部キー)、
+        // 勤怠管理テーブルを作成するための設計指示
+        // 勤怠管理テーブルにしまうカラムの定義
+        // 勤怠管理テーブルID、ユーザーID(従業員テーブルと紐づける外部キー)、
         // 勤務日・出退勤時間(出社時の退勤時間は空っぽOKでも)、打刻データ登録の変更された日時形式
         Schema::create('attendance_records', function (Blueprint $table) {
             $table->id();
@@ -24,7 +24,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        //マイグレーションを削除するときに勤怠管理テーブルもまとめて消す
+        // マイグレーションを削除するときに勤怠管理テーブルもまとめて消す
         Schema::dropIfExists('attendance_records');
     }
 };

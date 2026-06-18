@@ -2,51 +2,51 @@
 
 namespace App\Models;
 
-//ユーザーテストデーターを作成するための呼び出し
+// ユーザーテストデーターを作成するための呼び出し
 use Database\Factories\UserFactory;
-//大量のテストデーターを作成するための呼び出し
+// 大量のテストデーターを作成するための呼び出し
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-//勤怠管理画面に認証機能をするための呼出し
+// 勤怠管理画面に認証機能をするための呼出し
 use Illuminate\Foundation\Auth\User as Authenticatable;
-//ユーザー（従業員）にメールや画面で通知(ノティファイアブル)を送るための機能を呼び出し
+// ユーザー（従業員）にメールや画面で通知(ノティファイアブル)を送るための機能を呼び出し
 use Illuminate\Notifications\Notifiable;
-//メール認証機能の呼び出し
+// メール認証機能の呼び出し
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-//laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
+// laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
 use Illuminate\Database\Eloquent\Relations\HasMany;
-//データーベースの勤怠登録データーを操作するAttendanceRecordモデルを使うための読み込み
+// データーベースの勤怠登録データーを操作するAttendanceRecordモデルを使うための読み込み
 use App\Models\AttendanceRecord;
 
-//勤怠管理のユーザーにメール認証機能をするためのクラス(設置)
+// 勤怠管理のユーザーにメール認証機能をするためのクラス(設置)
 class User extends Authenticatable implements MustVerifyEmail
 {
-    //テストデータの大量生産と通知機能を組合わせる
+    // テストデータの大量生産と通知機能を組合わせる
     use HasFactory, Notifiable;
 
-    //名前とメールアドレス、パスワードはユーザーは書き換え可能
+    // 名前とメールアドレス、パスワードはユーザーは書き換え可能
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    //パスワードと自動ログインはガードされている(ヒドゥン)
+    // パスワードと自動ログインはガードされている(ヒドゥン)
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    //データの形式を正しく変換するための関数(機能)
+    // データの形式を正しく変換するための関数(機能)
     protected function casts(): array
     {
-        //メール認証の日時を日付形式に、パスワードは暗号化に変換して返す
+        // メール認証の日時を日付形式に、パスワードは暗号化に変換して返す
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    //1対多のリレーションを使うための関数(機能)
+    // 1対多のリレーションを使うための関数(機能)
     public function attendanceRecords(): HasMany
     {
         // ユーザーは複数存在する勤怠データ(1対多のリレーション)を引っ張ってくる

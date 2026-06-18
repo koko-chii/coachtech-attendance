@@ -17,7 +17,7 @@
             <!-- お名前入力欄 -->
             <div class="form-group">
                 <label>お名前</label>
-                <!-- old('name')は認証失敗時も入力内容を保持 -->
+                <!-- 認証失敗時も入力内容を保持 -->
                 <input type="text" name="name" value="{{ old('name') }}">
 
                 <!-- 入力欄下　エラーメッセージの表示 -->
@@ -50,7 +50,7 @@
                 <input type="password" name="password_confirmation">
             </div>
 
-            <!-- デザイン要件に従った黒ボタン-->
+            <!-- 黒ボタン-->
             <button type="submit" class="btn">登録</button>
         </form>
 

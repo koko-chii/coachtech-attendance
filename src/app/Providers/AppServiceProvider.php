@@ -8,25 +8,19 @@ use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // ログインしていないユーザーが弾かれた時の移動先を「/login」に固定
+        // ログインしていないユーザーが弾かれた時の移動先を/loginに固定
         Authenticate::redirectUsing(function ($request) {
             return route('login');
         });
 
-        // メール認証していないユーザーがログインしようとした時の移動先を「メール認証誘導画面（/email/verify）」に固定
+        // メール認証していないユーザーがログインしようとした時の移動先をメール認証誘導画面に固定
         EnsureEmailIsVerified::redirectTo('email/verify');
     }
 }

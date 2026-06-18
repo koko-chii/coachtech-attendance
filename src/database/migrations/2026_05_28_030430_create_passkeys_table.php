@@ -3,20 +3,20 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-//パスキー機能の読み込み
+// パスキー機能の読み込み
 use Laravel\Passkeys\Passkeys;
 
-//マイグレーションを実行するための新しいクラス(設置)
+// マイグレーションを実行するための新しいクラス(設置)
 return new class extends Migration
 {
-    //マイグレーションを実行するための関数(機能)
+    // マイグレーションを実行するための関数(機能)
     public function up(): void
     {
-        //新しくパスキーテーブルを作成するための設計指示
-        //テーブルにしまうカラムの定義
-        //パスキーデータのid、ユーザーID(ユーザーが削除されたら一緒に消す)、パスキーの名前、
-        //デバイス固有の識別番号(ID)、JSON(暗号化されたパスキー)データー、最後にログインした日時、
-        //パスキーを登録した日時と変更した更新日時を自動で記録、ユーザーID検索するための目次
+        // 新しくパスキーテーブルを作成するための設計指示
+        // テーブルにしまうカラムの定義
+        // パスキーデータのid、ユーザーID(ユーザーが削除されたら一緒に消す)、パスキーの名前、
+        // デバイス固有の識別番号(ID)、JSON(暗号化されたパスキー)データー、最後にログインした日時、
+        // パスキーを登録した日時と変更した更新日時を自動で記録、ユーザーID検索するための目次
         Schema::create('passkeys', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Passkeys::userModel(), 'user_id')->constrained()->cascadeOnDelete();
@@ -29,10 +29,10 @@ return new class extends Migration
         });
     }
 
-    //マイグレーションを削除するときの関数(機能)
+    // マイグレーションを削除するときの関数(機能)
     public function down(): void
     {
-        //パスキーテーブルもまとめて削除する設計指示
+        // パスキーテーブルもまとめて削除する設計指示
         Schema::dropIfExists('passkeys');
     }
 };

@@ -24,7 +24,7 @@ class AdminAttendanceController extends Controller
             ->where('date', $dateStr)
             ->get();
 
-        // 勤怠一覧画面へ日付データと打刻レコード一覧を渡して表示
+        // 勤怠一覧画面へ日付データと勤怠データを渡して表示
         return view('admin.admin_attendance_list', compact('date', 'attendanceRecords'));
     }
 

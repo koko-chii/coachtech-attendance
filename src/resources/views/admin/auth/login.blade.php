@@ -2,8 +2,6 @@
 
 @section('title', '管理者ログイン')
 
-@section('main_class', 'main-content--white')
-
 @section('css')
 @vite(['resources/css/admin_login.css'])
 @endsection
