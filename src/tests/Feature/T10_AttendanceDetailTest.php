@@ -9,7 +9,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 //テスト機能の基本機能の呼び出し
 use Tests\TestCase;
 //日本語メソッド名をテストだと認識させるPHPUnitの#[Test]属性を使用するために読み込み
-//(laravelのテストはPHPUnitベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //勤怠詳細画面のテストを行うクラス

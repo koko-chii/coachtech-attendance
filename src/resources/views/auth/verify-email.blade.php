@@ -9,7 +9,7 @@
 @section('content')
     <!-- メール認証画面メインエリア -->
     <div class="container">
-        <!-- 認証を促すメッセージやボタンの入ったbox配置 -->
+        <!-- 認証を促すメッセージボタン -->
         <div class="verify-box">
             <!-- 見本通りのメッセージを表示 -->
             <div class="message">

@@ -11,7 +11,6 @@ use App\Models\AttendanceRecord;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 //日本語の関数のためシステムにテストだと認識させる目印を読み込み
-//(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルステータス表示機能を作成するためのクラス(設置)

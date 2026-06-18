@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\AttendanceRecord;
 use Carbon\Carbon;
 //日本語の関数のためシステムにテストだと認識させる目印を読み込み
-//(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナルな退勤ボタンテスト機能を作成するクラス(設置)

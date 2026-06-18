@@ -30,7 +30,9 @@
                                 <th>日付</th>
                                 <td>
                                     <div class="dateDisplayGroup">
+                                        <!-- 勤怠日の日付から年を取得して表示 -->
                                         <span class="dateYearText">{{ \Carbon\Carbon::parse($record->date)->format('Y年') }}</span>
+                                        <!-- 勤怠日の日付から月日を取得して表示 -->
                                         <span class="dateDayText">{{ \Carbon\Carbon::parse($record->date)->format('n月j日') }}</span>
                                     </div>
                                 </td>
@@ -54,7 +56,7 @@
                                 </td>
                             </tr>
 
-                            <!-- 休憩時刻の修正申請入力欄 承認待ち申請詳細は修正不可 -->
+                            <!-- 登録済みの休憩時間を表示・編集 -->
                             @foreach($record->breakLogs as $index => $break)
                                 <tr>
                                     <th>{{ $index === 0 ? '休憩' : '休憩' . ($index + 1) }}</th>
@@ -75,6 +77,7 @@
                                 </tr>
                             @endforeach
 
+                            <!-- 承認待ちでない場合は新しい休憩時間を追加可能 -->
                             @if(!$record->stampCorrectionRequest || $record->stampCorrectionRequest->status !== 'pending')
                                 <tr>
                                     <th>休憩{{ count($record->breakLogs) === 0 ? '' : count($record->breakLogs) + 1 }}</th>

@@ -8,7 +8,6 @@ use App\Models\User;
 //laravel標準機能の日時取得計算機能(Carbon)を使うための読み込み
 use Carbon\Carbon;
 //日本語の関数のためシステムにテストだと認識させる目印を読み込み
-//(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //TestCaseを継承したオリジナル日時取得機能を作成するためのクラス(設置)

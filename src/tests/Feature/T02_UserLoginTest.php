@@ -9,7 +9,6 @@ use App\Models\User;
 //laravel標準機能のパスワード暗号化機能を使うための読み込み
 use Illuminate\Support\Facades\Hash;
 //日本語の関数のためシステムにテストだと認識させる目印を読み込み
-//(laravelのテスト機能はPHPUnitシステムをベースに動く)
 use PHPUnit\Framework\Attributes\Test;
 
 //テスト機能を継承したオリジナルログインテスト機能を作成するための関数(設置)

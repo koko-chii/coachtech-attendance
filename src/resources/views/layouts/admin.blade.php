@@ -13,8 +13,8 @@
             <img src="{{ asset('img/logo.png') }}" alt="COACHTECH">
         </h1>
         
-        @auth
-            @if(Auth::user()->admin_status)
+        <!-- 管理者としてログインしている場合のみヘッダーナビを表示 -->
+        @if(Auth::check() && Auth::user()->admin_status)
             <nav class="header__nav">
                 <ul class="header__nav-list">
                     <li class="header__nav-item">
@@ -27,6 +27,7 @@
                         <a class="header__nav-link" href="#">申請一覧</a>
                     </li>
                     <li class="header__nav-item">
+                        <!-- 安全にログアウトを実行するためのフォーム -->
                         <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
                             @csrf
                             <button class="header__nav-link" type="submit" style="background: none; border: none; font-family: inherit;">ログアウト</button>
@@ -34,10 +35,10 @@
                     </li>
                 </ul>
             </nav>
-            @endif
-        @endauth
+        @endif
     </header>
 
+    <!-- 子のcontentセクションを表示 -->
     <main class="main-content">
         @yield('content')
     </main>
