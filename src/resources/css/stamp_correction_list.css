@@ -42,10 +42,6 @@ body {
     margin-right: 16px;
 }
 
-.tab-switch {
-    display: none;
-}
-
 .tab-navigation {
     display: flex;
     gap: 80px;
@@ -71,16 +67,8 @@ body {
     color: #000000;
 }
 
-.request-section {
-    display: none;
-}
-
-#tab-pending:checked ~ .content-pending {
-    display: block;
-}
-
-#tab-approved:checked ~ .content-approved {
-    display: block;
+.tab-item.is-active {
+    color: #000000;
 }
 
 .table-wrapper {

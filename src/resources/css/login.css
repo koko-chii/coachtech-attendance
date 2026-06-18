@@ -75,6 +75,7 @@ body .login-box .btn:hover {
     color: red;
     font-size: 0.85em;
     margin-top: 5px;
+    text-align: center;
 }
 
 .login-box p {

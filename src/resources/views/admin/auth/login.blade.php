@@ -16,7 +16,7 @@
         <p class="error-message">{{ $message }}</p>
     @enderror
 
-    <form action="{{ route('admin.login.submit') }}" method="POST">
+    <form action="{{ route('admin.login.submit') }}" method="POST" novalidate>
         @csrf
 
         <div class="form-group">

@@ -1,9 +1,5 @@
-/* src/resources/css/attendance.css */
-
-@reference "app.css";
-
 html, body, main {
-    background-color: #f7f7f7 !important;
+    background-color: #f7f7f7;
 }
 
 body {
@@ -62,6 +58,9 @@ main {
 }
 
 .btn-attendance {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     width: 200px;
     padding: 16px 4px;
     font-size: 1.25em;
@@ -71,26 +70,27 @@ main {
     box-sizing: border-box;
     transition: all 0.2s;
     letter-spacing: 4px;
+    text-decoration: none;
 }
 
 .btn-black {
-    background-color: #000;
-    color: #fff;
+    background-color: #000000;
+    color: #ffffff;
     border: none;
 }
 
 .btn-black:hover {
-    background-color: #222 !important;
+    background-color: #222222;
 }
 
 .btn-white {
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #ccc;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #cccccc;
 }
 
 .btn-white:hover {
-    background-color: #fafafa !important;
+    background-color: #fafafa;
 }
 
 .attendance-end-message {
