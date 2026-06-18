@@ -8,10 +8,10 @@
 
 @section('content')
 <div class="attendance-list-container">
-    <!-- 階層に沿った適切な見出し -->
+    <!-- 何月日の表示 -->
     <h1>{{ $date->format('Y年n月j日') }}の勤怠</h1>
 
-    <!-- 日付変更ナビゲーション -->
+    <!-- 日付変更エリア -->
     <nav class="date-selector">
         <a class="nav-btn" href="{{ route('admin.attendance.list', ['date' => $date->copy()->subDay()->format('Y-m-d')]) }}">← 前日</a>
         <span class="current-date-display">📅 {{ $date->format('Y/m/d') }}</span>
@@ -34,19 +34,25 @@
             <tbody>
                 @foreach ($attendanceRecords as $record)
                     <tr>
+                        <!-- ユーザー名を表示 -->
                         <td>{{ $record->user->name }}</td>
+                        <!-- 出勤時刻をH:i形式で表示 -->
                         <td>{{ $record->clock_in ? \Carbon\Carbon::parse($record->clock_in)->format('H:i') : '' }}</td>
+                        <!-- 退勤時刻をH:i形式で表示 -->
                         <td>{{ $record->clock_out ? \Carbon\Carbon::parse($record->clock_out)->format('H:i') : '' }}</td>
+                        <!-- 休憩時間を計算して表示 -->
                         <td>
                             @if($record->breakLogs->isNotEmpty() && $record->breakLogs->first()->break_in && $record->breakLogs->first()->break_out)
                                 {{ \Carbon\Carbon::parse($record->breakLogs->first()->break_in)->diff(\Carbon\Carbon::parse($record->breakLogs->first()->break_out))->format('%H:%I') }}
                             @endif
                         </td>
+                        <!-- 勤務時間を計算して表示 -->
                         <td>
                             @if($record->clock_in && $record->clock_out)
                                 {{ \Carbon\Carbon::parse($record->clock_in)->diff(\Carbon\Carbon::parse($record->clock_out))->format('%H:%I') }}
                             @endif
                         </td>
+                        <!-- 勤怠詳細画面へのリンク -->
                         <td>
                             <a class="detail-link" href="{{ route('admin.attendance.detail', ['id' => $record->id]) }}">詳細</a>
                         </td>

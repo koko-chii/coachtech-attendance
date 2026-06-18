@@ -6,28 +6,6 @@
 @vite(['resources/css/admin_attendance_detail.css'])
 @endsection
 
-@section('header_menu')
-<nav class="header__nav">
-    <ul class="header__nav-list">
-        <li class="header__nav-item">
-            <a class="header__nav-link" href="{{ route('admin.attendance.list') }}">勤怠一覧</a>
-        </li>
-        <li class="header__nav-item">
-            <a class="header__nav-link" href="#">スタッフ一覧</a>
-        </li>
-        <li class="header__nav-item">
-            <a class="header__nav-link" href="#">申請一覧</a>
-        </li>
-        <li class="header__nav-item">
-            <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
-                @csrf
-                <button class="header__nav-link" type="submit" style="background: none; border: none; font-family: inherit;">ログアウト</button>
-            </form>
-        </li>
-    </ul>
-</nav>
-@endsection
-
 @section('content')
 <div class="attendanceDetailMain">
     <div class="attendanceDetailForm">
@@ -56,8 +34,10 @@
                         <th>出勤・退勤</th>
                         <td>
                             <div class="timeRangeGroup">
+                                <!-- 出勤時刻入力欄 -->
                                 <input class="inputTimeField" type="time" name="clock_in" value="{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : '' }}">
                                 <span class="timeSeparator">〜</span>
+                                <!-- 退勤時刻入力欄 -->
                                 <input class="inputTimeField" type="time" name="clock_out" value="{{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : '' }}">
                             </div>
                             @error('clock_in')
