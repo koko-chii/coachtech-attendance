@@ -40,7 +40,7 @@ class AdminLoginController extends Controller
 
         //認証失敗時はエラーメッセージを返す
         throw ValidationException::withMessages([
-            'login_failed' => 'ログイン情報が登録されていません',
+            'email' => 'ログイン情報が登録されていません',
         ]);
     }
 
