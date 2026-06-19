@@ -75,12 +75,13 @@ body .main-content {
 .dateDisplayGroup {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 80px;
 }
 .dateYearText {
     width: 130px;
     text-align: left;
     box-sizing: border-box;
+    
 }
 .dateDayText {
     width: 130px;
@@ -111,6 +112,9 @@ body .main-content {
     cursor: not-allowed;
     border-color: #e5e5e5;
 }
+.inputTimeField::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
 .timeSeparator {
     color: #4b5563;
     font-weight: normal;
@@ -130,7 +134,7 @@ body .main-content {
     color: #4b5563;
     background-color: #ffffff;
     box-sizing: border-box;
-    resize: vertical;
+    resize: none;
 }
 .textareaRemarksField:disabled {
     background-color: #f9fafb;

@@ -14,15 +14,15 @@ services:
       - ./src:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - php # 💡 連携先を php に統一しました
+      - php # 
     networks:
       - coachtech-network
 
   # アプリケーションサーバー (PHP & Node.js)
-  php: # 💡 本命のサーバー名を「php」に完全統一しました
+  php: 
     build:
       context: .
-      dockerfile: ./docker/php/Dockerfile # 💡 正しいDockerfileの場所を直結
+      dockerfile: ./docker/php/Dockerfile結
     container_name: coachtech-php
     user: "1000:1000"
     volumes:
