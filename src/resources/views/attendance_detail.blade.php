@@ -24,7 +24,7 @@
                         <tbody>
                             <tr>
                                 <th>名前</th>
-                                <td>{{ auth()->user()->name }}</td>
+                                <td>{{ $record->user->name }}</td>
                             </tr>
                             <tr>
                                 <th>日付</th>
@@ -47,12 +47,11 @@
                                         <span class="timeSeparator">〜</span>
                                         <input type="time" name="clock_out" class="inputTimeField" value="{{ old('clock_out', $record->clock_out ? \Carbon\Carbon::parse($record->clock_out)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}>
                                     </div>
-                                    @error('clock_in')
-                                        <p class="inputErrorMessage">{{ $message }}</p>
-                                    @enderror
-                                    @error('clock_out')
-                                        <p class="inputErrorMessage">{{ $message }}</p>
-                                    @enderror
+                                    @if ($errors->has('clock_in') || $errors->has('clock_out'))
+                                        <p class="inputErrorMessage">
+                                            {{ $errors->first('clock_in') ?: $errors->first('clock_out') }}
+                                        </p>
+                                    @endif
                                 </td>
                             </tr>
 
@@ -62,15 +61,37 @@
                                     <th>{{ $index === 0 ? '休憩' : '休憩' . ($index + 1) }}</th>
                                     <td>
                                         <div class="timeRangeGroup">
-                                            <input type="hidden" name="breaks[{{ $index }}][id]" value="{{ $break->id }}">
-                                            <input type="time" name="breaks[{{ $index }}][break_in]" class="inputTimeField" value="{{ old('breaks.'.$index.'.break_in', $break->break_in ? \Carbon\Carbon::parse($break->break_in)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'disabled' : '' }}>
+                                            <!-- 休憩データ更新時に対象レコードを識別するため、休憩IDを送信 -->
+                                            <input type="hidden" name="breaks[{{ $break->id }}][id]" value="{{ $break->id }}">
+
+                                            <!-- 既存の休憩開始時刻を表示し、バリデーションエラー時は入力値を保持 -->
+                                            <input
+                                                type="time"
+                                                name="breaks[{{ $break->id }}][break_in]"
+                                                class="inputTimeField"
+                                                value="{{ old('breaks.' . $break->id . '.break_in', $break->break_in ? \Carbon\Carbon::parse($break->break_in)->format('H:i') : '') }}"
+                                                {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}
+                                            >
+
                                             <span class="timeSeparator">〜</span>
-                                            <input type="time" name="breaks[{{ $index }}][break_out]" class="inputTimeField" value="{{ old('breaks.'.$index.'.break_out', $break->break_out ? \Carbon\Carbon::parse($break->break_out)->format('H:i') : '') }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'disabled' : '' }}>
+
+                                            <!-- 既存の休憩終了時刻を表示し、バリデーションエラー時は入力値を保持 -->
+                                            <input
+                                                type="time"
+                                                name="breaks[{{ $break->id }}][break_out]"
+                                                class="inputTimeField"
+                                                value="{{ old('breaks.' . $break->id . '.break_out', $break->break_out ? \Carbon\Carbon::parse($break->break_out)->format('H:i') : '') }}"
+                                                {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}
+                                            >
                                         </div>
-                                        @error('breaks.' . $index . '.break_in')
+
+                                        <!-- 休憩開始時刻のエラーメッセージ -->
+                                        @error('breaks.' . $break->id . '.break_in')
                                             <p class="inputErrorMessage">{{ $message }}</p>
                                         @enderror
-                                        @error('breaks.' . $index . '.break_out')
+
+                                        <!-- 休憩終了時刻のエラーメッセージ -->
+                                        @error('breaks.' . $break->id . '.break_out')
                                             <p class="inputErrorMessage">{{ $message }}</p>
                                         @enderror
                                     </td>
@@ -120,7 +141,9 @@
                 </form>
 
                 @if(optional($record->stampCorrectionRequest)->status === 'pending')
-                    <p class="approvalPendingMessage">*承認待ちのため修正はできません。</p>
+                    <div class="approvalPendingWrapper">
+                        <p class="approvalPendingMessage">*承認待ちのため修正はできません。</p>
+                    </div>
                 @endif
             </main>
         </div>

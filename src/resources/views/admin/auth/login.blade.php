@@ -11,9 +11,11 @@
     <h1 class="login-title">管理者ログイン</h1>
 
     <!-- ログイン情報が登録されていない場合のエラー表示 -->
-    @error('login_failed')
-        <p class="error-message">{{ $message }}</p>
-    @enderror
+     @if (session('login_failed') || $errors->has('login_failed'))
+            <div class="error-message">
+                {{ session('login_failed') ?? $errors->first('login_failed') }}
+            </div>
+        @endif
 
     <!-- 管理者ログイン情報を送信するフォーム（HTML標準バリデーションは無効） -->
     <form action="{{ route('admin.login.submit') }}" method="POST" novalidate>

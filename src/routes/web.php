@@ -74,12 +74,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
 
-    // 管理者ログアウト
-    Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+    // 認証が必須な管理者用ルートをログインチェック
+    Route::middleware(['auth'])->group(function () {
+        // 管理者ログアウト
+        Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
-    // 勤怠一覧画面(管理者)
-    Route::get('/attendance/list', [AdminAttendanceController::class, 'showDailyList'])->name('attendance.list');
+        // 勤怠一覧画面(管理者)
+        Route::get('/attendance/list', [AdminAttendanceController::class, 'showDailyList'])->name('attendance.list');
 
-    // 勤怠詳細画面(管理者)
-    Route::get('/attendance/{id}', [AdminAttendanceController::class, 'showDetail'])->name('attendance.detail');
+        // 勤怠詳細画面(管理者)
+        Route::get('/attendance/{id}', [AdminAttendanceController::class, 'showDetail'])->name('attendance.detail');
+
+        // 管理者が修正ボタンが押したときの更新処理を実行するルート
+        Route::patch('/attendance/{id}', [AdminAttendanceController::class, 'updateDetail'])->name('attendance.update');
+    });
 });

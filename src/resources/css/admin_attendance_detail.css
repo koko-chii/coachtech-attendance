@@ -3,7 +3,7 @@ body .main-content {
 }
 .attendanceDetailMain {
     width: 100%;
-    padding: 40px 0;
+    margin-top: -40px;
     box-sizing: border-box;
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }

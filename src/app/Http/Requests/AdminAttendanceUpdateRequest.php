@@ -8,7 +8,7 @@ use Illuminate\Validation\Validator;
 use Carbon\Carbon;
 
 // laravel標準のバリデーション機能を継承したクラス
-class UpdateAttendanceRequest extends FormRequest
+class AdminAttendanceUpdateRequest extends FormRequest
 {
     // リクエストの実行権限を判定
     public function authorize(): bool
@@ -42,48 +42,31 @@ class UpdateAttendanceRequest extends FormRequest
     // バリデーション後の追加チェックを設定
     protected function withValidator($validator): void
     {
-        // 出勤時刻と退勤時刻、休憩時間の前後関係を追加チェック
+        // 出勤時刻と退勤時刻を時刻形式（H:i）に変換
         $validator->after(function (Validator $validator): void {
-
-            // 出勤時刻と退勤時刻を時刻形式（H:i）に変換
-            $clockIn = $this->filled('clock_in')
-                ? Carbon::parse($this->input('clock_in'))->format('H:i')
-                : null;
-
-            $clockOut = $this->filled('clock_out')
-                ? Carbon::parse($this->input('clock_out'))->format('H:i')
-                : null;
+            $clockIn  = $this->filled('clock_in') ? Carbon::parse($this->input('clock_in'))->format('H:i') : null;
+            $clockOut = $this->filled('clock_out') ? Carbon::parse($this->input('clock_out'))->format('H:i') : null;
 
             // もし出勤時刻が退勤時刻より遅い場合はエラー
             if (filled($clockIn) && filled($clockOut)) {
                 if ($clockIn > $clockOut) {
-                    $validator->errors()->add(
-                        'clock_in',
-                        '出勤時間もしくは退勤時間が不適切な値です'
-                    );
+                    $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
                 }
             }
 
             // 複数の休憩入力データを時刻形式(H:i)に変換
             if ($this->has('breaks') && is_array($this->input('breaks'))) {
-
                 foreach ($this->input('breaks') as $index => $breakData) {
+                    $breakIn  = filled($breakData['break_in'] ?? null) ? Carbon::parse($breakData['break_in'])->format('H:i') : null;
+                    $breakOut = filled($breakData['break_out'] ?? null) ? Carbon::parse($breakData['break_out'])->format('H:i') : null;
 
-                    $breakIn = filled($breakData['break_in'] ?? null)
-                        ? Carbon::parse($breakData['break_in'])->format('H:i')
-                        : null;
-
-                    $breakOut = filled($breakData['break_out'] ?? null)
-                        ? Carbon::parse($breakData['break_out'])->format('H:i')
-                        : null;
-
-                    // 休憩開始時刻が出勤前、または退勤後ならエラー
+                    // もし休憩開始時刻が出勤前、退勤後の場合はエラー
                     if (filled($breakIn)) {
-                        if ((filled($clockIn) && $breakIn < $clockIn) ||
+                        if ((filled($clockIn) && $breakIn < $clockIn) || 
                             (filled($clockOut) && $breakIn > $clockOut)) {
 
                             $validator->errors()->add(
-                                'breaks.' . $index . '.break_in',
+                                'breaks.' . $index . '.break_in', 
                                 '休憩時間が不適切な値です'
                             );
 
@@ -91,7 +74,7 @@ class UpdateAttendanceRequest extends FormRequest
                         }
                     }
 
-                    // 休憩終了時刻が出勤前、退勤後ならエラー
+                    // もし休憩終了時刻が出勤前、退勤後の場合はエラー
                     if (filled($breakOut)) {
                         if ((filled($clockIn) && $breakOut < $clockIn) ||
                             (filled($clockOut) && $breakOut > $clockOut)) {
@@ -101,42 +84,36 @@ class UpdateAttendanceRequest extends FormRequest
                                 '休憩時間もしくは退勤時間が不適切な値です'
                             );
                         }
-                    }
 
-                    // 休憩開始 > 休憩終了 の場合エラー
-                    if (filled($breakIn) && filled($breakOut) && $breakOut < $breakIn) {
-                        $validator->errors()->add(
-                            'breaks.' . $index . '.break_out',
-                            '休憩時間が不適切な値です'
-                        );
+                        // 休憩終了時刻が、休憩開始より前の場合エラー
+                        if (filled($breakIn) && $breakOut < $breakIn) {
+
+                            $validator->errors()->add(
+                                'breaks.' . $index . '.break_out',
+                                '休憩時間が不適切な値です'
+                            );
+                        }
                     }
                 }
             }
 
             // 追加の休憩入力データを時刻形式(H:i)に変換
-            $newBreakIn = $this->filled('new_break_in')
-                ? Carbon::parse($this->input('new_break_in'))->format('H:i')
-                : null;
+            $newBreakIn  = $this->filled('new_break_in') ? Carbon::parse($this->input('new_break_in'))->format('H:i') : null;
+            $newBreakOut = $this->filled('new_break_out') ? Carbon::parse($this->input('new_break_out'))->format('H:i') : null;
 
-            $newBreakOut = $this->filled('new_break_out')
-                ? Carbon::parse($this->input('new_break_out'))->format('H:i')
-                : null;
-
-            // 休憩開始時刻が出勤前、または退勤後ならエラー
+            // 追加休憩開始時刻が出勤前、又は退勤後の場合はエラー
             if (filled($newBreakIn)) {
-                if ((filled($clockIn) && $newBreakIn < $clockIn) ||
+                if ((filled($clockIn) && $newBreakIn < $clockIn) || 
                     (filled($clockOut) && $newBreakIn > $clockOut)) {
 
                     $validator->errors()->add(
-                        'new_break_in',
+                        'new_break_in', 
                         '休憩時間が不適切な値です'
                     );
-
-                    return;
                 }
             }
 
-            // 休憩終了時刻が出勤前、退勤後ならエラー
+            // 追加休憩終了時刻が出勤前、退勤後の場合エラー
             if (filled($newBreakOut)) {
                 if ((filled($clockIn) && $newBreakOut < $clockIn) ||
                     (filled($clockOut) && $newBreakOut > $clockOut)) {
@@ -145,12 +122,10 @@ class UpdateAttendanceRequest extends FormRequest
                         'new_break_out',
                         '休憩時間もしくは退勤時間が不適切な値です'
                     );
-
-                    return;
                 }
             }
 
-            // 休憩開始 > 休憩終了 の場合エラー
+            // 追加休憩開始 > 終了 の場合はエラー
             if (filled($newBreakIn) &&
                 filled($newBreakOut) &&
                 $newBreakOut < $newBreakIn) {

@@ -48,6 +48,6 @@ class T03_AdminLoginTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors(['email' => 'ログイン情報が登録されていません']);
+        $response->assertSessionHasErrors(['login_failed' => 'ログイン情報が登録されていません']);
     }
 }

@@ -1,7 +1,10 @@
+@import url('https://googleapis.com');
+
 body {
     margin: 0;
     padding: 0;
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-weight: 700;
     background-color: #f6f8fa;
     color: #333333;
 }
@@ -14,7 +17,7 @@ body {
 }
 
 .requestListForm {
-    width: 55%;
+    width: 45%;
     max-width: 1450px;
     margin: 0 auto;
 }
@@ -94,7 +97,7 @@ body {
 
 .table-request th {
     color: #888888;
-    font-weight: 500;
+    font-weight: 700;
     border-bottom: 2px solid #f0f2f5;
 }
 
@@ -108,7 +111,7 @@ body {
 
 .table-request td {
     color: #333333;
-    font-weight: 500;
+    font-weight: 700;
 }
 
 .button-link {

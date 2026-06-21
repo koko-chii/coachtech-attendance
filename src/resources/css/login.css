@@ -12,7 +12,7 @@ html body {
 
 html body .login-box {
     position: absolute;
-    top: 43%;
+    top: 47%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #ffffff;

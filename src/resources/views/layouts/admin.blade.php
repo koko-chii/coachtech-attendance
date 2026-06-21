@@ -14,7 +14,7 @@
         </h1>
         
         <!-- 管理者としてログインしている場合のみヘッダーナビを表示 -->
-        @if(Auth::check() && Auth::user()->admin_status)
+        @if(Auth::check())
             <nav class="header__nav">
                 <ul class="header__nav-list">
                     <li class="header__nav-item">

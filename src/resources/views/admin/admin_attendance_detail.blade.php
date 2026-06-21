@@ -11,7 +11,7 @@
     <div class="attendanceDetailForm">
         <h1 class="attendanceDetailTitle">勤怠詳細</h1>
 
-        <form action="#" method="POST">
+        <form action="{{ route('admin.attendance.update', $attendance->id) }}" method="POST">
             @csrf
             @method('PATCH')
 
@@ -35,40 +35,68 @@
                         <td>
                             <div class="timeRangeGroup">
                                 <!-- 出勤時刻入力欄 -->
-                                <input class="inputTimeField" type="time" name="clock_in" value="{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : '' }}">
+                                <input class="inputTimeField" type="time" name="clock_in"
+                                    value="{{ old('clock_in', $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : '') }}">
                                 <span class="timeSeparator">〜</span>
                                 <!-- 退勤時刻入力欄 -->
-                                <input class="inputTimeField" type="time" name="clock_out" value="{{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : '' }}">
+                                <input class="inputTimeField" type="time" name="clock_out"
+                                    value="{{ old('clock_out', $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : '') }}">
                             </div>
-                            @error('clock_in')
-                                <span class="inputErrorMessage">{{ $message }}</span>
-                            @enderror
+                            @if ($errors->has('clock_in') || $errors->has('clock_out'))
+                                <p class="inputErrorMessage">
+                                    {{ $errors->first('clock_in') ?: $errors->first('clock_out') }}
+                                </p>
+                            @endif
                         </td>
                     </tr>
                     <tr>
                         <th>休憩</th>
                         <td>
                             <div class="timeRangeGroup">
-                                <input class="inputTimeField" type="time" name="break_in" value="{{ $attendance->breakLogs->isNotEmpty() && isset($attendance->breakLogs[0]) ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_in)->format('H:i') : '' }}">
+                                <input type="hidden" name="breaks[0][id]" value="{{ $attendance->breakLogs[0]->id ?? '' }}">
+                                <input class="inputTimeField" type="time" name="breaks[0][break_in]"
+                                    value="{{ old('breaks.0.break_in', isset($attendance->breakLogs[0]) && $attendance->breakLogs[0]->break_in ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_in)->format('H:i') : '') }}">
                                 <span class="timeSeparator">〜</span>
-                                <input class="inputTimeField" type="time" name="break_out" value="{{ $attendance->breakLogs->isNotEmpty() && isset($attendance->breakLogs[0]) ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_out)->format('H:i') : '' }}">
+                                <input class="inputTimeField" type="time" name="breaks[0][break_out]"
+                                    value="{{ old('breaks.0.break_out', isset($attendance->breakLogs[0]) && $attendance->breakLogs[0]->break_out ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_out)->format('H:i') : '') }}">
                             </div>
+
+                            @error('breaks.0.break_in')
+                                <span class="inputErrorMessage">{{ $message }}</span>
+                            @enderror
+
+                            @error('breaks.0.break_out')
+                                <span class="inputErrorMessage">{{ $message }}</span>
+                            @enderror
                         </td>
                     </tr>
                     <tr>
                         <th>休憩2</th>
                         <td>
                             <div class="timeRangeGroup">
-                                <input class="inputTimeField" type="time" name="break2_in" value="{{ $attendance->breakLogs->isNotEmpty() && isset($attendance->breakLogs[1]) ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_in)->format('H:i') : '' }}">
+                                <input type="hidden" name="breaks[1][id]" value="{{ $attendance->breakLogs[1]->id ?? '' }}">
+                                <input class="inputTimeField" type="time" name="breaks[1][break_in]"
+                                    value="{{ old('breaks.1.break_in', isset($attendance->breakLogs[1]) && $attendance->breakLogs[1]->break_in ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_in)->format('H:i') : '') }}">
                                 <span class="timeSeparator">〜</span>
-                                <input class="inputTimeField" type="time" name="break2_out" value="{{ $attendance->breakLogs->isNotEmpty() && isset($attendance->breakLogs[1]) ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_out)->format('H:i') : '' }}">
+                                <input class="inputTimeField" type="time" name="breaks[1][break_out]"
+                                    value="{{ old('breaks.1.break_out', isset($attendance->breakLogs[1]) && $attendance->breakLogs[1]->break_out ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_out)->format('H:i') : '') }}">
                             </div>
+
+                            @error('breaks.1.break_in')
+                                <span class="inputErrorMessage">{{ $message }}</span>
+                            @enderror
+
+                            @error('breaks.1.break_out')
+                                <span class="inputErrorMessage">{{ $message }}</span>
+                            @enderror
                         </td>
                     </tr>
+
                     <tr>
                         <th>備考</th>
                         <td>
-                            <textarea class="textareaRemarksField" name="remarks">{{ $attendance->remarks }}</textarea>
+                            <textarea class="textareaRemarksField" name="remarks">{{ old('remarks', $attendance->remarks) }}</textarea>
+
                             @error('remarks')
                                 <span class="inputErrorMessage">{{ $message }}</span>
                             @enderror
@@ -78,7 +106,11 @@
             </table>
 
             <div class="formActionsPanel">
-                <button class="submitUpdateButton" type="submit">修正</button>
+                @if ($attendance->status === 'pending')
+                    <p class="inputErrorMessage">承認待ちのため修正はできません。</p>
+                @else
+                    <button class="submitUpdateButton" type="submit">修正</button>
+                @endif
             </div>
         </form>
     </div>

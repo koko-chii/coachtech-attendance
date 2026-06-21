@@ -52,7 +52,7 @@
                 @enderror
             </div>
 
-            <!-- デザイン要件に従った黒ボタン -->
+            <!-- 黒ボタン -->
             <button type="submit" class="btn">ログイン</button>
         </form>
 

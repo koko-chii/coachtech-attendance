@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
+use App\Http\Requests\AdminAttendanceUpdateRequest;
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller
@@ -41,5 +43,44 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_attendance_detail', [
             'attendance' => $attendance,
         ]);
+    }
+
+    // 管理者が勤怠修正を行った際の更新処理
+    public function updateDetail(AdminAttendanceUpdateRequest $request, int $id): RedirectResponse
+    {
+        // 勤怠データと一緒に休憩データを取得
+        $attendance = AttendanceRecord::with('breakLogs')->findOrFail($id);
+
+        // 承認待ちの場合、修正不可のメッセージを表示して全画面へ戻る
+        if ($attendance->status === 'pending') {
+            return redirect()->back()->with('alert_message', '承認待ちのため修正はできません。');
+        }
+
+        // 出勤時刻・退勤時刻・備考を更新
+        $attendance->update([
+            'clock_in'  => $request->input('clock_in'),
+            'clock_out' => $request->input('clock_out'),
+            'remarks'   => $request->input('remarks'),
+        ]);
+
+        // 既存の休憩データを更新
+        if ($request->has('breaks')) {
+            foreach ($request->input('breaks') as $breakData) {
+                // 対象の休憩IDがあるものだけ更新
+                if (!empty($breakData['id'])) {
+                    $breakLog = $attendance->breakLogs->firstWhere('id', $breakData['id']);
+
+                    if ($breakLog) {
+                        $breakLog->update([
+                            'break_in'  => $breakData['break_in'] ?? null,
+                            'break_out' => $breakData['break_out'] ?? null,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // 修正完了メッセージと一緒に勤怠一覧画面へ遷移を返す
+        return redirect()->route('admin.attendance.list')->with('success_message', '勤怠データを修正しました');
     }
 }

@@ -143,3 +143,17 @@
 body .main-content {
     background-color: #f3f4f6;
 }
+
+.success-message-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 20px 0 24px;
+}
+
+.successMessage {
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
