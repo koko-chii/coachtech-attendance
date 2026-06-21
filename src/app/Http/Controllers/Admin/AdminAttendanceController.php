@@ -37,7 +37,7 @@ class AdminAttendanceController extends Controller
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
-        $attendance = AttendanceRecord::with(['user', 'breakLogs'])->findOrFail($id);
+        $attendance = AttendanceRecord::with(['user', 'breakLogs', 'stampCorrectionRequest'])->findOrFail($id);
 
         // 管理者用勤怠詳細画面を返す
         return view('admin.admin_attendance_detail', [
@@ -63,12 +63,22 @@ class AdminAttendanceController extends Controller
             'remarks'   => $request->input('remarks'),
         ]);
 
+        $breaks = $request->input('breaks', []);
+
+        if ($request->filled('new_break_in') || $request->filled('new_break_out')) {
+            $breaks[] = [
+                'id' => null,
+                'break_in' => $request->input('new_break_in'),
+                'break_out' => $request->input('new_break_out'),
+            ];
+        }
+
         // 既存の休憩データを更新
-        if ($request->has('breaks')) {
-            foreach ($request->input('breaks') as $breakData) {
+        if (!empty($breaks)) {
+            foreach ($breaks as $breakData) {
                 // 対象の休憩IDがあるものだけ更新
                 if (!empty($breakData['id'])) {
-                    $breakLog = $attendance->breakLogs->firstWhere('id', $breakData['id']);
+                    $breakLog = $attendance->breakLogs()->find($breakData['id']);
 
                     if ($breakLog) {
                         $breakLog->update([
@@ -76,6 +86,11 @@ class AdminAttendanceController extends Controller
                             'break_out' => $breakData['break_out'] ?? null,
                         ]);
                     }
+                } else {
+                    $attendance->breakLogs()->create([
+                        'break_in'  => $breakData['break_in'] ?? null,
+                        'break_out' => $breakData['break_out'] ?? null,
+                    ]);
                 }
             }
         }

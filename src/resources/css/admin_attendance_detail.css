@@ -1,12 +1,14 @@
 body .main-content {
     background-color: #f3f4f6;
 }
+
 .attendanceDetailMain {
     width: 100%;
     margin-top: -40px;
     box-sizing: border-box;
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }
+
 .attendanceDetailForm {
     width: 70%;
     max-width: 1000px;
@@ -14,6 +16,7 @@ body .main-content {
     margin: 0 auto;
     box-sizing: border-box;
 }
+
 .attendanceDetailTitle {
     font-size: 24px;
     font-weight: 900;
@@ -24,6 +27,7 @@ body .main-content {
     margin: 0 0 30px 0;
     box-sizing: border-box;
 }
+
 .alertMessage {
     background-color: #ffebeb;
     color: #ff0000;
@@ -34,6 +38,7 @@ body .main-content {
     border: 1px solid #ffd1d1;
     font-size: 16px;
 }
+
 .attendanceTable {
     width: 100%;
     background-color: #ffffff;
@@ -45,18 +50,22 @@ body .main-content {
     box-sizing: border-box;
     margin-bottom: 24px;
 }
+
 .attendanceTable tr {
     border-bottom: 1px solid #e5e5e5;
 }
+
 .attendanceTable tr:last-child {
     border-bottom: none;
 }
+
 .attendanceTable th,
 .attendanceTable td {
     font-size: 16px;
     padding: 24px 0;
     vertical-align: middle;
 }
+
 .attendanceTable th {
     width: 25%;
     color: #9ca3af;
@@ -64,6 +73,7 @@ body .main-content {
     text-align: left;
     padding-left: 60px;
 }
+
 .attendanceTable td {
     width: 75%;
     color: #4b5563;
@@ -72,27 +82,31 @@ body .main-content {
     padding-left: 40px;
     padding-right: 60px;
 }
+
 .dateDisplayGroup {
     display: flex;
     align-items: center;
     gap: 80px;
 }
+
 .dateYearText {
     width: 130px;
     text-align: left;
     box-sizing: border-box;
-    
 }
+
 .dateDayText {
     width: 130px;
     text-align: left;
     box-sizing: border-box;
 }
+
 .timeRangeGroup {
     display: flex;
     align-items: center;
     gap: 24px;
 }
+
 .inputTimeField {
     width: 130px;
     height: 40px;
@@ -106,15 +120,18 @@ body .main-content {
     box-sizing: border-box;
     text-align: center;
 }
+
 .inputTimeField:disabled {
     background-color: #f9fafb;
     color: #9ca3af;
     cursor: not-allowed;
     border-color: #e5e5e5;
 }
+
 .inputTimeField::-webkit-calendar-picker-indicator {
     display: none !important;
 }
+
 .timeSeparator {
     color: #4b5563;
     font-weight: normal;
@@ -122,6 +139,7 @@ body .main-content {
     width: 30px;
     text-align: center;
 }
+
 .textareaRemarksField {
     width: 100%;
     max-width: 420px;
@@ -136,12 +154,14 @@ body .main-content {
     box-sizing: border-box;
     resize: none;
 }
+
 .textareaRemarksField:disabled {
     background-color: #f9fafb;
     color: #9ca3af;
     cursor: not-allowed;
     border-color: #e5e5e5;
 }
+
 .formActionsPanel {
     display: flex;
     justify-content: flex-end;
@@ -149,6 +169,7 @@ body .main-content {
     margin-top: 20px;
     box-sizing: border-box;
 }
+
 .submitUpdateButton {
     background-color: #000000;
     color: #ffffff;
@@ -160,20 +181,11 @@ body .main-content {
     cursor: pointer;
     transition: opacity 0.2s ease;
 }
+
 .submitUpdateButton:hover {
     opacity: 0.8;
 }
-.approvalPendingMessage {
-    color: #ff4d4f;
-    font-size: 20px;
-    text-align: right;
-    margin-top: 24px;
-    margin-bottom: 0;
-    font-weight: normal;
-    display: block;
-    width: 100%;
-    clear: both;
-}
+
 .inputErrorMessage {
     color: #ff4d4f;
     font-size: 14px;
@@ -182,4 +194,21 @@ body .main-content {
     margin-bottom: 0;
     display: block;
     text-align: left;
+}
+
+.approvalPendingOutside {
+    width: 70%;
+    max-width: 1000px;
+    min-width: 800px;
+    margin: 20px auto 0;
+    display: flex;
+    justify-content: flex-end;
+    box-sizing: border-box;
+}
+
+.approvalPendingMessage {
+    color: #ff4d4f;
+    font-size: 20px;
+    margin: 0;
+    font-weight: normal;
 }

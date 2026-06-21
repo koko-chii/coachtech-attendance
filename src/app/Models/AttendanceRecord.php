@@ -31,6 +31,7 @@ class AttendanceRecord extends Model
         'date',
         'clock_in',
         'clock_out',
+        'remarks',
     ];
 
     // 複数の休憩情報を取得するための関数(機能)

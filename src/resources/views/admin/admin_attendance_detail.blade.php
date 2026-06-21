@@ -105,14 +105,18 @@
                 </tbody>
             </table>
 
-            <div class="formActionsPanel">
-                @if ($attendance->status === 'pending')
-                    <p class="inputErrorMessage">承認待ちのため修正はできません。</p>
-                @else
+            @if (optional($attendance->stampCorrectionRequest)->status !== 'pending')
+                <div class="formActionsPanel">
                     <button class="submitUpdateButton" type="submit">修正</button>
-                @endif
-            </div>
+                </div>
+            @endif
         </form>
     </div>
+
+    @if (optional($attendance->stampCorrectionRequest)->status === 'pending')
+        <div class="approvalPendingOutside">
+            <p class="approvalPendingMessage">＊承認待ちのため修正はできません。</p>
+        </div>
+    @endif
 </div>
 @endsection
