@@ -37,11 +37,8 @@ class AdminLoginController extends Controller
         // メールアドレスとパスワードを取得
         $credentials = $request->only('email', 'password');
 
-        // 管理者アカウントのみ認証対象にする
-        $credentials['admin_status'] = true;
-
         // 認証されたら管理者用勤怠一覧画面に遷移
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('admin.attendance.list');
         }
@@ -56,7 +53,7 @@ class AdminLoginController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         // ログイン時の認証ガードからログアウト
-        Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
 
         // 現在のセッションを無効化し、トークンを作り直す
         // CSRFトークンは正規の画面から送信されたことを証明する秘密の文字列

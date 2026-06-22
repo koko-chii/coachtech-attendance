@@ -123,7 +123,12 @@
                                 <th>備考</th>
                                 <td>
                                     <!-- ステータスが承認待ちなら書き換え禁止 -->
-                                    <input type="text" name="remarks" class="textareaRemarksField" value="{{ old('remarks', $record->remarks) }}" {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}>
+                                    <textarea
+                                        name="remarks"
+                                        class="textareaRemarksField"
+                                        {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}
+                                    >{{ old('remarks', $record->remarks) }}</textarea>
+
                                     @error('remarks')
                                         <p class="inputErrorMessage">{{ $message }}</p>
                                     @enderror

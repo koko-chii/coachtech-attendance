@@ -38,12 +38,10 @@ class AttendanceSeeder extends Seeder
         ]);
 
         // ユーザー情報3(管理者テーブルへ保存) メール認証不要
-        User::create([
+        Admin::create([
             'name' => 'ユーザー3(管理者)',
             'email' => 'user3@example.com',
             'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'admin_status' => true,
         ]);
 
         // 今現在の日時を取得してnow変数(箱)へしまう

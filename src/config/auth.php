@@ -14,7 +14,7 @@ return [
         ],
         'admin' => [
             'driver' => 'session',
-            'provider' => 'admins', // ← 管理者用のプロバイダーを指定
+            'provider' => 'admins',
         ],
     ],
 
@@ -25,7 +25,7 @@ return [
         ],
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class, // ← 管理者用のモデルを指定
+            'model' => App\Models\Admin::class,
         ],
     ],
 

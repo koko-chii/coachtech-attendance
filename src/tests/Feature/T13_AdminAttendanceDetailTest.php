@@ -1,10 +1,11 @@
 <?php
 
-namespace Tests\Feature\Feature;
+namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Admin;
 use App\Models\AttendanceRecord;
 use App\Models\BreakLog;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 勤怠詳細画面に表示されるデータが選択したものになっている(): void
     {
-        $admin = User::factory()->create(['admin_status' => true]);
+        $admin = Admin::factory()->create();
         $user = User::factory()->create(['name' => '詳細テスト太郎']);
         $today = Carbon::today()->format('Y-m-d');
 
@@ -35,7 +36,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
             'break_out' => '13:00:00',
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.attendance.detail', ['id' => $attendance->id]));
+        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.detail', ['id' => $attendance->id]));
 
         $response->assertStatus(200);
         $response->assertSee('詳細テスト太郎');
@@ -49,10 +50,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 出勤時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = User::factory()->create(['admin_status' => true]);
+        $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '18:00',
             'clock_out' => '09:00',
             'remarks' => '出勤時間エラーテスト',
@@ -67,10 +68,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 休憩開始時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = User::factory()->create(['admin_status' => true]);
+        $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'breaks' => [
@@ -92,10 +93,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 休憩終了時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = User::factory()->create(['admin_status' => true]);
+        $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'breaks' => [
@@ -117,10 +118,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 備考欄が未入力の場合のエラーメッセージが表示される(): void
     {
-        $admin = User::factory()->create(['admin_status' => true]);
+        $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'remarks' => '',

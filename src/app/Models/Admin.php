@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 // 管理者情報を管理するモデル
-class Admin extends Model
+class Admin extends Authenticatable
 {
     // テスト用ダミーデータを作成
     use HasFactory;

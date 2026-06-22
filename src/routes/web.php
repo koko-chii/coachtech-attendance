@@ -10,6 +10,8 @@ use App\Http\Controllers\StampCorrectionRequestController;
 use App\Http\Controllers\Admin\AdminLoginController;
 // 管理者用勤怠一覧コントローラーの読み込み
 use App\Http\Controllers\Admin\AdminAttendanceController;
+use App\Http\Controllers\Admin\AdminStaffController;
+use App\Http\Controllers\Admin\AdminRequestController;
 
 // ログイン済みの場合は勤怠登録画面へ、未ログインの場合はログイン画面へ自動転送
 Route::get('/', function () {
@@ -67,6 +69,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 申請一覧画面を表示するルート
     Route::get('/stamp_correction_request/list', [StampCorrectionRequestController::class, 'index'])->name('attendance_correction_request.index');
 
+    Route::get('/attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
+
 });
 
 // 管理者向け:ログイン認証
@@ -75,7 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
 
     // 認証が必須な管理者用ルートをログインチェック
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth:admin'])->group(function () {
         // 管理者ログアウト
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
@@ -87,5 +91,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 管理者が修正ボタンが押したときの更新処理を実行するルート
         Route::patch('/attendance/{id}', [AdminAttendanceController::class, 'updateDetail'])->name('attendance.update');
+
+        Route::get('/staff/list', [AdminStaffController::class, 'list'])->name('staff.list');
+        Route::get('/attendance/staff/{id}', [AdminStaffController::class, 'staffAttendance'])->name('attendance.staff');
+        Route::get('/stamp_correction_request/list', [AdminRequestController::class, 'list'])->name('request.list');
+        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminRequestController::class, 'approveView'])->name('request.approve');
     });
 });
