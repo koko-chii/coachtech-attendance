@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
 use App\Http\Requests\AdminAttendanceUpdateRequest;
+use App\Models\StampCorrectionRequest; 
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller
@@ -124,4 +125,170 @@ class AdminAttendanceController extends Controller
         // 修正完了メッセージと一緒に勤怠一覧画面へ遷移を返す
         return redirect()->route('admin.attendance.list')->with('success_message', '勤怠データを修正しました');
     }
+
+        public function showStaffList(): View
+    {
+        $users = \App\Models\User::where('admin_status', false)->get();
+
+        return view('admin.admin_staff_list', compact('users'));
+    }
+
+    public function showStaffAttendance(Request $request, int $id): View
+    {
+        $targetUser = \App\Models\User::findOrFail($id);
+
+        $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
+        $currentMonth = Carbon::parse($currentMonthStr . '-01');
+
+        $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
+        $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
+
+        $attendances = AttendanceRecord::with('breakLogs')
+            ->where('user_id', $targetUser->id)
+            ->whereYear('date', $currentMonth->year)
+            ->whereMonth('date', $currentMonth->month)
+            ->get()
+            ->map(function (AttendanceRecord $record): AttendanceRecord {
+                $record->display_clock_in = $record->clock_in;
+                $record->display_clock_out = $record->clock_out;
+                
+                $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
+                    if (!$b->break_in || !$b->break_out) return 0;
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+
+                $breakHours = floor($totalBreakSeconds / 3600);
+                $breakMinutes = floor(($totalBreakSeconds % 3600) / 60);
+                $record->display_break_time = $totalBreakSeconds > 0 ? sprintf('%02d:%02d', $breakHours, $breakMinutes) : '00:00';
+
+                $record->display_work_time = '';
+                if ($record->clock_in && $record->clock_out) {
+                    $start = Carbon::parse($record->clock_in);
+                    $end = Carbon::parse($record->clock_out);
+                    $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
+                    
+                    if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
+                    
+                    $workHours = floor($totalWorkSeconds / 3600);
+                    $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
+                    $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
+                }
+
+                return $record;
+            })
+            ->keyBy('date');
+
+        $daysInMonth = [];
+        $daysCount = $currentMonth->daysInMonth;
+        for ($i = 1; $i <= $daysCount; $i++) {
+            $daysInMonth[] = $currentMonth->copy()->day($i);
+        }
+
+        return view('admin.admin_staff_attendance', [
+            'targetUser'   => $targetUser,
+            'daysInMonth'  => $daysInMonth,
+            'attendances'  => $attendances,
+            'currentMonth' => $currentMonth->format('Y年m月'),
+            'prevMonth'    => $prevMonth,
+            'nextMonth'    => $nextMonth,
+        ]);
+    }
+
+    public function downloadCsv(Request $request, int $id)
+    {
+        $targetUser = \App\Models\User::findOrFail($id);
+        $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
+        $currentMonth = Carbon::parse($currentMonthStr . '-01');
+
+        $records = AttendanceRecord::with('breakLogs')
+            ->where('user_id', $targetUser->id)
+            ->whereYear('date', $currentMonth->year)
+            ->whereMonth('date', $currentMonth->month)
+            ->get();
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $targetUser->name . '_' . $currentMonthStr . '_attendance.csv"',
+        ];
+
+        $callback = function () use ($records) {
+            $stream = fopen('php://output', 'w');
+            fputcsv($stream, [mb_convert_encoding('日付', 'SJIS-win', 'UTF-8'), mb_convert_encoding('出勤', 'SJIS-win', 'UTF-8'), mb_convert_encoding('退勤', 'SJIS-win', 'UTF-8'), mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'), mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')]);
+
+            foreach ($records as $record) {
+                $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
+                    if (!$b->break_in || !$b->break_out) return 0;
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+                $breakTime = sprintf('%02d:%02d', floor($totalBreakSeconds / 3600), floor(($totalBreakSeconds % 3600) / 60));
+
+                $workTime = '';
+                if ($record->clock_in && $record->clock_out) {
+                    $totalWorkSeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out)) - $totalBreakSeconds;
+                    if ($totalWorkSeconds < 0) $totalWorkSeconds = 0;
+                    $workTime = sprintf('%02d:%02d', floor($totalWorkSeconds / 3600), floor(($totalWorkSeconds % 3600) / 60));
+                }
+
+                fputcsv($stream, [
+                    $record->date,
+                    $record->clock_in ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
+                    $breakTime,
+                    $workTime
+                ]);
+            }
+            fclose($stream);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+        public function showRequestList(): View
+    {
+        $allRequests = StampCorrectionRequest::with(['user', 'attendanceRecord'])->get();
+
+        $pendingRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'pending');
+        $approvedRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'approved');
+
+        return view('admin.admin_request_list', compact('pendingRequests', 'approvedRequests'));
+    }
+
+    public function showApproveView(int $id): View
+    {
+        $requestData = StampCorrectionRequest::with(['user', 'attendanceRecord'])->findOrFail($id);
+        $isPending = $requestData->status === 'pending';
+
+        return view('admin.admin_request_approve', compact('requestData', 'isPending'));
+    }
+
+    public function approveRequest(Request $request, int $id): RedirectResponse
+    {
+        $requestData = StampCorrectionRequest::findOrFail($id);
+        $attendance = AttendanceRecord::findOrFail($requestData->attendance_record_id);
+
+        if ($request->input('action') === 'approve') {
+            $attendance->update([
+                'clock_in'  => $requestData->requested_clock_in,
+                'clock_out' => $requestData->requested_clock_out,
+                'remarks'   => $requestData->requested_remarks,
+            ]);
+
+            if (!empty($requestData->requested_breaks)) {
+                $attendance->breakLogs()->delete();
+                collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
+                    $attendance->breakLogs()->create([
+                        'break_in'  => $b['break_in'] ?? null,
+                        'break_out' => $b['break_out'] ?? null,
+                    ]);
+                });
+            }
+
+            $requestData->update(['status' => 'approved']);
+            return redirect()->route('admin.request.list')->with('success_message', '申請を承認しました。');
+        }
+
+        $requestData->update(['status' => 'rejected']);
+        return redirect()->route('admin.request.list')->with('success_message', '申請を却下しました。');
+    }
+
 }

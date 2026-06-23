@@ -92,9 +92,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 管理者が修正ボタンが押したときの更新処理を実行するルート
         Route::patch('/attendance/{id}', [AdminAttendanceController::class, 'updateDetail'])->name('attendance.update');
 
-        Route::get('/staff/list', [AdminStaffController::class, 'list'])->name('staff.list');
-        Route::get('/attendance/staff/{id}', [AdminStaffController::class, 'staffAttendance'])->name('attendance.staff');
-        Route::get('/stamp_correction_request/list', [AdminRequestController::class, 'list'])->name('request.list');
-        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminRequestController::class, 'approveView'])->name('request.approve');
+        Route::get('/staff/list', [AdminAttendanceController::class, 'showStaffList'])->name('staff.list');
+        Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffAttendance'])->name('attendance.staff');
+        
+        Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
+        Route::get('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
+        Route::patch('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('request.approve.submit');
+
+        Route::get('/attendance/staff/{id}/csv', [AdminAttendanceController::class, 'downloadCsv'])->name('attendance.staff.csv');
     });
 });
+

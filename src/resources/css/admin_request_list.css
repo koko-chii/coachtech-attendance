@@ -1,0 +1,131 @@
+@import url('https://googleapis.com');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-weight: 700;
+    background-color: #f6f8fa;
+    color: #333333;
+}
+
+.requestListMain {
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    background-color: #f6f8fa;
+    box-sizing: border-box;
+}
+
+.requestListForm {
+    width: 45%;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+.request-management {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.page-title {
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
+}
+
+.page-title::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 28px;
+    background-color: #000000;
+    margin-right: 16px;
+}
+
+.success-message {
+    color: #ff4d4f;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.tab-navigation {
+    display: flex;
+    gap: 80px;
+    border-bottom: 1px solid #000000;
+    margin-bottom: 40px;
+    padding-bottom: 12px;
+}
+
+.tab-item {
+    font-size: 16px;
+    font-weight: bold;
+    color: #888888;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tab-item.is-active {
+    color: #000000;
+}
+
+.table-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    padding: 10px 0px;
+}
+
+.table-request {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table-request th,
+.table-request td {
+    padding: 24px 20px;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+.table-request th {
+    color: #888888;
+    font-weight: 700;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.table-request tbody tr {
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.table-request tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table-request td {
+    color: #333333;
+    font-weight: 700;
+}
+
+.button-link {
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.button-link:hover {
+    text-decoration: underline;
+}
+
+.empty-message {
+    text-align: center;
+    color: #888888;
+    padding: 40px 0;
+    font-size: 15px;
+}

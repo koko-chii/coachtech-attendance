@@ -1,0 +1,87 @@
+@import url('https://googleapis.com');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-weight: 700;
+    background-color: #f6f8fa;
+    color: #333333;
+}
+
+#attendance-list-container {
+    width: 45%;
+    max-width: 1450px;
+    margin: 0 auto;
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+#attendance-list-container h1 {
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
+    color: #333333;
+}
+
+#attendance-list-container h1::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 28px;
+    background-color: #000000;
+    margin-right: 16px;
+}
+
+.table-wrapper {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    padding: 10px 0px;
+}
+
+.table-request {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table-request th,
+.table-request td {
+    padding: 24px 20px;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+.table-request th {
+    color: #888888;
+    font-weight: 700;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.table-request tbody tr {
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.table-request tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table-request td {
+    color: #333333;
+    font-weight: 700;
+}
+
+.detail-link {
+    color: #000000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.detail-link:hover {
+    text-decoration: underline;
+}

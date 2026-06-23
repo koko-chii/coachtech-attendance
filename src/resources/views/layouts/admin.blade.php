@@ -21,10 +21,10 @@
                         <a class="header__nav-link" href="{{ route('admin.attendance.list') }}">勤怠一覧</a>
                     </li>
                     <li class="header__nav-item">
-                        <a class="header__nav-link" href="#">スタッフ一覧</a>
+                        <a class="header__nav-link" href="{{ route('admin.staff.list') }}">スタッフ一覧</a>
                     </li>
                     <li class="header__nav-item">
-                        <a class="header__nav-link" href="#">申請一覧</a>
+                        <a class="header__nav-link" href="{{ route('admin.request.list') }}">申請一覧</a>
                     </li>
                     <li class="header__nav-item">
                         <!-- 安全にログアウトを実行するためのフォーム -->

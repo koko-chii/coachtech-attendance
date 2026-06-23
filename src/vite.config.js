@@ -17,6 +17,8 @@ export default defineConfig({
                 'resources/css/admin_login.css',
                 'resources/css/admin_attendance_list.css',
                 'resources/css/admin_attendance_detail.css',
+                'resources/css/admin_staff_list.css',
+                'resources/css/admin_staff_attendance.css',
                 'resources/js/app.js',
             ],
             refresh: true,
