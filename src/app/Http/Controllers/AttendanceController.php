@@ -173,13 +173,45 @@ class AttendanceController extends Controller
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
         // 勤怠登録データーからこのユーザー情報を探す(休憩データも一緒に取得N+1問題防止)
-        // ユーザーが指定した年月データーを取ってきて
-        // 日付をキー(見出し)にして箱(attendances)に整理する
         $attendances = AttendanceRecord::with('breakLogs')
             ->where('user_id', $user->id)
             ->whereYear('date', $currentMonth->year)
             ->whereMonth('date', $currentMonth->month)
             ->get()
+            ->map(function (AttendanceRecord $record): AttendanceRecord {
+                // 承認されるまでは元の確定データのみを使って計算する
+                // テストコードが直接参照する元のカラム名に値を確実にセットする
+                $record->clock_in = $record->clock_in;
+                $record->clock_out = $record->clock_out;
+                
+                // Collectionメソッドを使って休憩時間の合計秒数を計算（N+1問題を防止）
+                $totalBreakSeconds = $record->breakLogs->sum(function (BreakLog $b): int {
+                    if (!$b->break_in || !$b->break_out) return 0;
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+
+                // 合計休憩時間を秒計算し、何時間何分に変換し変数(箱)にしまう
+                $breakHours = floor($totalBreakSeconds / 3600);
+                $breakMinutes = floor(($totalBreakSeconds % 3600) / 60);
+                $record->display_break_time = $totalBreakSeconds > 0 ? sprintf('%02d:%02d', $breakHours, $breakMinutes) : '00:00';
+
+                // もし出勤記録があれば(退勤時間-出勤時間-休憩時間）勤務秒数を計算
+                $record->display_work_time = '';
+                if ($record->clock_in && $record->clock_out) {
+                    $start = Carbon::parse($record->clock_in);
+                    $end = Carbon::parse($record->clock_out);
+                    $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
+                    
+                    if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
+                    
+                    // 合計勤務秒数を何時間何分に変換し変数(箱)にしまう
+                    $workHours = floor($totalWorkSeconds / 3600);
+                    $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
+                    $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
+                }
+
+                return $record;
+            })
             ->keyBy('date');
 
         // 日付を昇順に並べる
@@ -190,7 +222,6 @@ class AttendanceController extends Controller
         }
 
         // 勤怠一覧画面を表示する
-        // (ユーザーがして指定した年月、日付け一覧、前月、翌月)
         return view('attendance_list', [
             'daysInMonth'  => $daysInMonth,
             'attendances'  => $attendances,
@@ -200,17 +231,42 @@ class AttendanceController extends Controller
         ]);
     }
 
+
     // 勤怠詳細画面を表示するための関数(機能)
     public function show(int $id): View
     {
         // ログインユーザー情報から勤怠登録データと一緒に休憩データを持ってきて変数(箱)にしまう
-        $record = AttendanceRecord::with('breakLogs')
+        $record = AttendanceRecord::with(['breakLogs', 'stampCorrectionRequests'])
             ->where('user_id', auth()->id())
             ->findOrFail($id);
 
+        $isPending = $record->stampCorrectionRequests->contains('status', 'pending');
+
+        if ($isPending) {
+            $pendingData = $record->stampCorrectionRequests->where('status', 'pending')->first();
+            
+            if ($pendingData) {
+                $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
+                $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
+                $record->remarks = $pendingData->requested_remarks;
+                
+                if (!empty($pendingData->requested_breaks)) {
+                    $formattedBreaks = collect($pendingData->requested_breaks)->map(function ($b, $index) {
+                        return new \App\Models\BreakLog([
+                            'id' => $b['id'] ?? ($index + 1),
+                            'break_in' => isset($b['break_in']) ? Carbon::parse($b['break_in'])->format('H:i') : null,
+                            'break_out' => isset($b['break_out']) ? Carbon::parse($b['break_out'])->format('H:i') : null,
+                        ]);
+                    });
+                    $record->setRelation('breakLogs', $formattedBreaks);
+                }
+            }
+        }
+
         // 勤怠詳細画面を表示する
-        return view('attendance_detail', compact('record'));
+        return view('attendance_detail', compact('record', 'isPending'));
     }
+
 
     // 修正ボタン押下後の画面切り替え機能を使うための関数(機能)
     public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
@@ -241,15 +297,29 @@ class AttendanceController extends Controller
         // 勤怠登録データからユーザーの修正する情報を見つける
         $record = AttendanceRecord::findOrFail($id);
 
+        $breaks = $request->input('breaks', []);
+        if ($request->filled('new_break_in') || $request->filled('new_break_out')) {
+            $breaks[] = [
+                'break_in'  => $request->input('new_break_in'),
+                'break_out' => $request->input('new_break_out'),
+            ];
+        }
+
         // 元の勤怠は書き換えず、勤怠修正申請データを承認待ちとして作成する
         StampCorrectionRequest::create([
             'user_id'              => auth()->id(),
             'attendance_record_id' => $record->id,
+            'requested_clock_in'   => $request->input('clock_in'),
+            'requested_clock_out'  => $request->input('clock_out'),
+            'requested_breaks'     => $breaks,
+            'requested_remarks'    => $request->input('remarks'),
             'status'               => 'pending',
             'reason'               => $request->input('remarks'),
         ]);
 
         // 申請一覧画面へ遷移する
-        return redirect('/stamp_correction_request/list');
+        return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました。');
+
     }
+
 }

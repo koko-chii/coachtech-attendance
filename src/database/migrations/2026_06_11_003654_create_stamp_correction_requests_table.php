@@ -17,6 +17,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('attendance_record_id')->constrained()->onDelete('cascade');
+            $table->time('requested_clock_in');
+            $table->time('requested_clock_out');
+            $table->json('requested_breaks')->nullable();
+            $table->text('requested_remarks');
             $table->string('status')->default('pending');
             $table->text('reason');
             $table->timestamps();

@@ -2,55 +2,42 @@
 
 namespace App\Models;
 
-// データーベースの保存を許可すためのエロクワントモデルを呼出し
+// データーベーステーブルとPHPを結びつけ操作する機能の読み込み
 use Illuminate\Database\Eloquent\Model;
-// laravel標準の大量 of テスト機能を作成する機能を読み込み
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-// laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
-use Illuminate\Database\Eloquent\Relations\HasMany;
-// データーベースの休憩情報を操作するBreakLogモデルを使うための読み込み
-use App\Models\BreakLog;
-// 修正申請データーを操作する修正申請モデルの読み込み
-use App\Models\StampCorrectionRequest;
-// 1対多のリレーション機能を使うための読み込み
-use Illuminate\Database\Eloquent\Relations\HasOne;
-// Laravel標準の勤怠データの持ち主ユーザーを取得するための機能を読み込む
+// 1対多のつながりで子から親データーを紐づけるリレーション機能の読み込み
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;
+// 1対多のつながりで親から子データー一覧を紐づけるリレーション機能の読み込み
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// 勤怠管理モデルを作成するためのクラス(設置)
+// モデル機能を継承した勤怠登録データを扱うためのクラス
 class AttendanceRecord extends Model
 {
-    use HasFactory;
-
-    // データーベースに保存するための項目(ユーザー情報、月日、出勤・退勤時刻)を指定
-    // フィラブルプロパティとは、データベースにデータを保存する際に、
-    // 「画面から勝手に書き換えられても良い項目」を指定すること
+    // 安全に一括保存(複数の代入)を許可するカラムの指定
     protected $fillable = [
         'user_id',
         'date',
         'clock_in',
         'clock_out',
+        'total_time',
+        'total_break_time',
         'remarks',
     ];
 
-    // 複数の休憩情報を取得するための関数(機能)
-    public function breakLogs(): HasMany
-    {
-        // 勤怠管理は複数存在する休憩データ(1対多のリレーション)を引っ張ってきて
-        // コントローラーに返し画面に表示する
-        return $this->hasMany(BreakLog::class, 'attendance_record_id');
-    }
-
-    // 勤怠データー(親)と修正申請データー(子)を紐づける1対多のリレーション
-    public function stampCorrectionRequest(): HasOne
-    {
-        return $this->hasOne(StampCorrectionRequest::class, 'attendance_record_id');
-    }
-
+    // ユーザー情報に紐づけるための機能
     public function user(): BelongsTo
     {
-        // 勤怠データは1人のユーザーに属する
         return $this->belongsTo(User::class);
+    }
+
+    // 休憩情報データ一覧に紐づけるための機能
+    public function breakLogs(): HasMany
+    {
+        return $this->hasMany(BreakLog::class);
+    }
+
+    // 修正申請データーに紐づけるための機能
+    public function stampCorrectionRequests(): HasMany
+    {
+        return $this->hasMany(StampCorrectionRequest::class);
     }
 }

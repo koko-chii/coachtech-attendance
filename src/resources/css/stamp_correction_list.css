@@ -130,3 +130,10 @@ body {
     padding: 40px 0;
     font-size: 15px;
 }
+
+.success-message {
+    color: #ff4d4f;
+    font-size: 20px;
+    font-weight: bold;
+    margin-left: 20px;
+}

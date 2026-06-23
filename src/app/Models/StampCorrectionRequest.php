@@ -14,8 +14,16 @@ class StampCorrectionRequest extends Model
     protected $fillable = [
         'user_id',
         'attendance_record_id',
+        'requested_clock_in',
+        'requested_clock_out',
+        'requested_breaks',
+        'requested_remarks',
         'status',
         'reason',
+    ];
+
+    protected $casts = [
+        'requested_breaks' => 'array',
     ];
 
     // ユーザー情報に紐づけるための機能

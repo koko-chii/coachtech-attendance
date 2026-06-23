@@ -13,7 +13,15 @@
     <div class="requestListForm">
         <main class="request-management">
             <!-- ページタイトル -->
-            <h1 class="page-title">申請一覧</h1>
+              <h1 class="page-title">
+                申請一覧
+                <!-- 修正申請完了時のメッセージ表示 -->
+                @if(session('success_message'))
+                    <span class="success-message">
+                        {{ session('success_message') }}
+                    </span>
+                @endif
+            </h1>>
 
             <div class="tab-navigation">
                 <a href="?tab=pending" class="tab-item {{ request('tab') !== 'approved' ? 'is-active' : '' }}">承認待ち</a>
@@ -49,7 +57,7 @@
                                         <!-- 対象日時を表示 -->
                                         <td>{{ $request->target_date ?? ($request->attendanceRecord->date ?? '') }}</td>
                                         <!-- 申請理由 -->
-                                        <td>{{ $request->reason }}</td>
+                                        <td>{{ $request->requested_remarks ?? $request->reason }}</td>
                                         <!-- 申請日 -->
                                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                                         <!-- 詳細ページへ遷移 -->
@@ -93,12 +101,12 @@
                                         <!-- 対象日時を表示 -->
                                         <td>{{ $request->target_date ?? ($request->attendanceRecord->date ?? '') }}</td>
                                         <!-- 申請理由 -->
-                                        <td>{{ $request->reason }}</td>
+                                        <td>{{ $request->requested_remarks ?? $request->reason }}</td>
                                         <!-- 申請日 -->
                                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                                         <!-- 詳細ページへ遷移 -->
                                         <td>
-                                            <a href="{{ route('attendance.detail', $request->attendance_record_id) }}" class="button-link">詳細</a>
+                                            <a href="{{ route('attendance.detail', $request->attendance_record_id) }}?from=request" class="button-link">詳細</a>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -19,7 +19,7 @@ class StampCorrectionRequestController extends Controller
         // ログインユーザーの修正申請データーを勤怠登録データと一緒に取得
         $allRequests = StampCorrectionRequest::with(['attendanceRecord'])
             ->where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
 
         // 取得したデータの中から承認待ちデーターを抽出

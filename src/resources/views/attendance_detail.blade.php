@@ -99,7 +99,7 @@
                             @endforeach
 
                             <!-- 承認待ちでない場合は新しい休憩時間を追加可能 -->
-                            @if(!$record->stampCorrectionRequest || $record->stampCorrectionRequest->status !== 'pending')
+                            @if(!$isPending)
                                 <tr>
                                     <th>休憩{{ count($record->breakLogs) === 0 ? '' : count($record->breakLogs) + 1 }}</th>
                                     <td>
@@ -126,7 +126,7 @@
                                     <textarea
                                         name="remarks"
                                         class="textareaRemarksField"
-                                        {{ optional($record->stampCorrectionRequest)->status === 'pending' ? 'readonly' : '' }}
+                                        {{ $isPending ? 'disabled' : '' }}
                                     >{{ old('remarks', $record->remarks) }}</textarea>
 
                                     @error('remarks')
@@ -138,14 +138,14 @@
                     </table>
 
                     <!-- 承認待ちでないなら修正ボタン押下可能 -->
-                    @if(optional($record->stampCorrectionRequest)->status !== 'pending')
+                    @if(!$isPending)
                         <div class="formActionsPanel">
                             <button type="submit" class="submitUpdateButton">修正</button>
                         </div>
                     @endif
                 </form>
 
-                @if(optional($record->stampCorrectionRequest)->status === 'pending')
+                @if($isPending)
                     <div class="approvalPendingWrapper">
                         <p class="approvalPendingMessage">*承認待ちのため修正はできません。</p>
                     </div>
