@@ -13,15 +13,14 @@
     <div class="requestListForm">
         <main class="request-management">
             <!-- ページタイトル -->
-              <h1 class="page-title">
-                申請一覧
-                <!-- 修正申請完了時のメッセージ表示 -->
-                @if(session('success_message'))
-                    <span class="success-message">
-                        {{ session('success_message') }}
-                    </span>
-                @endif
-            </h1>>
+              <h1 class="page-title">申請一覧</h1>
+
+            <!-- 修正申請完了時のメッセージ表示（1行下へ配置） -->
+            @if(session('success_message'))
+                <span class="success-message">
+                    {{ session('success_message') }}
+                </span>
+            @endif
 
             <div class="tab-navigation">
                 <a href="?tab=pending" class="tab-item {{ request('tab') !== 'approved' ? 'is-active' : '' }}">承認待ち</a>

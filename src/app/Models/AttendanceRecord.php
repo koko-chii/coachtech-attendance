@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 // 1対多のつながりで親から子データー一覧を紐づけるリレーション機能の読み込み
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 // モデル機能を継承した勤怠登録データを扱うためのクラス
 class AttendanceRecord extends Model
 {
+    use HasFactory;
+    
     // 安全に一括保存(複数の代入)を許可するカラムの指定
     protected $fillable = [
         'user_id',

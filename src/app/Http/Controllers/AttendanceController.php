@@ -231,7 +231,6 @@ class AttendanceController extends Controller
         ]);
     }
 
-
     // 勤怠詳細画面を表示するための関数(機能)
     public function show(int $id): View
     {
@@ -240,7 +239,8 @@ class AttendanceController extends Controller
             ->where('user_id', auth()->id())
             ->findOrFail($id);
 
-        $isPending = $record->stampCorrectionRequests->contains('status', 'pending');
+        // 承認待ち状態の申請データがあるか調べる
+        $isPending = $record->stampCorrectionRequests ? $record->stampCorrectionRequests->contains('status', 'pending') : false;
 
         if ($isPending) {
             $pendingData = $record->stampCorrectionRequests->where('status', 'pending')->first();
@@ -251,7 +251,7 @@ class AttendanceController extends Controller
                 $record->remarks = $pendingData->requested_remarks;
                 
                 if (!empty($pendingData->requested_breaks)) {
-                    $formattedBreaks = collect($pendingData->requested_breaks)->map(function ($b, $index) {
+                    $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
                         return new \App\Models\BreakLog([
                             'id' => $b['id'] ?? ($index + 1),
                             'break_in' => isset($b['break_in']) ? Carbon::parse($b['break_in'])->format('H:i') : null,
@@ -266,7 +266,6 @@ class AttendanceController extends Controller
         // 勤怠詳細画面を表示する
         return view('attendance_detail', compact('record', 'isPending'));
     }
-
 
     // 修正ボタン押下後の画面切り替え機能を使うための関数(機能)
     public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
@@ -318,7 +317,7 @@ class AttendanceController extends Controller
         ]);
 
         // 申請一覧画面へ遷移する
-        return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました。');
+        return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました');
 
     }
 

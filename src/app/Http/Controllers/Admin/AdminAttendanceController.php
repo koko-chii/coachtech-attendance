@@ -33,14 +33,14 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    // 管理者用勤怠詳細画面を表示
+        // 管理者用勤怠詳細画面を表示
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
         $attendance = AttendanceRecord::with(['user', 'breakLogs', 'stampCorrectionRequests'])->findOrFail($id);
 
         // 承認待ち状態の申請データがあるか調べる
-        $isPending = $attendance->stampCorrectionRequests->contains('status', 'pending');
+        $isPending = $attendance->stampCorrectionRequests ? $attendance->stampCorrectionRequests->contains('status', 'pending') : false;
 
         // もし承認待ち状態の申請データが存在すれば、管理者詳細画面の表示データを修正申請の値に書き換える
         if ($isPending) {
@@ -51,13 +51,12 @@ class AdminAttendanceController extends Controller
                 $attendance->setAttribute('clock_out', $pendingData->requested_clock_out);
                 $attendance->setAttribute('remarks', $pendingData->requested_remarks);
                 
-                // 休憩データも申請時のデータ構造に一時的に置き換える
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
                         return new \App\Models\BreakLog([
                             'id' => $b['id'] ?? ($index + 1),
-                            'break_in' => isset($b['break_in']) ? \Carbon\Carbon::parse($b['break_in'])->format('H:i') : (isset($b['break_in']) ? \Carbon\Carbon::parse($b['break_in'])->format('H:i') : null),
-                            'break_out' => isset($b['break_out']) ? \Carbon\Carbon::parse($b['break_out'])->format('H:i') : (isset($b['break_out']) ? \Carbon\Carbon::parse($b['break_out'])->format('H:i') : null),
+                            'break_in' => isset($b['break_in']) ? \Carbon\Carbon::parse($b['break_in'])->format('H:i') : null,
+                            'break_out' => isset($b['break_out']) ? \Carbon\Carbon::parse($b['break_out'])->format('H:i') : null,
                         ]);
                     });
                     $attendance->setRelation('breakLogs', $formattedBreaks);
@@ -71,7 +70,6 @@ class AdminAttendanceController extends Controller
             'isPending' => $isPending,
         ]);
     }
-
 
     // 管理者が勤怠修正を行った際の更新処理
     public function updateDetail(AdminAttendanceUpdateRequest $request, int $id): RedirectResponse
