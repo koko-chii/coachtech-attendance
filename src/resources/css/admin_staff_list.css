@@ -49,7 +49,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     overflow: hidden;
-    padding: 10px 40px;
+    padding: 10px 0;
 }
 
 .table-request {
@@ -59,20 +59,20 @@ body {
 
 .table-request th,
 .table-request td {
-    padding: 20px;
+    padding: 12px 40px;
     font-size: 14px;
     vertical-align: middle;
-    text-align: center; 
 }
 
 .table-request th {
     color: #aaaaaa;
     font-weight: 700;
-    border-bottom: 1px solid #f0f2f5;
+    text-align: left;
+    border-bottom: 3px solid #f0f2f5;
 }
 
 .table-request tbody tr {
-    border-bottom: 1px solid #f0f2f5;
+    border-bottom: 3px solid #f0f2f5;
 }
 
 .table-request tbody tr:last-child {
@@ -82,6 +82,17 @@ body {
 .table-request td {
     color: #333333;
     font-weight: 700;
+}
+
+.table-request th:first-child,
+.table-request td:first-child {
+    text-align: left;
+    width: 25%;
+}
+
+.table-request th:last-child,
+.table-request td:last-child {
+    text-align: left;
 }
 
 .button-link {

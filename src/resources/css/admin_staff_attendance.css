@@ -67,7 +67,7 @@ table {
 
 table th,
 table td {
-    padding: 24px 20px;
+    padding: 12px 20px;
     font-size: 15px;
     vertical-align: middle;
 }
@@ -75,11 +75,11 @@ table td {
 table th {
     color: #888888;
     font-weight: 700;
-    border-bottom: 2px solid #f0f2f5;
+    border-bottom: 3px solid #f0f2f5;
 }
 
 table tbody tr {
-    border-bottom: 1px solid #f0f2f5;
+    border-bottom: 3px solid #f0f2f5;
 }
 
 table tbody tr:last-child {
