@@ -98,7 +98,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
-        
+
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
             'clock_in' => '2026-06-24 09:00:00',
