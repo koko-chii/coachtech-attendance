@@ -23,11 +23,19 @@
             <!-- ログインユーザー用のヘッダーに表示 -->
             @auth
             <nav class="nav">
-                <a href="{{ route('attendance.index') }}">勤怠</a>
-                <a href="/attendance/list">勤怠一覧</a>
-                <a href="/stamp_correction_request/list">申請</a>
-                <!-- ログアウト用の隠しフォームを送信させ安全にログアウトする -->
-                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
+                <!-- もし退勤済み（フラグが確実に真）だったら退勤後用のメニューを表示する -->
+                @if(!empty($is_clocked_out) && $is_clocked_out === true)
+                    <a href="/attendance/list">今月の出勤一覧</a>
+                    <a href="/stamp_correction_request/list">申請一覧</a>
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
+                <!-- 退勤前、勤務中、または他のレポート画面などの場合は通常のメニューを表示する -->
+                @else
+                    <a href="{{ route('attendance.index') }}">勤怠</a>
+                    <a href="/attendance/list">勤怠一覧</a>
+                    <a href="/stamp_correction_request/list">申請</a>
+                    <a href="{{ route('attendance.report') }}">レポート</a>
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
+                @endif
             </nav>
             @endauth
         </div>

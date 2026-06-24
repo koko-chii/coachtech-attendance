@@ -39,24 +39,33 @@ class AttendanceController extends Controller
 
         // 休憩中ではないフラグ状態を変数(箱)に入れる
         $is_breaking = false;
+        // 退勤済みではないフラグ状態を変数(箱)に入れる
+        $is_clocked_out = false;
 
         // 出退勤情報と休憩中の情報を取得し、休憩戻りがまだか調べる
         // (直訳)もし出勤していて退勤していなければ
         // 勤怠管理データーから探し出し休憩から戻ってないか調べる。
-        if ($attendance && !$attendance->clock_out) {
-            $is_breaking = BreakLog::where('attendance_record_id', $attendance->id)
-                ->whereNull('break_out')
-                ->exists();
+        if ($attendance) {
+            // もし既に退勤していたら退勤済みフラグをtrue(真)にする
+            if ($attendance->clock_out) {
+                $is_clocked_out = true;
+            } else {
+                $is_breaking = BreakLog::where('attendance_record_id', $attendance->id)
+                    ->whereNull('break_out')
+                    ->exists();
+            }
         }
 
-        // 出勤情報と休憩中情報、今日の日付と表示方法をを箱にしまい、
+        // 出勤情報と休憩中情報、今日の日付と表示方法、退勤済み情報を箱にしまい、
         // 勤怠管理画面に表示する
         return view('attendance', [
-            'attendance'  => $attendance,
-            'is_breaking' => $is_breaking,
-            'today'       => $today->format('Y年n月j日'),
+            'attendance'     => $attendance,
+            'is_breaking'    => $is_breaking,
+            'is_clocked_out' => $is_clocked_out,
+            'today'          => $today->format('Y年n月j日'),
         ]);
     }
+
 
     // 出勤ボタンが押されたときの関数(機能)
     public function clockIn(): RedirectResponse
@@ -183,7 +192,7 @@ class AttendanceController extends Controller
                 // テストコードが直接参照する元のカラム名に値を確実にセットする
                 $record->clock_in = $record->clock_in;
                 $record->clock_out = $record->clock_out;
-                
+
                 // Collectionメソッドを使って休憩時間の合計秒数を計算（N+1問題を防止）
                 $totalBreakSeconds = $record->breakLogs->sum(function (BreakLog $b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
@@ -201,9 +210,9 @@ class AttendanceController extends Controller
                     $start = Carbon::parse($record->clock_in);
                     $end = Carbon::parse($record->clock_out);
                     $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
-                    
+
                     if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
-                    
+
                     // 合計勤務秒数を何時間何分に変換し変数(箱)にしまう
                     $workHours = floor($totalWorkSeconds / 3600);
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
@@ -244,12 +253,12 @@ class AttendanceController extends Controller
 
         if ($isPending) {
             $pendingData = $record->stampCorrectionRequests->where('status', 'pending')->first();
-            
+
             if ($pendingData) {
                 $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
                 $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
                 $record->remarks = $pendingData->requested_remarks;
-                
+
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
                         return new \App\Models\BreakLog([
@@ -321,4 +330,111 @@ class AttendanceController extends Controller
 
     }
 
+    public function report(Request $request): View
+    {
+        $user = Auth::user();
+        $now = Carbon::now();
+        $sixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth();
+
+        $records = AttendanceRecord::with('breakLogs')
+            ->where('user_id', $user->id)
+            ->where('date', '>=', $sixMonthsAgo->format('Y-m-d'))
+            ->where('date', '<=', $now->format('Y-m-d'))
+            ->get();
+
+        $monthlyData = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $monthStr = $now->copy()->subMonths($i)->format('Y-m');
+
+            $monthRecords = $records->filter(fn($r) => Carbon::parse($r->date)->format('Y-m') === $monthStr);
+
+            $totalWorkSeconds = $monthRecords->sum(function ($r) {
+                if (!$r->clock_in || !$r->clock_out) {
+                    return 0;
+                }
+                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                    if (!$b->break_in || !$b->break_out) {
+                        return 0;
+                    }
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+                return max(0, $staySeconds - $breakSeconds);
+            });
+
+            $totalOvertimeSeconds = $monthRecords->sum(function ($r) {
+                if (!$r->clock_in || !$r->clock_out) {
+                    return 0;
+                }
+                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                    if (!$b->break_in || !$b->break_out) {
+                        return 0;
+                    }
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+                $workSeconds = max(0, $staySeconds - $breakSeconds);
+                return max(0, $workSeconds - 28800);
+            });
+
+            $monthlyData->put($monthStr, [
+                'work_hours' => (int)floor($totalWorkSeconds / 3600),
+                'work_minutes' => (int)floor(($totalWorkSeconds % 3600) / 60),
+                'overtime_hours' => (int)floor($totalOvertimeSeconds / 3600),
+                'overtime_minutes' => (int)floor(($totalOvertimeSeconds % 3600) / 60),
+                'raw_work_seconds' => $totalWorkSeconds,
+            ]);
+        }
+
+        $grandTotalWorkSeconds = $monthlyData->sum('raw_work_seconds');
+
+        $grandTotalOvertimeSeconds = $records->sum(function ($r) {
+            if (!$r->clock_in || !$r->clock_out) {
+                return 0;
+            }
+            $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+            $breakSeconds = $r->breakLogs->sum(function ($b) {
+                if (!$b->break_in || !$b->break_out) {
+                    return 0;
+                }
+                return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+            });
+            $workSeconds = max(0, $staySeconds - $breakSeconds);
+            return max(0, $workSeconds - 28800);
+        });
+
+        $totalDays = $records->count();
+        $averageWorkSeconds = $totalDays > 0 ? (int)round($grandTotalWorkSeconds / $totalDays) : 0;
+
+        $summary = [
+            'total_work' => ['h' => (int)floor($grandTotalWorkSeconds / 3600), 'm' => (int)floor(($grandTotalWorkSeconds % 3600) / 60)],
+            'total_overtime' => ['h' => (int)floor($grandTotalOvertimeSeconds / 3600), 'm' => (int)floor(($grandTotalOvertimeSeconds % 3600) / 60)],
+            'average_work' => ['h' => (int)floor($averageWorkSeconds / 3600), 'm' => (int)floor(($averageWorkSeconds % 3600) / 60)],
+        ];
+
+        $currentMonthStr = $now->format('Y-m');
+        $currentMonthRecords = $records->filter(fn($r) => Carbon::parse($r->date)->format('Y-m') === $currentMonthStr);
+
+        $anomaly = [
+            'lateness' => $currentMonthRecords->filter(fn($r) => Carbon::parse($r->clock_in)->format('H:i:s') > '09:00:00')->count(),
+            'early_leave' => $currentMonthRecords->filter(fn($r) => $r->clock_out && Carbon::parse($r->clock_out)->format('H:i:s') < '18:00:00')->count(),
+            'long_working' => $currentMonthRecords->filter(function ($r) {
+                if (!$r->clock_in || !$r->clock_out) {
+                    return false;
+                }
+                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                    if (!$b->break_in || !$b->break_out) {
+                        return 0;
+                    }
+                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                });
+                return ($staySeconds - $breakSeconds) > 36000;
+            })->count(),
+        ];
+
+        return view('attendance_report', compact('summary', 'monthlyData', 'anomaly'));
+    }
+
 }
+

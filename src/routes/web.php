@@ -94,7 +94,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('/staff/list', [AdminAttendanceController::class, 'showStaffList'])->name('staff.list');
         Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffAttendance'])->name('attendance.staff');
-        
+
         Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
         Route::get('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
         Route::patch('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('request.approve.submit');

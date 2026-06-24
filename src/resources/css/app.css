@@ -25,7 +25,7 @@ html body .header {
 }
 
 html body .header-inner {
-    padding: 15px 40px;          
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -62,3 +62,17 @@ html body .nav a {
     padding-right: 32px;
     box-sizing: border-box;
 }
+
+.main-content {
+    display: block;
+    width: 100%;
+    min-height: calc(100vh - 70px);
+    padding-top: 70px;
+    background-color: #f6f8fa;
+}
+
+.main-content > * {
+    margin-left: auto;
+    margin-right: auto;
+}
+

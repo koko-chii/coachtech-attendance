@@ -19,6 +19,7 @@ export default defineConfig({
                 'resources/css/admin_attendance_detail.css',
                 'resources/css/admin_staff_list.css',
                 'resources/css/admin_staff_attendance.css',
+                'resources/css/attendance.report.css',
                 'resources/js/app.js',
             ],
             refresh: true,
