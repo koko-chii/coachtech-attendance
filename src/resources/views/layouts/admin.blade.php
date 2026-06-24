@@ -12,7 +12,7 @@
         <h1 class="header__logo">
             <img src="{{ asset('img/logo.png') }}" alt="COACHTECH">
         </h1>
-        
+
         <!-- 管理者としてログインしている場合のみヘッダーナビを表示 -->
         @if(Auth::check())
             <nav class="header__nav">
@@ -39,7 +39,7 @@
     </header>
 
     <!-- 子のcontentセクションを表示 -->
-    <main class="main-content">
+    <main class="{{ Auth::check() ? 'main-content' : '' }}">
         @yield('content')
     </main>
 </body>
