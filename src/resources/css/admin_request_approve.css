@@ -2,49 +2,48 @@
 
 .attendanceDetailMain {
     width: 100%;
-    background-color: #f3f4f6;
-    min-height: calc(100vh - 70px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 0;
+    padding: 60px 0;
     box-sizing: border-box;
-    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }
 
 .attendanceDetailForm {
-    width: 70%;
-    max-width: 1000px;
-    min-width: 800px;
+    width: 55%;
+    max-width: 1450px;
     margin: 0 auto;
     box-sizing: border-box;
 }
 
 .attendanceDetailTitle {
-    font-size: 24px;
-    font-weight: 900;
-    border-left: 8px solid #4b5563;
-    padding-left: 12px;
-    letter-spacing: 0.05em;
-    color: #4b5563;
-    margin: 0 0 30px 0;
-    box-sizing: border-box;
+    font-size: 26px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
+    color: #333333;
+}
+
+.attendanceDetailTitle::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 28px;
+    background-color: #000000;
+    margin-right: 16px;
 }
 
 .attendanceTable {
     width: 100%;
     background-color: #ffffff;
-    border: 1px solid #e5e5e5;
     border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     border-collapse: collapse;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-    margin-bottom: 24px;
+    margin-bottom: 30px;
 }
 
 .attendanceTable tr {
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #f0f2f5;
 }
 
 .attendanceTable tr:last-child {
@@ -53,148 +52,124 @@
 
 .attendanceTable th,
 .attendanceTable td {
-    font-size: 16px;
-    padding: 24px 0;
+    padding: 24px 40px;
+    font-size: 15px;
     vertical-align: middle;
 }
 
 .attendanceTable th {
-    width: 25%;
-    color: #9ca3af;
-    font-weight: 800;
+    width: 30%;
+    color: #888888;
+    font-weight: 700;
     text-align: left;
-    padding-left: 60px;
 }
 
 .attendanceTable td {
-    width: 75%;
-    color: #4b5563;
-    font-weight: 900;
+    width: 70%;
+    color: #333333;
+    font-weight: 700;
     text-align: left;
-    padding-left: 40px;
-    padding-right: 60px;
 }
 
 .dateDisplayGroup {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 0;
 }
 
 .dateYearText {
-    width: 130px;
-    text-align: left;
-    box-sizing: border-box;
-    order: 1;
-}
-
-.dateDisplayGroup::before {
-    content: "";
-    display: block;
-    width: 30px;
-    order: 2;
+    margin-right: 40px;
 }
 
 .dateDayText {
-    width: 130px;
-    text-align: left;
-    box-sizing: border-box;
-    order: 3;
+    margin-left: 40px;
 }
 
 .timeRangeGroup {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 40px;
 }
 
 .inputTimeField {
-    width: 130px;
-    height: 40px;
-    padding: 0 16px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #4b5563;
-    background-color: #ffffff;
-    box-sizing: border-box;
-    text-align: center;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333333;
+    background-color: transparent;
+    padding: 0;
+    width: auto;
+    height: auto;
+    font-family: inherit;
 }
 
 .inputTimeField[readonly] {
-    background-color: #f9fafb;
-    color: #4b5563;
-    border-color: #e5e5e5;
-    cursor: default;
+    background-color: transparent;
+    outline: none;
+    pointer-events: none;
+}
+
+.inputTimeField::-webkit-calendar-picker-indicator {
+    display: none;
 }
 
 .timeSeparator {
-    color: #4b5563;
-    font-weight: normal;
-    font-size: 16px;
-    width: 30px;
-    text-align: center;
+    color: #333333;
+    font-size: 15px;
 }
 
 .textareaRemarksField {
     width: 100%;
-    max-width: 420px;
-    height: 80px;
-    padding: 12px 16px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #4b5563;
-    background-color: #ffffff;
-    box-sizing: border-box;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333333;
+    background-color: transparent;
+    padding: 0;
+    height: auto;
     resize: none;
+    font-family: inherit;
 }
 
 .textareaRemarksField[readonly] {
-    background-color: #f9fafb;
-    color: #4b5563;
-    border-color: #e5e5e5;
-    cursor: default;
+    background-color: transparent;
+    outline: none;
 }
 
 .formActionsPanel {
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    margin-top: 20px;
     box-sizing: border-box;
 }
 
 .submitUpdateButton {
     background-color: #000000;
     color: #ffffff;
-    font-size: 16px;
-    font-weight: 900;
-    padding: 12px 60px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 48px;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: opacity 0.2s ease;
-}
-
-.submitUpdateButton:hover {
-    opacity: 0.8;
 }
 
 .approvalPendingOutside {
     display: flex;
     justify-content: flex-end;
-    width: 100%;
-    margin-top: 24px;
+    width: 55%;
+    max-width: 1450px;
+    margin: 0 auto;
     box-sizing: border-box;
 }
 
 .approvalPendingMessage {
-    color: #ff4d4f;
-    font-size: 20px;
-    font-weight: normal;
+    background-color: #aaaaaa;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 36px;
+    border-radius: 4px;
     margin: 0;
-    text-align: right;
+    text-align: center;
 }

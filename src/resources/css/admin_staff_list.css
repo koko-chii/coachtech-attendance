@@ -1,5 +1,9 @@
 @import url('https://googleapis.com');
 
+body .main-content {
+    background-color: #f3f4f6;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -9,15 +13,19 @@ body {
     color: #333333;
 }
 
-#attendance-list-container {
-    width: 45%;
-    max-width: 1450px;
-    margin: 0 auto;
-    padding-top: 40px;
+.requestListMain {
+    width: 100%;
+    padding-top: 60px;
     padding-bottom: 60px;
 }
 
-#attendance-list-container h1 {
+.requestListForm {
+    width: 70%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.page-title {
     font-size: 26px;
     font-weight: bold;
     display: flex;
@@ -27,11 +35,11 @@ body {
     color: #333333;
 }
 
-#attendance-list-container h1::before {
+.page-title::before {
     content: "";
     display: inline-block;
-    width: 8px;
-    height: 28px;
+    width: 6px;
+    height: 32px;
     background-color: #000000;
     margin-right: 16px;
 }
@@ -39,28 +47,28 @@ body {
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     overflow: hidden;
-    padding: 10px 0px;
+    padding: 10px 40px;
 }
 
 .table-request {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
 }
 
 .table-request th,
 .table-request td {
-    padding: 24px 20px;
-    font-size: 15px;
+    padding: 20px;
+    font-size: 14px;
     vertical-align: middle;
+    text-align: center; 
 }
 
 .table-request th {
-    color: #888888;
+    color: #aaaaaa;
     font-weight: 700;
-    border-bottom: 2px solid #f0f2f5;
+    border-bottom: 1px solid #f0f2f5;
 }
 
 .table-request tbody tr {
@@ -76,12 +84,12 @@ body {
     font-weight: 700;
 }
 
-.detail-link {
+.button-link {
     color: #000000;
     font-weight: bold;
     text-decoration: none;
 }
 
-.detail-link:hover {
+.button-link:hover {
     text-decoration: underline;
 }
