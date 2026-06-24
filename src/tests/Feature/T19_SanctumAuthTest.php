@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
-use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 
 class T19_SanctumAuthTest extends TestCase
@@ -30,7 +29,7 @@ class T19_SanctumAuthTest extends TestCase
     public function 認証済みユーザーは自分の勤怠を更新または削除できる(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
         $record = AttendanceRecord::factory()->create(['user_id' => $user->id, 'date' => '2026-06-24']);
 
         $putResponse = $this->putJson("/api/v1/attendance-records/{$record->id}", [
@@ -48,7 +47,7 @@ class T19_SanctumAuthTest extends TestCase
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
         $record = AttendanceRecord::factory()->create(['user_id' => $otherUser->id]);
 
         $putResponse = $this->putJson("/api/v1/attendance-records/{$record->id}", [
@@ -61,4 +60,3 @@ class T19_SanctumAuthTest extends TestCase
         $deleteResponse->assertStatus(403)->assertJson(['error' => 'この操作を実行する権限がありません。']);
     }
 }
-

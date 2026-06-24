@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AttendanceRecordResource extends JsonResource
 {
+    public static $wrap = 'data';
+
     public function toArray(Request $request): array
     {
         return [

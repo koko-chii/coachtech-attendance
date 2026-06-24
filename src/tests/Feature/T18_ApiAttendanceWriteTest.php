@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\AttendanceRecord;
-use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 
 class T18_ApiAttendanceWriteTest extends TestCase
@@ -17,7 +16,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function 正常なデータ送信で勤怠が作成される(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
 
         $data = [
             'user_id' => $user->id,
@@ -36,7 +35,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function バリデーションエラー時に422と日本語エラーメッセージが返る(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
 
         $response = $this->postJson('/api/v1/attendance-records', []);
 
@@ -48,7 +47,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function 既存勤怠に対してPUTでレコードが更新される(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
         $record = AttendanceRecord::factory()->create(['user_id' => $user->id, 'date' => '2026-06-24']);
 
         $data = [
@@ -66,7 +65,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function 存在しないIDに対してPUTを実行すると404を返す(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
 
         $response = $this->putJson('/api/v1/attendance-records/99999', [
             'date' => '2026-06-24',
@@ -80,7 +79,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function 既存勤怠に対してDELETEを送信するとレコードが削除される(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
         $record = AttendanceRecord::factory()->create(['user_id' => $user->id]);
 
         $response = $this->deleteJson("/api/v1/attendance-records/{$record->id}");
@@ -93,7 +92,7 @@ class T18_ApiAttendanceWriteTest extends TestCase
     public function 存在しないIDに対してDELETEを実行すると404を返す(): void
     {
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'sanctum');
 
         $response = $this->deleteJson('/api/v1/attendance-records/99999');
 

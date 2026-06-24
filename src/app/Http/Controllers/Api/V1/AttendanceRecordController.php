@@ -48,56 +48,34 @@ class AttendanceRecordController extends Controller
         ], 200);
     }
 
-    public function store(StoreAttendanceRecordRequest $request): JsonResponse
+    public function store(StoreAttendanceRecordRequest $request): AttendanceRecordResource
     {
         $record = AttendanceRecord::create($request->validated());
 
-        return response()->json(new AttendanceRecordResource($record), 201);
+        return new AttendanceRecordResource($record);
     }
 
-    public function show(int $id): JsonResponse
+    public function show(AttendanceRecord $attendanceRecord): AttendanceRecordResource
     {
-        $record = AttendanceRecord::with(['user', 'breakLogs', 'stampCorrectionRequests'])->find($id);
+        $attendanceRecord->load(['user', 'breakLogs', 'stampCorrectionRequests']);
 
-        if (!$record) {
-            return response()->json([
-                'error' => '勤怠情報が見つかりませんでした。'
-            ], 404);
-        }
-
-        return response()->json(new AttendanceRecordResource($record), 200);
+        return new AttendanceRecordResource($attendanceRecord);
     }
 
-    public function update(UpdateAttendanceRecordRequest $request, int $id): JsonResponse
+    public function update(UpdateAttendanceRecordRequest $request, AttendanceRecord $attendanceRecord): AttendanceRecordResource
     {
-        $record = AttendanceRecord::find($id);
+        $this->authorize('update', $attendanceRecord);
 
-        if (!$record) {
-            return response()->json([
-                'error' => '勤怠情報が見つかりませんでした。'
-            ], 404);
-        }
+        $attendanceRecord->update($request->validated());
 
-        $this->authorize('update', $record);
-
-        $record->update($request->validated());
-
-        return response()->json(new AttendanceRecordResource($record), 200);
+        return new AttendanceRecordResource($attendanceRecord);
     }
 
-    public function destroy(int $id): Response
+    public function destroy(AttendanceRecord $attendanceRecord): Response
     {
-        $record = AttendanceRecord::find($id);
+        $this->authorize('delete', $attendanceRecord);
 
-        if (!$record) {
-            return response([
-                'error' => '勤怠情報が見つかりませんでした。'
-            ], 404);
-        }
-
-        $this->authorize('delete', $record);
-
-        $record->delete();
+        $attendanceRecord->delete();
 
         return response()->noContent();
     }
