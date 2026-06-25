@@ -100,7 +100,7 @@ class AdminAttendanceController extends Controller
         // 修正申請で送られら休憩データを取得する
         $breaks = $request->input('breaks', []);
 
-        //
+        //休憩開始時刻または休憩終了時刻が入力されていたら修正する
         $newBreakIn = $request->input('new_break_in');
         $newBreakOut = $request->input('new_break_out');
 
@@ -286,14 +286,17 @@ class AdminAttendanceController extends Controller
             ]);
 
             if (!empty($requestData->requested_breaks)) {
-                $attendance->breakLogs()->delete();
-                collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
-                    $attendance->breakLogs()->create([
-                        'break_in'  => $b['break_in'] ?? null,
-                        'break_out' => $b['break_out'] ?? null,
-                    ]);
-                });
-            }
+            $attendance->breakLogs()->delete();
+            collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
+                if (empty($b['break_in']) || empty($b['break_out'])) {
+                    return;
+                }
+                $attendance->breakLogs()->create([
+                    'break_in'  => $b['break_in'],
+                    'break_out' => $b['break_out'],
+                ]);
+            });
+        }
 
             $requestData->update(['status' => 'approved']);
             return redirect()->route('admin.request.list')->with('success_message', '申請を承認しました。');

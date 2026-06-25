@@ -122,9 +122,13 @@ body {
     text-decoration: underline;
 }
 
-.empty-message {
+.success-message {
+    color: #16a34a;
+    font-size: 20px;
+    font-weight: bold;
     text-align: center;
-    color: #888888;
-    padding: 40px 0;
-    font-size: 15px;
+    padding: 10px 14px;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 20px;
 }
