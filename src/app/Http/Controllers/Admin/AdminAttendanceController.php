@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+// 別のURLへ移動するようブラウザへ返す
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
 use App\Http\Requests\AdminAttendanceUpdateRequest;
-use App\Models\StampCorrectionRequest; 
+// 打刻修正申請データを管理するためのモデル
+use App\Models\StampCorrectionRequest;
+use App\Models\BreakLog;
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller
@@ -34,7 +37,7 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-        // 管理者用勤怠詳細画面を表示
+    // 管理者用勤怠詳細画面を表示
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
@@ -46,20 +49,24 @@ class AdminAttendanceController extends Controller
         // もし承認待ち状態の申請データが存在すれば、管理者詳細画面の表示データを修正申請の値に書き換える
         if ($isPending) {
             $pendingData = $attendance->stampCorrectionRequests->where('status', 'pending')->first();
-            
+
+            // 承認待ちの修正申請データがある場合、修正値の出勤時刻・退勤時刻・備考を勤怠データに入れる
             if ($pendingData) {
                 $attendance->setAttribute('clock_in', $pendingData->requested_clock_in);
                 $attendance->setAttribute('clock_out', $pendingData->requested_clock_out);
                 $attendance->setAttribute('remarks', $pendingData->requested_remarks);
-                
+
+                // 承認待ちの修正申請データに休憩時刻の修正値がある場合
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
-                        return new \App\Models\BreakLog([
+                    // 修正された休憩時刻をBreakLog形式に変換して返す
+                    return new BreakLog([
                             'id' => $b['id'] ?? ($index + 1),
                             'break_in' => isset($b['break_in']) ? \Carbon\Carbon::parse($b['break_in'])->format('H:i') : null,
                             'break_out' => isset($b['break_out']) ? \Carbon\Carbon::parse($b['break_out'])->format('H:i') : null,
                         ]);
                     });
+                    // 修正後の休憩データを、勤怠データに紐づく休憩情報としてセットする
                     $attendance->setRelation('breakLogs', $formattedBreaks);
                 }
             }
@@ -78,7 +85,7 @@ class AdminAttendanceController extends Controller
         // 勤怠データと一緒に休憩データを取得
         $attendance = AttendanceRecord::with('breakLogs')->findOrFail($id);
 
-        // 承認待ちの場合、修正不可のメッセージを表示して全画面へ戻る
+        // 承認待ちの場合、修正不可のメッセージを画面へ返す
         if ($attendance->status === 'pending') {
             return redirect()->back()->with('alert_message', '承認待ちのため修正はできません。');
         }
@@ -90,13 +97,18 @@ class AdminAttendanceController extends Controller
             'remarks'   => $request->input('remarks'),
         ]);
 
+        // 修正申請で送られら休憩データを取得する
         $breaks = $request->input('breaks', []);
 
-        if ($request->filled('new_break_in') || $request->filled('new_break_out')) {
+        //
+        $newBreakIn = $request->input('new_break_in');
+        $newBreakOut = $request->input('new_break_out');
+
+        if ($newBreakIn || $newBreakOut) {
             $breaks[] = [
                 'id' => null,
-                'break_in' => $request->input('new_break_in'),
-                'break_out' => $request->input('new_break_out'),
+                'break_in' => $newBreakIn,
+                'break_out' => $newBreakOut,
             ];
         }
 
@@ -151,7 +163,7 @@ class AdminAttendanceController extends Controller
             ->map(function (AttendanceRecord $record): AttendanceRecord {
                 $record->display_clock_in = $record->clock_in;
                 $record->display_clock_out = $record->clock_out;
-                
+
                 $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
@@ -166,9 +178,9 @@ class AdminAttendanceController extends Controller
                     $start = Carbon::parse($record->clock_in);
                     $end = Carbon::parse($record->clock_out);
                     $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
-                    
+
                     if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
-                    
+
                     $workHours = floor($totalWorkSeconds / 3600);
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
                     $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);

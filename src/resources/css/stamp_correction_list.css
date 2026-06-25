@@ -124,16 +124,31 @@ body {
     text-decoration: underline;
 }
 
-.empty-message {
-    text-align: center;
-    color: #888888;
-    padding: 40px 0;
-    font-size: 15px;
+main.request-management .title-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 20px 0;
 }
 
-.success-message {
-    color: #ff4d4f;
+main.request-management .page-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #111827;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+}
+
+main.request-management .success-message {
+    color: #16a34a;
     font-size: 20px;
     font-weight: bold;
-    margin-left: 300px;
+    margin: 0;
+    padding: 6px 16px;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 20px;
+    white-space: nowrap;
 }

@@ -11,7 +11,7 @@
     <!-- 何月日の表示 -->
     <h1>{{ $date->format('Y年n月j日') }}の勤怠</h1>
 
-     <!-- 修正完了メッセージ -->
+    <!-- 修正完了メッセージ -->
     @if (session('success_message'))
         <div class="success-message-wrapper">
             <p class="successMessage">{{ session('success_message') }}</p>
@@ -38,7 +38,7 @@
                     <th>詳細</th>
                 </tr>
             </thead>
-           <tbody>
+        <tbody>
                 <!-- 勤怠一覧の1行分ずつ取り出す -->
                 @foreach ($attendanceRecords as $record)
                     @php
