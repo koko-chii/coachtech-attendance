@@ -16,10 +16,10 @@
     margin: 0 auto 30px auto;
     font-size: 24px;
     font-weight: 900;
-    border-left: 8px solid #4b5563;
+    border-left: 8px solid #000000;
     padding-left: 12px;
     letter-spacing: 0.05em;
-    color: #4b5563;
+    color: #000000;
     box-sizing: border-box;
 }
 
@@ -53,7 +53,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #4b5563;
+    color: #000000;
     padding-right: 0px;
 }
 
@@ -63,7 +63,7 @@
 }
 
 #month-selector .nav-btn {
-    color: #9ca3af;
+    color: #868a93;
     font-size: 16px;
     font-weight: 800;
     text-decoration: none;
@@ -103,13 +103,13 @@
 }
 
 .table-wrapper th {
-    color: #9ca3af;
+    color: #868a93;
     border-bottom: 2px solid #e5e5e5;
 }
 
 .table-wrapper td {
     border-bottom: 1px solid #e5e5e5;
-    color: #4b5563;
+    color: #868a93;
 }
 
 .table-wrapper th:nth-child(1),
@@ -155,7 +155,7 @@
 }
 
 .table-wrapper .detail-link {
-    color: #4b5563;
+    color: #000000;
     font-weight: 900;
     text-decoration: none;
     font-size: 16px;
