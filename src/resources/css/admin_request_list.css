@@ -84,14 +84,13 @@ body {
 .table-request {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
+    text-align: center;
 }
 
 .table-request th,
 .table-request td {
     padding: 12px 20px;
     font-size: 15px;
-    vertical-align: middle;
 }
 
 .table-request th {
@@ -109,7 +108,7 @@ body {
 }
 
 .table-request td {
-    color: #333333;
+    color: #888888;
     font-weight: 700;
 }
 

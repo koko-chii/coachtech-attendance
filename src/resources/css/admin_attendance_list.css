@@ -16,7 +16,7 @@
     border-left: 8px solid #4b5563;
     padding-left: 12px;
     letter-spacing: 0.05em;
-    color: #4b5563;
+    color: #333333;
     box-sizing: border-box;
 }
 .date-selector {
@@ -47,7 +47,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #4b5563;
+    color: #333333;
 }
 .date-selector .nav-btn:last-child {
     flex: 1;
@@ -94,7 +94,7 @@
 }
 .table-wrapper td {
     border-bottom: 1px solid #e5e5e5;
-    color: #4b5563;
+    color: #9ca3af;
 }
 .table-wrapper th:nth-child(1),
 .table-wrapper td:nth-child(1) {
@@ -131,7 +131,7 @@
     background-color: #fafafa;
 }
 .table-wrapper .detail-link {
-    color: #4b5563;
+    color: #333333;
     font-weight: 900;
     text-decoration: none;
     font-size: 16px;

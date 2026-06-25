@@ -14,7 +14,7 @@ body .main-content {
 #attendance-list-container h1 {
     font-size: 24px;
     font-weight: 900;
-    border-left: 8px solid #000;
+    border-left: 8px solid #4b5563;
     padding-left: 12px;
     color: #4b5563;
     margin-bottom: 30px;
@@ -30,7 +30,7 @@ body .main-content {
 
 .nav-btn {
     background-color: #ffffff;
-    color: #000000;
+    color: #888888;
     border: 1px solid #cbd5e1;
     padding: 8px 24px;
     border-radius: 6px;
@@ -62,7 +62,7 @@ body .main-content {
 table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
+    text-align: center;
 }
 
 table th,
@@ -87,7 +87,7 @@ table tbody tr:last-child {
 }
 
 table td {
-    color: #333333;
+    color: #888888;
     font-weight: 700;
 }
 

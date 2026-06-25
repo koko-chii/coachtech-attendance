@@ -38,7 +38,7 @@ body {
 .page-title::before {
     content: "";
     display: inline-block;
-    width: 6px;
+    width: 8px;
     height: 32px;
     background-color: #000000;
     margin-right: 16px;
@@ -59,15 +59,15 @@ body {
 
 .table-request th,
 .table-request td {
-    padding: 12px 40px;
+    padding: 12px 20px;
     font-size: 14px;
-    vertical-align: middle;
+    text-align: center;
 }
 
 .table-request th {
-    color: #aaaaaa;
+    color: #888888;
     font-weight: 700;
-    text-align: left;
+    text-align: center;
     border-bottom: 3px solid #f0f2f5;
 }
 
@@ -80,19 +80,26 @@ body {
 }
 
 .table-request td {
-    color: #333333;
+    color: #888888;
     font-weight: 700;
 }
 
 .table-request th:first-child,
 .table-request td:first-child {
-    text-align: left;
-    width: 25%;
+    text-align: center;
+    width: 40%;
+}
+
+.table-request th:nth-child(2),
+.table-request td:nth-child(2) {
+    text-align: center;
+    width: 20%;
 }
 
 .table-request th:last-child,
 .table-request td:last-child {
-    text-align: left;
+    text-align: center;
+    width: 40%;
 }
 
 .button-link {

@@ -78,17 +78,17 @@
 }
 
 .dateYearText {
-    margin-right: 40px;
+    margin-right: 80px;
 }
 
 .dateDayText {
-    margin-left: 40px;
+    margin-left: 90px;
 }
 
 .timeRangeGroup {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 80px;
 }
 
 .inputTimeField {
