@@ -13,6 +13,7 @@ use App\Http\Requests\AdminAttendanceUpdateRequest;
 // 打刻修正申請データを管理するためのモデル
 use App\Models\StampCorrectionRequest;
 use App\Models\BreakLog;
+use App\Models\User;
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller
@@ -90,20 +91,19 @@ class AdminAttendanceController extends Controller
             return redirect()->back()->with('alert_message', '承認待ちのため修正はできません。');
         }
 
-        // 出勤時刻・退勤時刻・備考を更新
+        // 出勤時刻・退勤時刻・備考を更新して保存
         $attendance->update([
             'clock_in'  => $request->input('clock_in'),
             'clock_out' => $request->input('clock_out'),
             'remarks'   => $request->input('remarks'),
         ]);
 
-        // 修正申請で送られら休憩データを取得する
+        // 修正申請で送られら休憩データを取得
         $breaks = $request->input('breaks', []);
 
-        //休憩開始時刻または休憩終了時刻が入力されていたら修正する
+        // 休憩開始時刻または休憩終了時刻が入力されていた場合、休憩データに追加
         $newBreakIn = $request->input('new_break_in');
         $newBreakOut = $request->input('new_break_out');
-
         if ($newBreakIn || $newBreakOut) {
             $breaks[] = [
                 'id' => null,
@@ -112,19 +112,21 @@ class AdminAttendanceController extends Controller
             ];
         }
 
-        // 既存の休憩データを更新
+        // 休憩データがある場合、既存の休憩データをIDごとに更新
         if (!empty($breaks)) {
             foreach ($breaks as $breakData) {
-                // 対象の休憩IDがあるものだけ更新
+                // 休憩IDがある場合、既存の休憩データを取得
                 if (!empty($breakData['id'])) {
                     $breakLog = $attendance->breakLogs()->find($breakData['id']);
 
+                    // 既存の休憩データが見つかった場合は更新
                     if ($breakLog) {
                         $breakLog->update([
                             'break_in'  => $breakData['break_in'] ?? null,
                             'break_out' => $breakData['break_out'] ?? null,
                         ]);
                     }
+                    // 既存の休憩データが見つからなかった場合は新しく作成
                 } else {
                     $attendance->breakLogs()->create([
                         'break_in'  => $breakData['break_in'] ?? null,
@@ -138,16 +140,20 @@ class AdminAttendanceController extends Controller
         return redirect()->route('admin.attendance.list')->with('success_message', '勤怠データを修正しました');
     }
 
-        public function showStaffList(): View
+    //スタッフ一覧画面を表示するメソッド
+    public function showStaffList(): View
     {
-        $users = \App\Models\User::where('admin_status', false)->get();
+        //管理者ではないユーザー情報を取得
+        $users = User::where('admin_status', false)->get();
 
+        //管理者用スタッフ一覧画面を返す
         return view('admin.admin_staff_list', compact('users'));
     }
 
+    //
     public function showStaffAttendance(Request $request, int $id): View
     {
-        $targetUser = \App\Models\User::findOrFail($id);
+        $targetUser = User::findOrFail($id);
 
         $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
         $currentMonth = Carbon::parse($currentMonthStr . '-01');
