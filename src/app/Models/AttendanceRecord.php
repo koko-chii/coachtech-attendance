@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class AttendanceRecord extends Model
 {
     use HasFactory;
-    
+
     // 安全に一括保存(複数の代入)を許可するカラムの指定
     protected $fillable = [
         'user_id',

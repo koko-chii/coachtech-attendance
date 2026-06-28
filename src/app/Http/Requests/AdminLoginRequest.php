@@ -26,7 +26,7 @@ class AdminLoginRequest extends FormRequest
 
     // バリデーションメッセージを定義
     public function messages(): array
-    {      
+    {
         return [
             'email.required' => 'メールアドレスを入力してください',
             'password.required' => 'パスワードを入力してください',

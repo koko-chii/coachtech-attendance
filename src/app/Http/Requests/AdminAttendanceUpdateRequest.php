@@ -62,11 +62,11 @@ class AdminAttendanceUpdateRequest extends FormRequest
 
                     // もし休憩開始時刻が出勤前、退勤後の場合はエラー
                     if (filled($breakIn)) {
-                        if ((filled($clockIn) && $breakIn < $clockIn) || 
+                        if ((filled($clockIn) && $breakIn < $clockIn) ||
                             (filled($clockOut) && $breakIn > $clockOut)) {
 
                             $validator->errors()->add(
-                                'breaks.' . $index . '.break_in', 
+                                'breaks.' . $index . '.break_in',
                                 '休憩時間が不適切な値です'
                             );
 
@@ -103,11 +103,11 @@ class AdminAttendanceUpdateRequest extends FormRequest
 
             // 追加休憩開始時刻が出勤前、又は退勤後の場合はエラー
             if (filled($newBreakIn)) {
-                if ((filled($clockIn) && $newBreakIn < $clockIn) || 
+                if ((filled($clockIn) && $newBreakIn < $clockIn) ||
                     (filled($clockOut) && $newBreakIn > $clockOut)) {
 
                     $validator->errors()->add(
-                        'new_break_in', 
+                        'new_break_in',
                         '休憩時間が不適切な値です'
                     );
                 }

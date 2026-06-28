@@ -35,7 +35,7 @@ class StampCorrectionRequestController extends Controller
                 return $request->status === 'approved';
             }
         );
-        
+
         // 勤怠申請一覧画面で承認待ちと承認済みを表示する
         return view('stamp_correction_request.list', compact('pendingRequests', 'approvedRequests'));
     }
