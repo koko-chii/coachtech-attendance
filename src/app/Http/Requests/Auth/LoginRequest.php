@@ -4,6 +4,7 @@ namespace App\Http\Requests\Auth;
 
 // laravelが用意したFormRequest(入力チェック)機能を使うために呼び出す
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 // FormRequest機能を継承したLoginRequest(オリジナルログインチェック機能)を
 // 作成するためのクラス(設置)
@@ -35,5 +36,19 @@ class LoginRequest extends FormRequest
             'email.required' => 'メールアドレスを入力してください',
             'password.required' => 'パスワードを入力してください',
         ];
+    }
+
+    public function authenticate(): void
+    {
+        // 認証情報の取得
+        $credentials = $this->only('email', 'password');
+
+        // ログインに失敗した場合
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+            // lang/ja/auth.php の failed（ログイン情報が登録されていません）をセットしてエラーを返します
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
     }
 }

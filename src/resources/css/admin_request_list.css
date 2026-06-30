@@ -78,38 +78,41 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     overflow: hidden;
-    padding: 60px 140px;
+    padding: 0;
 }
 
 .table-request {
     width: 100%;
     border-collapse: collapse;
-    text-align: center;
+    text-align: left;
 }
 
 .table-request th,
 .table-request td {
-    padding: 12px 20px;
     font-size: 15px;
+    vertical-align: middle;
 }
 
 .table-request th {
     color: #888888;
     font-weight: 700;
     border-bottom: 2px solid #f0f2f5;
+    padding: 12px 10px;
 }
 
-.table-request tbody tr {
-    border-bottom: 1px solid #f0f2f5;
+.table-request tbody td {
+    border-bottom: 2px solid #f0f2f5;
+    padding: 12px 10px;
 }
 
-.table-request tbody tr:last-child {
-    border-bottom: none;
+.table-request th:first-child,
+.table-request td:first-child {
+    padding-left: 140px;
 }
 
-.table-request td {
-    color: #888888;
-    font-weight: 700;
+.table-request th:last-child,
+.table-request td:last-child {
+    padding-right: 140px;
 }
 
 .button-link {
