@@ -1,6 +1,6 @@
 <?php
 
-// laravelのルーティング機能を読み込み
+// laravel的路由功能加载
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceController;
@@ -73,15 +73,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 });
 
-// 管理者向け:ログイン認証
+// 管理者向けルートグループ
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
 
-    // 認証が必須な管理者用ルートをログインチェック
+    // 認証が必須な管理者用ルート
     Route::middleware(['auth:admin'])->group(function () {
         // 管理者ログアウト
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+        // 修正申請一覧画面
+        Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
+        
+        // 修正申請承認画面
+        Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
+        
+        // 修正申請の承認処理実行
+        Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceController::class, 'approveRequest'])->name('request.approve');
 
         // 勤怠一覧画面(管理者)
         Route::get('/attendance/list', [AdminAttendanceController::class, 'showDailyList'])->name('attendance.list');
@@ -93,13 +102,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/attendance/{id}', [AdminAttendanceController::class, 'updateDetail'])->name('attendance.update');
 
         Route::get('/staff/list', [AdminAttendanceController::class, 'showStaffList'])->name('staff.list');
-        Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffAttendance'])->name('attendance.staff');
 
-        Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
-        Route::get('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
-        Route::patch('/stamp_correction_request/approve/{id}', [AdminAttendanceController::class, 'approveRequest'])->name('request.approve.submit');
+        Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffAttendance'])->name('attendance.staff');
 
         Route::get('/attendance/staff/{id}/csv', [AdminAttendanceController::class, 'downloadCsv'])->name('attendance.staff.csv');
     });
 });
-

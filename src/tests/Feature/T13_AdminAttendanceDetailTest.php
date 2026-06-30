@@ -27,7 +27,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
             'date' => $today,
             'clock_in' => $today . ' 09:00:00',
             'clock_out' => $today . ' 18:00:00',
-            'remarks' => 'テスト用備考サンプル',
+            'comment' => 'テスト用備考サンプル',
         ]);
 
         BreakLog::create([
@@ -56,7 +56,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
         $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '18:00',
             'clock_out' => '09:00',
-            'remarks' => '出勤時間エラーテスト',
+            'comment' => '出勤時間エラーテスト',
         ]);
 
         $response->assertStatus(302);
@@ -81,7 +81,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
                     'break_out' => '20:00',
                 ],
             ],
-            'remarks' => '休憩開始エラーテスト',
+            'comment' => '休憩開始エラーテスト',
         ]);
 
         $response->assertStatus(302);
@@ -106,7 +106,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
                     'break_out' => '19:00',
                 ],
             ],
-            'remarks' => '休憩終了エラーテスト',
+            'comment' => '休憩終了エラーテスト',
         ]);
 
         $response->assertStatus(302);
@@ -121,15 +121,15 @@ class T13_AdminAttendanceDetailTest extends TestCase
         $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', $attendance), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
-            'remarks' => '',
+            'comment' => '',
         ]);
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors([
-            'remarks' => '備考を記入してください'
+            'comment'
         ]);
     }
 }

@@ -37,7 +37,16 @@ class T17_ApiAttendanceReadTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => ['id', 'user_id', 'date', 'clock_in', 'clock_out']
+                'data' => [
+                'id',
+                'user_id',
+                'date',
+                'clock_in',
+                'clock_out',
+                'user',
+                'breaks',
+                'stamp_correction_requests'
+                ]
             ]);
     }
 

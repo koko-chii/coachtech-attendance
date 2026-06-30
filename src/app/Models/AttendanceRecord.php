@@ -23,7 +23,7 @@ class AttendanceRecord extends Model
         'clock_out',
         'total_time',
         'total_break_time',
-        'remarks',
+        'comment',
     ];
 
     // ユーザー情報に紐づけるための機能
@@ -33,13 +33,13 @@ class AttendanceRecord extends Model
     }
 
     // 休憩情報データ一覧に紐づけるための機能
-    public function breakLogs(): HasMany
+    public function breaks(): HasMany
     {
         return $this->hasMany(BreakLog::class);
     }
 
     // 修正申請データーに紐づけるための機能
-    public function stampCorrectionRequests(): HasMany
+    public function applications(): HasMany
     {
         return $this->hasMany(StampCorrectionRequest::class);
     }

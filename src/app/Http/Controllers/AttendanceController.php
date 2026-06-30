@@ -50,7 +50,7 @@ class AttendanceController extends Controller
             if ($attendance->clock_out) {
                 $is_clocked_out = true;
             } else {
-                $is_breaking = BreakLog::where('attendance_record_id', $attendance->id)
+                $is_breaking = $attendance->breaks()
                     ->whereNull('break_out')
                     ->exists();
             }
@@ -111,14 +111,17 @@ class AttendanceController extends Controller
             $attendance->update([
                 'clock_out' => Carbon::now()->toTimeString(),
             ]);
+
+            // 元の画面に戻す（仕様書通りのメッセージをセッションに添えて返す）
+            return redirect()->back()->with('message', 'お疲れ様でした。');
         }
 
         // 元の画面に戻す
         return redirect()->back();
     }
 
-    // 休憩ボタンが押されたときの関数(機能)
-    public function break(): RedirectResponse
+   // 休憩ボタンが押されたときの関数(機能)
+    public function break(): \Illuminate\Http\RedirectResponse
     {
         // ログインしているユーザーをuser変数(箱)に入れる
         $user = Auth::user();
@@ -138,7 +141,7 @@ class AttendanceController extends Controller
         }
 
         // 休憩ボタンが押され休憩戻はまだの情報が1件でもあるか探し出す
-        $activeBreak = BreakLog::where('attendance_record_id', $attendance->id)
+        $activeBreak = $attendance->breaks()
             ->whereNull('break_out')
             ->first();
 
@@ -154,11 +157,10 @@ class AttendanceController extends Controller
         // 休憩中情報が無かったら、新しく休憩中テーブル
         // (勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報)を登録する
         else {
-            BreakLog::create([
-                'attendance_record_id' => $attendance->id,
-                'break_in'             => $now->toTimeString(),
-                'created_at'           => $now,
-                'updated_at'           => $now,
+            $attendance->breaks()->create([
+                'break_in'   => $now->toTimeString(),
+                'created_at' => $now,
+                'updated_at' => $now,
             ]);
         }
         // 元の画面に戻す
@@ -182,7 +184,7 @@ class AttendanceController extends Controller
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
         // 勤怠登録データーからこのユーザー情報を探す(休憩データも一緒に取得N+1問題防止)
-        $attendances = AttendanceRecord::with('breakLogs')
+        $attendances = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
             ->whereYear('date', $currentMonth->year)
             ->whereMonth('date', $currentMonth->month)
@@ -194,7 +196,7 @@ class AttendanceController extends Controller
                 $record->clock_out = $record->clock_out;
 
                 // Collectionメソッドを使って休憩時間の合計秒数を計算（N+1問題を防止）
-                $totalBreakSeconds = $record->breakLogs->sum(function (BreakLog $b): int {
+                $totalBreakSeconds = $record->breaks->sum(function (BreakLog $b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
                 });
@@ -244,20 +246,23 @@ class AttendanceController extends Controller
     public function show(int $id): View
     {
         // ログインユーザー情報から勤怠登録データと一緒に休憩データを持ってきて変数(箱)にしまう
-        $record = AttendanceRecord::with(['breakLogs', 'stampCorrectionRequests'])
-            ->where('user_id', auth()->id())
+        $record = AttendanceRecord::where('user_id', auth()->id())
             ->findOrFail($id);
 
+        // 
+        $record->load(['breaks', 'applications']);
+
+
         // 承認待ち状態の申請データがあるか調べる
-        $isPending = $record->stampCorrectionRequests ? $record->stampCorrectionRequests->contains('status', 'pending') : false;
+        $isPending = $record->applications ? $record->applications->contains('status', 'pending') : false;
 
         if ($isPending) {
-            $pendingData = $record->stampCorrectionRequests->where('status', 'pending')->first();
+            $pendingData = $record->applications->where('status', 'pending')->first();
 
             if ($pendingData) {
                 $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
                 $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
-                $record->remarks = $pendingData->requested_remarks;
+                $record->comment = $pendingData->requested_remarks;
 
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
@@ -267,7 +272,7 @@ class AttendanceController extends Controller
                             'break_out' => isset($b['break_out']) ? Carbon::parse($b['break_out'])->format('H:i') : null,
                         ]);
                     });
-                    $record->setRelation('breakLogs', $formattedBreaks);
+                    $record->setRelation('breaks', $formattedBreaks);
                 }
             }
         }
@@ -281,12 +286,12 @@ class AttendanceController extends Controller
     {
         // 備考欄の未入力チェック、出勤・退勤時間の前後関係の入力チェックを行う
         $request->validate([
-            'remarks'   => ['required'],
+            'comment'   => ['required'],
             'clock_in'  => ['required'],
             'clock_out' => ['required', 'after:clock_in'],
         ], [
-            'remarks.required' => '備考を記入してください',
-            'clock_out.after'  => '出勤時間が不適切な値です',
+            'comment.required' => '備考を記入してください',
+            'clock_out.after'  => '出勤時間もしくは退勤時間が不適切な値です',
         ]);
 
         // もし休憩データの修正がある場合、退勤時間より後になっていないか不適切な値をチェック
@@ -320,9 +325,9 @@ class AttendanceController extends Controller
             'requested_clock_in'   => $request->input('clock_in'),
             'requested_clock_out'  => $request->input('clock_out'),
             'requested_breaks'     => $breaks,
-            'requested_remarks'    => $request->input('remarks'),
+            'requested_remarks'    => $request->input('comment'),
             'status'               => 'pending',
-            'reason'               => $request->input('remarks'),
+            'reason'               => $request->input('comment'),
         ]);
 
         // 申請一覧画面へ遷移する
@@ -336,7 +341,7 @@ class AttendanceController extends Controller
         $now = Carbon::now();
         $sixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth();
 
-        $records = AttendanceRecord::with('breakLogs')
+        $records = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
             ->where('date', '>=', $sixMonthsAgo->format('Y-m-d'))
             ->where('date', '<=', $now->format('Y-m-d'))
@@ -353,7 +358,7 @@ class AttendanceController extends Controller
                     return 0;
                 }
                 $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
-                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                $breakSeconds = $r->breaks->sum(function ($b) {
                     if (!$b->break_in || !$b->break_out) {
                         return 0;
                     }
@@ -367,7 +372,7 @@ class AttendanceController extends Controller
                     return 0;
                 }
                 $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
-                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                $breakSeconds = $r->breaks->sum(function ($b) {
                     if (!$b->break_in || !$b->break_out) {
                         return 0;
                     }
@@ -393,7 +398,7 @@ class AttendanceController extends Controller
                 return 0;
             }
             $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
-            $breakSeconds = $r->breakLogs->sum(function ($b) {
+            $breakSeconds = $r->breaks->sum(function ($b) {
                 if (!$b->break_in || !$b->break_out) {
                     return 0;
                 }
@@ -423,7 +428,7 @@ class AttendanceController extends Controller
                     return false;
                 }
                 $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
-                $breakSeconds = $r->breakLogs->sum(function ($b) {
+                $breakSeconds = $r->breaks->sum(function ($b) {
                     if (!$b->break_in || !$b->break_out) {
                         return 0;
                     }
@@ -435,6 +440,4 @@ class AttendanceController extends Controller
 
         return view('attendance_report', compact('summary', 'monthlyData', 'anomaly'));
     }
-
 }
-

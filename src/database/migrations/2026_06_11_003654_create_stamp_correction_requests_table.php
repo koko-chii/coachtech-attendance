@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->time('requested_clock_in')->nullable();
             $table->time('requested_clock_out')->nullable();
             $table->json('requested_breaks')->nullable();
-            $table->text('requested_remarks')->nullable();
+            $table->text('requested_comment')->nullable();
             $table->string('status')->default('pending');
             $table->text('reason');
             $table->timestamps();

@@ -15,12 +15,11 @@ class StoreAttendanceRecordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer'],
             'date' => [
                 'required',
                 'date_format:Y-m-d',
                 Rule::unique('attendance_records')->where(function ($query) {
-                    return $query->where('user_id', $this->user_id);
+                    return $query->where('user_id', $this->user()->id);
                 }),
             ],
             'clock_in' => ['required', 'date_format:H:i:s'],
@@ -43,3 +42,4 @@ class StoreAttendanceRecordRequest extends FormRequest
         ];
     }
 }
+

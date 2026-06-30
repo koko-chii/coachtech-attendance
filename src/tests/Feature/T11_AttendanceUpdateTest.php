@@ -33,7 +33,7 @@ class T11_AttendanceUpdateTest extends TestCase
         $response = $this->actingAs($user)->patch(route('attendance.update', $record->id), [
             'clock_in' => '19:00',
             'clock_out' => '18:00',
-            'remarks' => 'テスト備考',
+            'comment' => 'テスト備考',
         ]);
 
         //エラーメッセージが表示されることを確認
@@ -105,7 +105,7 @@ class T11_AttendanceUpdateTest extends TestCase
                     'break_out' => '19:00',
                 ],
             ],
-            'remarks' => 'テスト備考',
+            'comment' => 'テスト備考',
         ]);
 
          //エラーメッセージが表示されることを確認
@@ -123,11 +123,11 @@ class T11_AttendanceUpdateTest extends TestCase
         $response = $this->actingAs($user)->patch(route('attendance.update', $record->id), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
-            'remarks' => '',
+            'comment' => '',
         ]);
 
         //エラーメッセージが表示されることを確認
-        $response->assertSessionHasErrors(['remarks' => '備考を記入してください']);
+        $response->assertSessionHasErrors(['comment' => '備考を記入してください']);
     }
 
     #[Test]
@@ -141,7 +141,7 @@ class T11_AttendanceUpdateTest extends TestCase
         $response = $this->actingAs($user)->patch(route('attendance.update', $record->id), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
-            'remarks' => '修正申請テスト理由',
+            'comment' => '修正申請テスト理由',
         ]);
 
         //修正申請データがデータベースへ保存されることを確認

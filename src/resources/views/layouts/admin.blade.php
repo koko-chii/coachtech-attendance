@@ -17,7 +17,7 @@
         </h1>
 
         <!-- 管理者としてログインしている場合のみヘッダーナビを表示 -->
-        @if(Auth::check())
+        @if(Auth::guard('admin')->check())
             <nav class="header__nav">
                 <ul class="header__nav-list">
                     <li class="header__nav-item">
@@ -42,7 +42,7 @@
     </header>
 
     <!-- 子のcontentセクションを表示 -->
-    <main class="{{ Auth::check() ? 'main-content' : '' }}">
+    <main class="{{ Auth::guard('admin')->check() ? 'main-content' : '' }}">
         @yield('content')
     </main>
 </body>

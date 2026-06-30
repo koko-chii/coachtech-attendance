@@ -3,71 +3,94 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+// 勤怠データの操作をするモデル
 use App\Models\AttendanceRecord;
+// APIで返すJSONに変換する
 use App\Http\Resources\AttendanceRecordResource;
+// 勤怠一覧を取得するためのバリデーション
 use App\Http\Requests\Api\V1\IndexAttendanceRecordRequest;
+// 勤怠データの新規作成をするためのバリデーション
 use App\Http\Requests\Api\V1\StoreAttendanceRecordRequest;
+// 勤怠データを更新するためのバリデーション
 use App\Http\Requests\Api\V1\UpdateAttendanceRecordRequest;
-use Illuminate\Http\JsonResponse;
+// JSONレスポンスを返すための読み込み
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+// HTTPレスポンスを返すための読み込み
 use Illuminate\Http\Response;
+// API用JSON形式変換
+use Illuminate\Http\JsonResponse;
+// 認証機能を使用するための読み込み
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+// API用に勤怠データを操作するためのコントローラークラス
 class AttendanceRecordController extends Controller
 {
+    // 操作権限をチェック
     use AuthorizesRequests;
 
-    public function index(IndexAttendanceRecordRequest $request): JsonResponse
+    // 勤怠一覧をJSONレスポンスで返すための処理
+    public function index(IndexAttendanceRecordRequest $request): AnonymousResourceCollection
     {
-        $query = AttendanceRecord::query();
+        $perPage = (int) $request->input('per_page', 20);
 
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
-        }
+        // 勤怠データの取得
+        $records = AttendanceRecord::with(['user', 'breaks'])
+            // 指定したスタッフIDの勤怠データを探す
+            ->when($request->filled('user_id'), function ($query) use ($request) {
+                $query->where('user_id', $request->input('user_id'));
+            })
+            // 指定した日付けの勤怠データ取得
+            ->when($request->filled('date'), function ($query) use ($request) {
+                $query->where('date', $request->input('date'));
+            })
+            // 指定した月の勤怠データ取得
+            ->when($request->filled('month'), function ($query) use ($request) {
+                $query->where('date', 'like', $request->input('month') . '%');
+            })
+            ->latest('date')
+            // 指定した1ページの勤怠データを取得
+            ->paginate($perPage);
 
-        if ($request->has('date')) {
-            $query->where('date', $request->input('date'));
-        }
-
-        if ($request->has('month')) {
-            $query->where('date', 'like', $request->input('month') . '%');
-        }
-
-        $perPage = $request->input('per_page', 20);
-        $perPage = min(max((int)$perPage, 1), 100);
-
-        $records = $query->paginate($perPage);
-
-        return response()->json([
-            'data' => AttendanceRecordResource::collection($records->items()),
-            'meta' => [
-                'current_page' => $records->currentPage(),
-                'last_page' => $records->lastPage(),
-                'per_page' => $records->perPage(),
-                'total' => $records->total(),
-            ]
-        ], 200);
+        //　取得した勤怠データをJSONに変換して正しく表示して返す
+        return AttendanceRecordResource::collection($records);
     }
 
-    public function store(StoreAttendanceRecordRequest $request): AttendanceRecordResource
+    // スマホ等で送られた勤怠データを登録し、API用にJSON形式に返す処理
+    public function store(StoreAttendanceRecordRequest $request): JsonResponse
     {
-        $record = AttendanceRecord::create($request->validated());
+        // API用のバリデーションチェック済みの勤怠データを作成
+        $attendanceRecord = $request->user()->attendanceRecords()->create($request->validated());
 
-        return new AttendanceRecordResource($record);
+        $attendanceRecord->load(['user', 'breaks']);
+
+        // 勤怠データをAPI用のJSON形式で返す
+        return (new AttendanceRecordResource($attendanceRecord))
+            ->response()
+            ->setStatusCode(201);
     }
 
+    // API用の勤怠詳細画面を返すための処理
     public function show(AttendanceRecord $attendanceRecord): AttendanceRecordResource
     {
-        $attendanceRecord->load(['user', 'breakLogs', 'stampCorrectionRequests']);
+        // 勤怠データに関するスタッフデータ・休憩データ・修正申請データを読み込む
+        $attendanceRecord->load(['user', 'breaks', 'applications']);
 
+        // 勤怠詳細データをAPI用のJSON形式で返す
         return new AttendanceRecordResource($attendanceRecord);
     }
 
+    // API用の勤怠データを更新処理
     public function update(UpdateAttendanceRecordRequest $request, AttendanceRecord $attendanceRecord): AttendanceRecordResource
     {
+        // 更新権限をチェック
         $this->authorize('update', $attendanceRecord);
 
+        // バリデーションチェック済みの勤怠データを更新
         $attendanceRecord->update($request->validated());
 
+        $attendanceRecord->load(['user', 'breaks']);
+
+        // 更新した勤怠データをAPI用のJSON形式で返す
         return new AttendanceRecordResource($attendanceRecord);
     }
 

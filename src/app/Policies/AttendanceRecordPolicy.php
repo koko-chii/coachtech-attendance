@@ -7,13 +7,22 @@ use App\Models\AttendanceRecord;
 
 class AttendanceRecordPolicy
 {
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->admin_status === true) {
+            return true;
+        }
+
+        return null;
+    }
+
     public function update(User $user, AttendanceRecord $attendanceRecord): bool
     {
-        return $user->id === $attendanceRecord->user_id || $user->admin_status === true;
+        return $user->id === $attendanceRecord->user_id;
     }
 
     public function delete(User $user, AttendanceRecord $attendanceRecord): bool
     {
-        return $user->id === $attendanceRecord->user_id || $user->admin_status === true;
+        return $user->id === $attendanceRecord->user_id;
     }
 }

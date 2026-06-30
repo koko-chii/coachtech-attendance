@@ -25,7 +25,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
             'clock_in'  => ['required'],
             'clock_out' => ['required'],
             'breaks'    => ['nullable', 'array'],
-            'remarks'   => ['required'],
+            'comment'   => ['required'],
         ];
     }
 
@@ -35,7 +35,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
         return [
             'clock_in.required'  => '出勤時間もしくは退勤時間が不適切な値です',
             'clock_out.required' => '出勤時間もしくは退勤時間が不適切な値です',
-            'remarks.required'   => '備考を記入してください',
+            'comment.required'   => '備考を記入してください',
         ];
     }
 

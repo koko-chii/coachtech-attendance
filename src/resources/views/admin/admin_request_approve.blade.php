@@ -11,9 +11,9 @@
     <div class="attendanceDetailForm">
         <h1 class="attendanceDetailTitle">勤怠詳細</h1>
 
-        <form action="{{ route('admin.request.approve.submit', $requestData->id) }}" method="POST">
+        <!-- ★修正①: actionのルート名を「admin.request.approve」にする。また @method('PATCH') は削除（テストのPOSTに合わせるため） -->
+        <form action="{{ route('admin.request.approve', $requestData->id) }}" method="POST">
             @csrf
-            @method('PATCH')
 
             <table class="attendanceTable">
                 <tbody>
@@ -56,10 +56,18 @@
                         @endforeach
                     @endif
 
+                    <!-- ★修正②: テストを通過させるために「申請理由」の表示行を追加する -->
+                    <tr>
+                        <th>申請理由</th>
+                        <td>
+                            <span class="textReasonField">{{ $requestData->reason }}</span>
+                        </td>
+                    </tr>
+
                     <tr>
                         <th>備考</th>
                         <td>
-                            <textarea class="textareaRemarksField" name="remarks" readonly>{{ $requestData->requested_remarks }}</textarea>
+                            <textarea class="textareaRemarksField" name="comment" readonly>{{ $requestData->requested_comment }}</textarea>
                         </td>
                     </tr>
                 </tbody>
@@ -75,7 +83,7 @@
 
     @if (!$isPending)
         <div class="approvalPendingOutside">
-            <p class="approvalPendingMessage">＊承認済み</p>
+            <p class="approvalPendingMessage">承認済み</p>
         </div>
     @endif
 </div>

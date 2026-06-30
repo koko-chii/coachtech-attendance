@@ -9,14 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendance_records', function (Blueprint $table) {
-            $table->text('remarks')->nullable()->after('clock_out');
+            $table->text('comment')->nullable()->after('clock_out');
         });
     }
 
     public function down(): void
     {
         Schema::table('attendance_records', function (Blueprint $table) {
-            $table->dropColumn('remarks');
+            $table->dropColumn('comment');
         });
     }
 };

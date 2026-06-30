@@ -27,7 +27,7 @@ class AdminAttendanceController extends Controller
 
         // 当日の勤怠データを、従業員ユーザー情報と休憩データも一緒に取得
         // ユーザーが登録されていて打刻がない場合も考慮し、データが存在するもののみ取得
-        $attendanceRecords = AttendanceRecord::with(['user', 'breakLogs'])
+        $attendanceRecords = AttendanceRecord::with(['user', 'breaks'])
             ->where('date', $dateStr)
             ->get();
 
@@ -38,18 +38,18 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    // 管理者用勤怠詳細画面を表示
+        // 管理者用勤怠詳細画面を表示
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
-        $attendance = AttendanceRecord::with(['user', 'breakLogs', 'stampCorrectionRequests'])->findOrFail($id);
+        $attendance = AttendanceRecord::with(['user', 'breaks', 'applications'])->findOrFail($id);
 
         // 承認待ち状態の申請データがあるか調べる
-        $isPending = $attendance->stampCorrectionRequests ? $attendance->stampCorrectionRequests->contains('status', 'pending') : false;
+        $isPending = $attendance->applications ? $attendance->applications->contains('status', 'pending') : false;
 
         // もし承認待ち状態の申請データが存在すれば、管理者詳細画面の表示データを修正申請の値に書き換える
         if ($isPending) {
-            $pendingData = $attendance->stampCorrectionRequests->where('status', 'pending')->first();
+            $pendingData = $attendance->applications->where('status', 'pending')->first();
 
             // 承認待ちの修正申請データがある場合、修正値の出勤時刻・退勤時刻・備考を勤怠データに入れる
             if ($pendingData) {
@@ -84,7 +84,7 @@ class AdminAttendanceController extends Controller
     public function updateDetail(AdminAttendanceUpdateRequest $request, int $id): RedirectResponse
     {
         // 勤怠データと一緒に休憩データを取得
-        $attendance = AttendanceRecord::with('breakLogs')->findOrFail($id);
+        $attendance = AttendanceRecord::with('breaks')->findOrFail($id);
 
         // 承認待ちの場合、修正不可のメッセージを画面へ返す
         if ($attendance->status === 'pending') {
@@ -95,7 +95,7 @@ class AdminAttendanceController extends Controller
         $attendance->update([
             'clock_in'  => $request->input('clock_in'),
             'clock_out' => $request->input('clock_out'),
-            'remarks'   => $request->input('remarks'),
+            'comment'   => $request->input('comment'),
         ]);
 
         // 修正申請で送られら休憩データを取得
@@ -114,21 +114,10 @@ class AdminAttendanceController extends Controller
 
         // 休憩データがある場合、既存の休憩データをIDごとに更新
         if (!empty($breaks)) {
+            $attendance->breaks()->delete();
             foreach ($breaks as $breakData) {
-                // 休憩IDがある場合、既存の休憩データを取得
-                if (!empty($breakData['id'])) {
-                    $breakLog = $attendance->breakLogs()->find($breakData['id']);
-
-                    // 既存の休憩データが見つかった場合は更新
-                    if ($breakLog) {
-                        $breakLog->update([
-                            'break_in'  => $breakData['break_in'] ?? null,
-                            'break_out' => $breakData['break_out'] ?? null,
-                        ]);
-                    }
-                    // 既存の休憩データが見つからなかった場合は新しく作成
-                } else {
-                    $attendance->breakLogs()->create([
+                if (!empty($breakData['break_in'])) {
+                    $attendance->breaks()->create([
                         'break_in'  => $breakData['break_in'] ?? null,
                         'break_out' => $breakData['break_out'] ?? null,
                     ]);
@@ -150,7 +139,7 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_staff_list', compact('users'));
     }
 
-    // スタッフ管理画面 指定したスタッフの勤怠一覧画面を表示
+        // スタッフ管理画面 指定したスタッフの勤怠一覧画面を表示
     public function showStaffAttendance(Request $request, int $id): View
     {
         // URLで指定したIDのスタッフデータを取得
@@ -167,7 +156,7 @@ class AdminAttendanceController extends Controller
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
         // 勤怠データと一緒に休憩データを取得
-        $attendances = AttendanceRecord::with('breakLogs')
+        $attendances = AttendanceRecord::with('breaks')
             // 指定したIDのスタッフデータを検索
             ->where('user_id', $targetUser->id)
             // 更に対象年月データを検索し、取得
@@ -181,7 +170,7 @@ class AdminAttendanceController extends Controller
                 $record->display_clock_out = $record->clock_out;
 
                 // 休憩時刻の合計(秒)を計算
-                $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
+                $totalBreakSeconds = $record->breaks->sum(function ($b): int {
                     // もし休憩開始および休憩終了時刻が空の場合、0秒を返す
                     if (!$b->break_in || !$b->break_out) return 0;
                     // 休憩開始と休憩終了の差(秒)から休憩時刻を計算
@@ -302,9 +291,9 @@ class AdminAttendanceController extends Controller
         // 修正申請データと一緒にスタッフデータと勤怠データを取得
         $allRequests = StampCorrectionRequest::with(['user', 'attendanceRecord'])->get();
 
-        // 承認待ちと承認済みデータを振り分け
-        $pendingRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'pending');
-        $approvedRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'approved');
+        // 承認待ちと承認済みデータを振り分け、部屋番号を0から詰め直す
+        $pendingRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'pending')->values();
+        $approvedRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'approved')->values();
 
         // 管理者用申請一覧へ表示
         return view('admin.admin_request_list', compact('pendingRequests', 'approvedRequests'));
@@ -335,31 +324,32 @@ class AdminAttendanceController extends Controller
             $attendance->update([
                 'clock_in'  => $requestData->requested_clock_in,
                 'clock_out' => $requestData->requested_clock_out,
-                'remarks'   => $requestData->requested_remarks,
+                'comment'   => $requestData->requested_comment,
             ]);
 
             // もし修正データに休憩修正がある場合、既存データを削除
             if (!empty($requestData->requested_breaks)) {
-            $attendance->breakLogs()->delete();
-            // 新しい休憩データを1件ずつ作成
-            collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
-                // 空データをスキップ
-                if (empty($b['break_in']) || empty($b['break_out'])) {
-                    return;
-                }
-                // データベースの休憩データを新しく作る
-                $attendance->breakLogs()->create([
-                    'break_in'  => $b['break_in'],
-                    'break_out' => $b['break_out'],
-                ]);
-            });
-        }
+                $attendance->breaks()->delete();
+                // 新しい休憩データを1件ずつ作成
+                collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
+                    // 空データをスキップ
+                    if (empty($b['break_in']) || empty($b['break_out'])) {
+                        return;
+                    }
+                    // データベースの休憩データを新しく作る
+                    $attendance->breaks()->create([
+                        'break_in'  => $b['break_in'],
+                        'break_out' => $b['break_out'],
+                    ]);
+                });
+            }
 
-        // ステータスを承認済みに更新
-        $requestData->update(['status' => 'approved']);
-            // 管理者用申請一覧へ遷移と一緒に、メッセージを返す
+            // ステータスを承認済みに更新
+            $requestData->update(['status' => 'approved']);
+            // 管理者用申請一覧の「承認済み」タブへ遷移と一緒に、メッセージを返す
             return redirect()->route('admin.request.list')->with('success_message', '申請を承認しました。');
         }
     }
-
 }
+
+

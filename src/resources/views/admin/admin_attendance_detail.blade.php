@@ -53,12 +53,12 @@
                         <th>休憩</th>
                         <td>
                             <div class="timeRangeGroup">
-                                <input type="hidden" name="breaks[0][id]" value="{{ $attendance->breakLogs[0]->id ?? '' }}">
+                                <input type="hidden" name="breaks[0][id]" value="{{ $attendance->breaks[0]->id ?? '' }}">
                                 <input class="inputTimeField" type="time" name="breaks[0][break_in]"
-                                    value="{{ old('breaks.0.break_in', isset($attendance->breakLogs[0]) && $attendance->breakLogs[0]->break_in ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_in)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
+                                    value="{{ old('breaks.0.break_in', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_in ? \Carbon\Carbon::parse($attendance->breaks[0]->break_in)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
                                 <span class="timeSeparator">〜</span>
                                 <input class="inputTimeField" type="time" name="breaks[0][break_out]"
-                                    value="{{ old('breaks.0.break_out', isset($attendance->breakLogs[0]) && $attendance->breakLogs[0]->break_out ? \Carbon\Carbon::parse($attendance->breakLogs[0]->break_out)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
+                                    value="{{ old('breaks.0.break_out', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_out ? \Carbon\Carbon::parse($attendance->breaks[0]->break_out)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
                             </div>
 
                             @error('breaks.0.break_in')
@@ -74,12 +74,12 @@
                         <th>休憩2</th>
                         <td>
                             <div class="timeRangeGroup">
-                                <input type="hidden" name="breaks[1][id]" value="{{ $attendance->breakLogs[1]->id ?? '' }}">
+                                <input type="hidden" name="breaks[1][id]" value="{{ $attendance->breaks[1]->id ?? '' }}">
                                 <input class="inputTimeField" type="time" name="breaks[1][break_in]"
-                                    value="{{ old('breaks.1.break_in', isset($attendance->breakLogs[1]) && $attendance->breakLogs[1]->break_in ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_in)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
+                                    value="{{ old('breaks.1.break_in', isset($attendance->breaks[1]) && $attendance->breaks[1]->break_in ? \Carbon\Carbon::parse($attendance->breaks[1]->break_in)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
                                 <span class="timeSeparator">〜</span>
                                 <input class="inputTimeField" type="time" name="breaks[1][break_out]"
-                                    value="{{ old('breaks.1.break_out', isset($attendance->breakLogs[1]) && $attendance->breakLogs[1]->break_out ? \Carbon\Carbon::parse($attendance->breakLogs[1]->break_out)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
+                                    value="{{ old('breaks.1.break_out', isset($attendance->breaks[1]) && $attendance->breaks[1]->break_out ? \Carbon\Carbon::parse($attendance->breaks[1]->break_out)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
                             </div>
 
                             @error('breaks.1.break_in')
@@ -95,9 +95,9 @@
                     <tr>
                         <th>備考</th>
                         <td>
-                            <textarea class="textareaRemarksField" name="remarks" {{ $isPending ? 'readonly' : '' }}>{{ old('remarks', $attendance->remarks) }}</textarea>
+                            <textarea class="textareaRemarksField" name="comment" {{ $isPending ? 'readonly' : '' }}>{{ old('comment', $attendance->comment) }}</textarea>
 
-                            @error('remarks')
+                            @error('comment')
                                 <span class="inputErrorMessage">{{ $message }}</span>
                             @enderror
                         </td>

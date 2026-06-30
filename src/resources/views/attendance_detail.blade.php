@@ -56,7 +56,7 @@
                             </tr>
 
                             <!-- 登録済みの休憩時間を表示・編集 -->
-                            @foreach($record->breakLogs as $index => $break)
+                            @foreach($record->breaks as $index => $break)
                                 <tr>
                                     <th>{{ $index === 0 ? '休憩' : '休憩' . ($index + 1) }}</th>
                                     <td>
@@ -101,8 +101,9 @@
                             <!-- 承認待ちでない場合は新しい休憩時間を追加可能 -->
                             @if(!$isPending)
                                 <tr>
-                                    <th>休憩{{ count($record->breakLogs) === 0 ? '' : count($record->breakLogs) + 1 }}</th>
+                                    <th>休憩{{ count($record->breaks) === 0 ? '' : count($record->breaks) + 1 }}</th>
                                     <td>
+
                                         <div class="timeRangeGroup">
                                             <input type="time" name="new_break_in" class="inputTimeField" value="{{ old('new_break_in') }}">
                                             <span class="timeSeparator">〜</span>
@@ -124,12 +125,12 @@
                                 <td>
                                     <!-- ステータスが承認待ちなら書き換え禁止 -->
                                     <textarea
-                                        name="remarks"
+                                        name="comment"
                                         class="textareaRemarksField"
                                         {{ $isPending ? 'disabled' : '' }}
-                                    >{{ old('remarks', $record->remarks) }}</textarea>
+                                    >{{ old('comment', $record->comment) }}</textarea>
 
-                                    @error('remarks')
+                                    @error('comment')
                                         <p class="inputErrorMessage">{{ $message }}</p>
                                     @enderror
                                 </td>

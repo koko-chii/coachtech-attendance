@@ -39,15 +39,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($pendingRequests as $request)
+                                @foreach ($pendingRequests as $request)
                                     <tr>
                                         <td>承認待ち</td>
                                         <td>{{ $request->user->name ?? '' }}</td>
                                         <td>{{ $request->attendanceRecord->date ?? '' }}</td>
-                                        <td>{{ $request->requested_remarks }}</td>
-                                        <td>{{ $request->created_at->format('Y/m/d') }}</td>
+                                        <td>{{ $request->requested_comment ?? '' }}</td>
+                                        <td>{{ $request->created_at ? $request->created_at->format('Y/m/d') : '' }}</td>
                                         <td>
-                                            <a href="{{ route('admin.request.approve', $request->id) }}" class="button-link">詳細</a>
+                                            <a class="button-link" href="{{ route('admin.request.approve', ['attendance_correct_request_id' => $request->id]) }}">詳細</a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -77,10 +77,10 @@
                                         <td>承認済み</td>
                                         <td>{{ $request->user->name ?? '' }}</td>
                                         <td>{{ $request->attendanceRecord->date ?? '' }}</td>
-                                        <td>{{ $request->requested_remarks }}</td>
-                                        <td>{{ $request->created_at->format('Y/m/d') }}</td>
+                                        <td>{{ $request->requested_comment ?? '' }}</td>
+                                        <td>{{ $request->created_at ? $request->created_at->format('Y/m/d') : '' }}</td>
                                         <td>
-                                            <a href="{{ route('admin.request.approve', $request->id) }}" class="button-link">詳細</a>
+                                            <a class="button-link" href="{{ route('admin.request.approve', ['attendance_correct_request_id' => $request->id]) }}">詳細</a>
                                         </td>
                                     </tr>
                                 @endforeach

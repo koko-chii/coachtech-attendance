@@ -45,15 +45,15 @@
                         // 休憩時間の合計を0分でスタート
                         $totalBreakMinutes = 0;
 
-                        // この勤怠データに紐づく休憩データを1件ずつ取り出す
+                        // この勤怠データに紐づく休憩データを1件ずつ調べる
                         // 休憩開始・終了の両方が入っている時だけ計算する
-                        foreach ($record->breakLogs as $breakLog) {
+                        foreach ($record->breaks as $breakLog) {
                             if ($breakLog->break_in && $breakLog->break_out) {
                                 $breakIn = \Carbon\Carbon::parse($breakLog->break_in);
                                 $breakOut = \Carbon\Carbon::parse($breakLog->break_out);
 
                                 // 休憩時間の計算
-                                $totalBreakMinutes += $breakIn->diffInMinutes($breakOut);
+                                $totalBreakMinutes += $breakIn->diffInMinutes($breakOut, true);
                             }
                         }
 
@@ -73,7 +73,7 @@
                             $clockOut = \Carbon\Carbon::parse($record->clock_out);
 
                             // 出勤～退勤までの全体時間を分で計算
-                            $totalWorkMinutes = $clockIn->diffInMinutes($clockOut);
+                            $totalWorkMinutes = $clockIn->diffInMinutes($clockOut, true);
 
                             // 全体時間から休憩時間を引いて勤務時間をだす
                             $workMinutes = $totalWorkMinutes - $totalBreakMinutes;
@@ -86,6 +86,7 @@
                             $formattedWorkTime = sprintf('%02d:%02d', $workHours, $workRemainMinutes);
                         }
                     @endphp
+
 
                     <tr>
                         <!-- ユーザー名を表示 -->

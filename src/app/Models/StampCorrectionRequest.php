@@ -17,7 +17,7 @@ class StampCorrectionRequest extends Model
         'requested_clock_in',
         'requested_clock_out',
         'requested_breaks',
-        'requested_remarks',
+        'requested_comment',
         'status',
         'reason',
     ];

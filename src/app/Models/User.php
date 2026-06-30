@@ -16,12 +16,14 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 // データーベースの勤怠登録データーを操作するAttendanceRecordモデルを使うための読み込み
 use App\Models\AttendanceRecord;
+// API用の認証システムトークン
+use Laravel\Sanctum\HasApiTokens;
 
 // 勤怠管理のユーザーにメール認証機能をするためのクラス(設置)
 class User extends Authenticatable implements MustVerifyEmail
 {
     // テストデータの大量生産と通知機能を組合わせる
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     // 名前とメールアドレス、パスワードはユーザーは書き換え可能
     protected $fillable = [
