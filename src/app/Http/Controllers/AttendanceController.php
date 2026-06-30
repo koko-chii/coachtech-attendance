@@ -49,6 +49,7 @@ class AttendanceController extends Controller
             // もし既に退勤していたら退勤済みフラグをtrue(真)にする
             if ($attendance->clock_out) {
                 $is_clocked_out = true;
+            // 休憩中なら休憩終了が空か判定
             } else {
                 $is_breaking = $attendance->breaks()
                     ->whereNull('break_out')
@@ -220,9 +221,10 @@ class AttendanceController extends Controller
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
                     $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
                 }
-
+                // 計算した勤務時間を返す
                 return $record;
             })
+            // 返されたrecordをデータキーにして、勤怠データを扱いやすくする
             ->keyBy('date');
 
         // 日付を昇順に並べる
@@ -249,29 +251,35 @@ class AttendanceController extends Controller
         $record = AttendanceRecord::where('user_id', auth()->id())
             ->findOrFail($id);
 
-        // 
+        // 勤怠データ1件に関連する休憩情報と申請情報を取得
         $record->load(['breaks', 'applications']);
 
 
         // 承認待ち状態の申請データがあるか調べる
         $isPending = $record->applications ? $record->applications->contains('status', 'pending') : false;
 
+        // 承認待ちデータがある場合、
         if ($isPending) {
             $pendingData = $record->applications->where('status', 'pending')->first();
 
+            // 出勤時刻・退勤時刻・備考を勤怠データに上書き
             if ($pendingData) {
                 $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
                 $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
-                $record->comment = $pendingData->requested_remarks;
+                $record->comment = $pendingData->requested_comment;
 
+                // 修正申請に休憩データがある場合
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
-                        return new \App\Models\BreakLog([
+                        
+                    // 休憩データ1件を表すものを作成して返す
+                        return new BreakLog([
                             'id' => $b['id'] ?? ($index + 1),
                             'break_in' => isset($b['break_in']) ? Carbon::parse($b['break_in'])->format('H:i') : null,
                             'break_out' => isset($b['break_out']) ? Carbon::parse($b['break_out'])->format('H:i') : null,
                         ]);
                     });
+                    // 休憩データを1件の勤怠データに紐づける
                     $record->setRelation('breaks', $formattedBreaks);
                 }
             }

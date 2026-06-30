@@ -38,7 +38,7 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-        // 管理者用勤怠詳細画面を表示
+    // 管理者用勤怠詳細画面を表示
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
@@ -139,7 +139,7 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_staff_list', compact('users'));
     }
 
-        // スタッフ管理画面 指定したスタッフの勤怠一覧画面を表示
+    // スタッフ管理画面 指定したスタッフの勤怠一覧画面を表示
     public function showStaffAttendance(Request $request, int $id): View
     {
         // URLで指定したIDのスタッフデータを取得
@@ -250,12 +250,14 @@ class AdminAttendanceController extends Controller
         $callback = function () use ($records) {
             // 出力先を準備
             $stream = fopen('php://output', 'w');
-            // csvヘッダーの作成、計勤怠データごとに休憩時間の計算、変換してcsv出力
+            // csvヘッダーの作成 
             fputcsv($stream, [mb_convert_encoding('日付', 'SJIS-win', 'UTF-8'), mb_convert_encoding('出勤', 'SJIS-win', 'UTF-8'), mb_convert_encoding('退勤', 'SJIS-win', 'UTF-8'),
             mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'), mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')]);
+            // 計勤怠データごとに休憩時間の計算
             foreach ($records as $record) {
                 $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
+                    // carbon形式に変換して(文字列を日時を扱えるよう変換)csv出力
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
                 });
                 $breakTime = sprintf('%02d:%02d', floor($totalBreakSeconds / 3600), floor(($totalBreakSeconds % 3600) / 60));

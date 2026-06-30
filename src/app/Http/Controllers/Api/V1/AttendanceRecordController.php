@@ -94,12 +94,16 @@ class AttendanceRecordController extends Controller
         return new AttendanceRecordResource($attendanceRecord);
     }
 
+    // 勤怠データを削除する処理
     public function destroy(AttendanceRecord $attendanceRecord): Response
     {
+        // 勤怠データを削除する権限チェック
         $this->authorize('delete', $attendanceRecord);
 
+        // 勤怠データの削除
         $attendanceRecord->delete();
 
+        // 削除し返すデータはないレスポンスを返す
         return response()->noContent();
     }
 }
