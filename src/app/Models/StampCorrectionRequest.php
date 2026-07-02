@@ -22,6 +22,7 @@ class StampCorrectionRequest extends Model
         'reason',
     ];
 
+    // 休憩申請データを配列扱いに変換する設定
     protected $casts = [
         'requested_breaks' => 'array',
     ];

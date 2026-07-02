@@ -13,9 +13,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // モデル機能を継承した勤怠登録データを扱うためのクラス
 class AttendanceRecord extends Model
 {
+    // テスト用ダミーデータを作成
     use HasFactory;
 
-    // 安全に一括保存(複数の代入)を許可するカラムの指定
+    // 安全に一括保存を許可するカラムの指定
     protected $fillable = [
         'user_id',
         'date',
@@ -26,9 +27,10 @@ class AttendanceRecord extends Model
         'comment',
     ];
 
-    // ユーザー情報に紐づけるための機能
+    // スタッフデータに紐づけるための機能
     public function user(): BelongsTo
     {
+        // スタッフデータに紐づけて返す
         return $this->belongsTo(User::class);
     }
 

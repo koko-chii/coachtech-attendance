@@ -8,12 +8,17 @@ use App\Http\Resources\Api\V1\UserResource;
 use App\Http\Resources\Api\V1\AttendanceBreakResource;
 use App\Http\Resources\Api\V1\ApplicationResource;
 
+// APIレスポンス用のJSONデータに変換する機能を継承した勤怠データクラス
 class AttendanceRecordResource extends JsonResource
 {
+    // APIレスポンス用のJSONデータをdataキーで包む
     public static $wrap = 'data';
 
-        public function toArray(Request $request): array
+    // APIレスポンス用のJSONデータに変換する処理を宣言
+    public function toArray(Request $request): array
     {
+        // JSONデータとして内容を配列で返す
+        // (ID・スタッフID・日付・出勤・退勤・スタッフデータ・休憩・修正申請)
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
