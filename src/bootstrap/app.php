@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
-use Ill￥minate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Configuration\Middleware;
 
 // web/apiなどのルートファイルの読み込み設定
 return Application::configure(basePath: dirname(__DIR__))
@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 // JSONでエラーを返す
                 return response()->json([
-                    'message' => 'ログインしていません。'
+                    'message' => 'Unauthenticated.'
                 ], 401);
             }
         });
