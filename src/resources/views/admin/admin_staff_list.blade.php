@@ -8,7 +8,6 @@
 <div class="requestListMain">
     <div class="requestListForm">
         <main class="request-management">
-            <!-- ページタイトル -->
             <h1 class="page-title">スタッフ一覧</h1>
 
             <div class="table-wrapper">
@@ -21,6 +20,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- スタッフデータを1件ずつ取り出し一覧表示 -->
                         @foreach($users as $user)
                             <tr>
                                 <td>{{ $user->name }}</td>

@@ -35,10 +35,14 @@
                 <div class="col-work">労働時間</div>
                 <div class="col-overtime">残業時間</div>
             </div>
+            <!-- 月ごとの勤怠データを1件ずつ表示 -->
             @foreach($monthlyData as $month => $data)
             <div class="table-row">
+                <!-- 月を表示 -->
                 <div class="col-month">{{ $month }}</div>
+                <!-- 労働時間を表示 -->
                 <div class="col-work">{{ $data['work_hours'] }}h {{ $data['work_minutes'] }}m</div>
+                <!-- 残業時間を表示 -->
                 <div class="col-overtime">{{ $data['overtime_hours'] }}h {{ $data['overtime_minutes'] }}m</div>
             </div>
             @endforeach

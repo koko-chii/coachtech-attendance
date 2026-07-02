@@ -6,6 +6,7 @@
 
 @section('content')
 <div id="attendance-list-container">
+    <!-- スタッフ一覧からの詳細画面 -->
     <h1>{{ $targetUser->name }}さんの勤怠</h1>
 
     <div id="month-selector">
@@ -29,6 +30,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- 年月日・曜日・勤怠データをを1日ずつ取得して一覧表示-->
                 @foreach($daysInMonth as $day)
                     @php
                         $dateStr = $day->format('Y-m-d');
@@ -37,6 +39,7 @@
                         $dayOfWeek = $wago[$day->dayOfWeek];
                     @endphp
                     <tr>
+                         <!-- 出勤・退勤・休憩・労働時間を表示-->
                         <td>{{ $day->format('m/d') }}({{ $dayOfWeek }})</td>
                         <td>{{ $record && $record->display_clock_in ? \Carbon\Carbon::parse($record->display_clock_in)->format('H:i') : '' }}</td>
                         <td>{{ $record && $record->display_clock_out ? \Carbon\Carbon::parse($record->display_clock_out)->format('H:i') : '' }}</td>

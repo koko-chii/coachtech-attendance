@@ -17,6 +17,7 @@
                 @endif
             </h1>
 
+            <!-- 承認待ちと承認済みの切替 -->
             <div class="tab-navigation">
                 <a href="?tab=pending" class="tab-item {{ request('tab') !== 'approved' ? 'is-active' : '' }}">承認待ち</a>
                 <a href="?tab=approved" class="tab-item {{ request('tab') === 'approved' ? 'is-active' : '' }}">承認済み</a>
@@ -39,8 +40,10 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- 承認待ちデータを1件ずつ取り出し一覧表示 -->
                                 @foreach ($pendingRequests as $request)
                                     <tr>
+                                        <!-- 名前・日付・備考・申請日 -->
                                         <td>承認待ち</td>
                                         <td>{{ $request->user->name ?? '' }}</td>
                                         <td>{{ $request->attendanceRecord->date ?? '' }}</td>

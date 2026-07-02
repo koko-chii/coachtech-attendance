@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="attendance-list-container">
-    <!-- 何月日の表示 -->
+    <!-- 念月日の表示 -->
     <h1>{{ $date->format('Y年n月j日') }}の勤怠</h1>
 
     <!-- 修正完了メッセージ -->

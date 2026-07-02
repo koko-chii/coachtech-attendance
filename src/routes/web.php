@@ -21,7 +21,7 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// Mailpitの画面へ簡単に移動するためのルート(開発が終わったら削除してOK)
+// Mailpitの画面へ簡単に移動するためのルート
 Route::get('/email/go-to-mailpit', function () {
     return redirect('http://localhost:8025');
 });
@@ -101,10 +101,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 管理者が修正ボタンが押したときの更新処理を実行するルート
         Route::patch('/attendance/{id}', [AdminAttendanceController::class, 'updateDetail'])->name('attendance.update');
 
+        // 管理者がスタッフ一覧ボタンを押した時のルート
         Route::get('/staff/list', [AdminAttendanceController::class, 'showStaffList'])->name('staff.list');
 
+        // 管理者がスタッフ一覧から指定したスタッフの詳細ボタンを押した時のルート
         Route::get('/attendance/staff/{id}', [AdminAttendanceController::class, 'showStaffAttendance'])->name('attendance.staff');
 
+        // 管理者が指定したスタッフの一覧画面からcsvボタンを押した時のルート
         Route::get('/attendance/staff/{id}/csv', [AdminAttendanceController::class, 'downloadCsv'])->name('attendance.staff.csv');
     });
 });

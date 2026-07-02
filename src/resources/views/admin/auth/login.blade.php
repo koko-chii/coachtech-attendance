@@ -18,13 +18,14 @@
         @endif
 
         <form action="{{ route('admin.login.submit') }}" method="POST" novalidate>
+           <!--不正なPOST送信を防ぐ認証トークン-->
             @csrf
 
             <div class="form-group">
                 <label class="form-label" for="email">メールアドレス</label>
                 <input class="form-input" type="email" id="email" name="email" value="{{ old('email') }}">
                 @error('email')
-                    <p class="error-message">{{ $message }}</p>
+                    <p class="error-message">{{ $message }}</p{{ $name }}>
                 @enderror
             </div>
 

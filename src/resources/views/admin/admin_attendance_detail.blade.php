@@ -12,7 +12,9 @@
         <h1 class="attendanceDetailTitle">勤怠詳細</h1>
 
         <form action="{{ route('admin.attendance.update', $attendance->id) }}" method="POST">
+            <!-- 不正なフォーム送信を防ぐための認証トークン-->
             @csrf
+            <!-- HTTPメソッドを更新処理に変更 -->
             @method('PATCH')
 
             <table class="attendanceTable">
@@ -53,11 +55,15 @@
                         <th>休憩</th>
                         <td>
                             <div class="timeRangeGroup">
+                                <!-- 休憩データのIDを更新用に送信 -->
                                 <input type="hidden" name="breaks[0][id]" value="{{ $attendance->breaks[0]->id ?? '' }}">
+                                <!-- 休憩開始時間の入力欄 -->
                                 <input class="inputTimeField" type="time" name="breaks[0][break_in]"
                                     value="{{ old('breaks.0.break_in', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_in ? \Carbon\Carbon::parse($attendance->breaks[0]->break_in)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
-                                <span class="timeSeparator">〜</span>
-                                <input class="inputTimeField" type="time" name="breaks[0][break_out]"
+                                    <!-- 区切り表示 -->
+                                    <span class="timeSeparator">〜</span>
+                                    <!-- 休憩終了入力欄 -->
+                                    <input class="inputTimeField" type="time" name="breaks[0][break_out]"
                                     value="{{ old('breaks.0.break_out', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_out ? \Carbon\Carbon::parse($attendance->breaks[0]->break_out)->format('H:i') : '') }}" {{ $isPending ? 'readonly' : '' }}>
                             </div>
 
