@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\AttendanceRecord;
 use App\Models\StampCorrectionRequest;
+// 日本語の関数のためシステムにテストだと認識させる目印を読み込み
 use PHPUnit\Framework\Attributes\Test;
 
 class T15_AdminAttendanceCorrectionTest extends TestCase
@@ -22,6 +23,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
         $attendance1 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
         $attendance2 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
 
+        // 承認待ちの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance1->id,
             'user_id' => $user->id,
@@ -29,6 +31,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'reason' => 'テスト理由',
             'requested_comment' => '承認待ちの申請データ',
         ]);
+        // 承認済みの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance2->id,
             'user_id' => $user->id,
@@ -37,8 +40,10 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'requested_comment' => '承認済みの申請データ',
         ]);
 
+        // 管理者ログインして管理者用申請一覧画面の承認待ちタブを表示
         $response = $this->actingAs($admin, 'admin')->get(route('admin.request.list', ['tab' => 'pending']));
 
+        // 画面表示の検証
         $response->assertStatus(200);
         $response->assertSee('承認待ちの申請データ');
         $response->assertDontSee('承認済みの申請データ');
@@ -67,6 +72,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'requested_comment' => '承認済みの申請データ',
         ]);
 
+        // 管理者ログインして管理者用申請一覧画面の承認済みタブを表示
         $response = $this->actingAs($admin, 'admin')->get(route('admin.request.list', ['tab' => 'approved']));
 
         $response->assertStatus(200);
@@ -79,12 +85,14 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
-        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id]);
+        $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id,'date' => today(),]);
 
         $requestData = StampCorrectionRequest::create([
             'attendance_record_id' => $attendance->id,
             'user_id' => $user->id,
             'status' => 'pending',
+            'requested_clock_in' => '09:00',
+            'requested_clock_out' => '18:00',
             'reason' => 'テスト理由',
             'requested_comment' => '詳細確認用コメント',
         ]);
@@ -92,6 +100,8 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
         $response = $this->actingAs($admin, 'admin')->get(route('admin.request.approve', ['attendance_correct_request_id' => $requestData->id]));
 
         $response->assertStatus(200);
+        $response->assertSee('09:00');
+        $response->assertSee('18:00');
         $response->assertSee('詳細確認用コメント');
         $response->assertSee('テスト理由');
     }
