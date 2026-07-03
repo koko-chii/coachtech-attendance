@@ -18,7 +18,7 @@
         @endif
 
         <form action="{{ route('admin.login.submit') }}" method="POST" novalidate>
-           <!--不正なPOST送信を防ぐ認証トークン-->
+            <!--不正なPOST送信を防ぐ認証トークン-->
             @csrf
 
             <div class="form-group">

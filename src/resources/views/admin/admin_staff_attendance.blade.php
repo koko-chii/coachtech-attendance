@@ -39,7 +39,7 @@
                         $dayOfWeek = $wago[$day->dayOfWeek];
                     @endphp
                     <tr>
-                         <!-- 出勤・退勤・休憩・労働時間を表示-->
+                        <!-- 出勤・退勤・休憩・労働時間を表示-->
                         <td>{{ $day->format('m/d') }}({{ $dayOfWeek }})</td>
                         <td>{{ $record && $record->display_clock_in ? \Carbon\Carbon::parse($record->display_clock_in)->format('H:i') : '' }}</td>
                         <td>{{ $record && $record->display_clock_out ? \Carbon\Carbon::parse($record->display_clock_out)->format('H:i') : '' }}</td>

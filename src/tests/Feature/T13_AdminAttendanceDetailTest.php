@@ -8,7 +8,9 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\AttendanceRecord;
 use App\Models\BreakLog;
+// 日時取得計算機能
 use Carbon\Carbon;
+// 日本語の関数のためシステムにテストだと認識させる目印を読み込み
 use PHPUnit\Framework\Attributes\Test;
 
 class T13_AdminAttendanceDetailTest extends TestCase
@@ -18,10 +20,14 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 勤怠詳細画面に表示されるデータが選択したものになっている(): void
     {
+        // 管理者用ダミーデータ作成
         $admin = Admin::factory()->create();
+        // スタッフ用ダミーデータ作成
         $user = User::factory()->create(['name' => '詳細テスト太郎']);
+        // 本日の日付をcarbonオブジェクトで年月日形式で取得
         $today = Carbon::today()->format('Y-m-d');
 
+        // ダミーの勤怠データを作成
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
             'date' => $today,
@@ -30,12 +36,14 @@ class T13_AdminAttendanceDetailTest extends TestCase
             'comment' => 'テスト用備考サンプル',
         ]);
 
+        // ダミーの休憩データを作成
         BreakLog::create([
             'attendance_record_id' => $attendance->id,
             'break_in' => '12:00:00',
             'break_out' => '13:00:00',
         ]);
 
+        // 管理者でログインして指定したIDの勤怠詳細画面を表示できるか検証
         $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.detail', ['id' => $attendance->id]));
 
         $response->assertStatus(200);
@@ -53,12 +61,14 @@ class T13_AdminAttendanceDetailTest extends TestCase
         $admin = Admin::factory()->create();
         $attendance = AttendanceRecord::factory()->create();
 
+        // 管理者ログインで指定したIDの管理者用勤怠詳細画面にアクセスし、修正時刻のエラーを検証
         $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '18:00',
             'clock_out' => '09:00',
             'comment' => '出勤時間エラーテスト',
         ]);
 
+        // 勤怠詳細画面を再表示し、指定したエラーメッセージが表示されることを検証
         $response->assertStatus(302);
         $response->assertSessionHasErrors([
             'clock_in' => '出勤時間もしくは退勤時間が不適切な値です'
@@ -74,6 +84,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
         $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
+            // 既存の休憩データはなく、休憩データを作成し設定
             'breaks' => [
                 [
                     'id' => null,
@@ -129,7 +140,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertSessionHasErrors([
-            'comment'
+            'comment' => '備考を記入してください',
         ]);
     }
 }

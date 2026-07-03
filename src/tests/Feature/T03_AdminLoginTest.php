@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+// 日本語の関数のためシステムにテストだと認識させる目印を読み込み
 use PHPUnit\Framework\Attributes\Test;
 
 class T03_AdminLoginTest extends TestCase

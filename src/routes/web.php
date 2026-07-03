@@ -1,6 +1,6 @@
 <?php
 
-// laravel的路由功能加载
+// ルートを定義するための読み込み
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceController;
@@ -85,10 +85,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 修正申請一覧画面
         Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
-        
+
         // 修正申請承認画面
         Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
-        
+
         // 修正申請の承認処理実行
         Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceController::class, 'approveRequest'])->name('request.approve');
 

@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Admin;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
-// 日本語メソッド名をテストだと認識させるPHPUnitの#[Test]属性を使用するために読み込み
+// 日本語の関数のためシステムにテストだと認識させる目印を読み込み
 use PHPUnit\Framework\Attributes\Test;
 
 // 管理者用一覧画面のテストを行うクラス
@@ -43,12 +43,12 @@ class T12_AdminAttendanceListTest extends TestCase
         // 前日の日付を画面表示用のYYYY年M月D日形式で取得
         $previousDayDisplay = Carbon::today()->subDay()->isoFormat('YYYY年M月D日');
 
-        //管理者用一覧画面へアクセス
+        // 理者用一覧画面へアクセス
         $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list', ['date' => $previousDay]));
 
-        //正常に表示することを確認
+        // 正常に表示することを確認
         $response->assertStatus(200);
-        //前日の勤怠情報が表示されることを確認
+        // 前日の勤怠情報が表示されることを確認
         $response->assertSee($previousDayDisplay);
     }
 
@@ -57,17 +57,17 @@ class T12_AdminAttendanceListTest extends TestCase
     {
         $admin = Admin::factory()->create();
 
-        //翌日の日付を検索用のY-m-d形式で取得
+        // 翌日の日付を検索用のY-m-d形式で取得
         $nextDay = Carbon::today()->addDay()->format('Y-m-d');
-        //翌日の日付を画面表示用のYYYY年M月D日型式で取得
+        // 翌日の日付を画面表示用のYYYY年M月D日型式で取得
         $nextDayDisplay = Carbon::today()->addDay()->isoFormat('YYYY年M月D日');
 
-        //管理者用一覧画面へアクセス
+        // 管理者用一覧画面へアクセス
         $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list', ['date' => $nextDay]));
 
-        //正常に表示されることを確認
+        // 正常に表示されることを確認
         $response->assertStatus(200);
-        //翌日の勤怠情報が表示されることを確認
+        // 翌日の勤怠情報が表示されることを確認
         $response->assertSee($nextDayDisplay);
     }
 
@@ -76,14 +76,14 @@ class T12_AdminAttendanceListTest extends TestCase
     {
         $admin = Admin::factory()->create();
 
-        //テスト用ユーザーデータを作成
+        // テスト用ユーザーデータを作成
         $user1 = User::factory()->create(['name' => 'テスト太郎']);
         $user2 = User::factory()->create(['name' => 'テスト次郎']);
 
-        //本日の日付をY-m-d形式で取得
+        // 本日の日付をY-m-d形式で取得
         $today = Carbon::today()->format('Y-m-d');
 
-        //テスト用ユーザー1勤怠データを作成
+        // テスト用ユーザー1勤怠データを作成
         AttendanceRecord::factory()->create([
             'user_id' => $user1->id,
             'date' => $today,
@@ -99,12 +99,12 @@ class T12_AdminAttendanceListTest extends TestCase
             'clock_out' => $today . ' 19:00:00',
         ]);
 
-        //管理者用一覧画面へアクセス
+        // 管理者用一覧画面へアクセス
         $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list'));
 
-        //正常に表示しすることを確認
+        // 正常に表示しすることを確認
         $response->assertStatus(200);
-        //ユーザー1・ユーザー２の勤怠データが表示されることを確認
+        // ユーザー1・ユーザー２の勤怠データが表示されることを確認
         $response->assertSee('テスト太郎');
         $response->assertSee('09:00');
         $response->assertSee('18:00');
