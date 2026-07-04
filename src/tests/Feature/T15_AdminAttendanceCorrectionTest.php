@@ -20,6 +20,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
+        // テスト用で2件のスタッフの勤怠データを作成
         $attendance1 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
         $attendance2 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
 
@@ -54,9 +55,11 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
+        // テスト用で2件のスタッフの勤怠データを作成
         $attendance1 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
         $attendance2 = AttendanceRecord::factory()->create(['user_id' => $user->id]);
 
+        // 承認待ちの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance1->id,
             'user_id' => $user->id,
@@ -64,6 +67,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'reason' => 'テスト理由',
             'requested_comment' => '承認待ちの申請データ',
         ]);
+        // 承認済みの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance2->id,
             'user_id' => $user->id,
@@ -85,8 +89,10 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
+        // 本日の日付と作成したテスト用スタッフの勤怠データを作成
         $attendance = AttendanceRecord::factory()->create(['user_id' => $user->id,'date' => today(),]);
 
+         // 承認待ちの修正申請データの作成
         $requestData = StampCorrectionRequest::create([
             'attendance_record_id' => $attendance->id,
             'user_id' => $user->id,
@@ -97,6 +103,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'requested_comment' => '詳細確認用コメント',
         ]);
 
+        // 管理者ログインして作成したスタッフの管理者用修正申請承認画面を表示
         $response = $this->actingAs($admin, 'admin')->get(route('admin.request.approve', ['attendance_correct_request_id' => $requestData->id]));
 
         $response->assertStatus(200);
@@ -111,12 +118,14 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
     {
         $admin = Admin::factory()->create();
         $user = User::factory()->create();
+        // テスト用勤怠データを作成
         $attendance = AttendanceRecord::factory()->create([
             'user_id' => $user->id,
             'clock_in' => '09:00:00',
             'clock_out' => '18:00:00'
         ]);
 
+        // 承認待ちの修正申請データを作成
         $requestData = StampCorrectionRequest::create([
             'attendance_record_id' => $attendance->id,
             'user_id' => $user->id,
@@ -127,12 +136,15 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'reason' => 'テスト理由',
         ]);
 
+        // 管理者ログインして作成したスタッフの管理者用修正申請承認画面を表示し、承認ボタンを押す
         $response = $this->actingAs($admin, 'admin')->post(route('admin.request.approve', ['attendance_correct_request_id' => $requestData->id]), [
             'action' => 'approve'
         ]);
 
+        // 承認後、リダイレクトで管理者用修正承認画面を表示しなおす
         $response->assertStatus(302);
-        
+
+        // データベースの勤怠データが修正値に反映していることを検証
         $this->assertDatabaseHas('attendance_records', [
             'id' => $attendance->id,
             'clock_in' => '10:00:00',
@@ -140,6 +152,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'comment' => '承認後に反映される備考',
         ]);
 
+        // データベースの勤怠データが承認済みに更新されていることを検証
         $this->assertDatabaseHas('stamp_correction_requests', [
             'id' => $requestData->id,
             'status' => 'approved',
