@@ -1,5 +1,8 @@
+@import url('https://googleapis.com');
+
 .report-wrapper {
     max-width: 1000px;
+    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; /* 使用するFontsを指定 */
     margin: 0 auto;
     padding: 30px 20px;
     font-family: sans-serif;
