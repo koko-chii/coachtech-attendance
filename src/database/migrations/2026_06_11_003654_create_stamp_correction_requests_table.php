@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 // マイグレーション機能を継承した名前のないクラス(設置)を返す
 return new class extends Migration {
-    
+
     // 修正(更新)するための関数(機能)
     public function up(): void {
         // 勤怠修正申請のテーブルを設計を作成して操作
@@ -20,9 +20,8 @@ return new class extends Migration {
             $table->time('requested_clock_in')->nullable();
             $table->time('requested_clock_out')->nullable();
             $table->json('requested_breaks')->nullable();
-            $table->text('requested_comment')->nullable();
+            $table->text('comment')->nullable();
             $table->string('status')->default('pending');
-            $table->text('reason');
             $table->timestamps();
         });
     }

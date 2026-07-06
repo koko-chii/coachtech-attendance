@@ -9,7 +9,7 @@
 @section('content')
 <!-- 勤怠一覧画面全体のレイアウトを整えるコンテナ -->
 <div id="attendance-list-container">
-    
+
     <h1>勤怠一覧</h1>
 
     <!-- 指定月とその前月・翌月の選択欄 -->

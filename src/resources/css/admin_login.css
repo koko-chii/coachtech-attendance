@@ -1,4 +1,5 @@
-.login-page-only {
+/* ログイン画面全体 */
+login-page-only {
     box-sizing: border-box;
     display: block;
     width: 100vw;
@@ -9,6 +10,7 @@
     z-index: 1;
 }
 
+/* ログインフォーム */
 .login-container {
     display: block;
     width: 100%;
@@ -18,6 +20,7 @@
     background-color: transparent;
 }
 
+/* タイトル */
 .login-title {
     display: block;
     width: 100%;
@@ -28,6 +31,7 @@
     text-align: center;
 }
 
+/* エラーメッセージ */
 .error-message {
     display: block;
     width: 100%;
@@ -38,6 +42,7 @@
     text-align: center;
 }
 
+/* 入力欄 */
 .form-group {
     display: block;
     width: 100%;
@@ -63,6 +68,7 @@
     background-color: #ffffff;
 }
 
+/* ログインボタン */
 .form-button {
     display: block;
     width: 100%;

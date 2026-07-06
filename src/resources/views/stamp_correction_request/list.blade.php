@@ -60,7 +60,7 @@
                                         <!-- 対象日時を表示 -->
                                         <td>{{ $request->target_date ?? ($request->attendanceRecord->date ?? '') }}</td>
                                         <!-- 申請理由 -->
-                                        <td>{{ $request->requested_remarks ?? $request->reason }}</td>
+                                        <td>{{ $request->comment ?? '' }}</td>
                                         <!-- 申請日 -->
                                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                                         <!-- 詳細ページへ遷移 -->
@@ -104,7 +104,7 @@
                                         <!-- 対象日時を表示 -->
                                         <td>{{ $request->target_date ?? ($request->attendanceRecord->date ?? '') }}</td>
                                         <!-- 申請理由 -->
-                                        <td>{{ $request->requested_remarks ?? $request->reason }}</td>
+                                        <td>{{ $request->comment ?? '' }}</td>
                                         <!-- 申請日 -->
                                         <td>{{ $request->created_at->format('Y/m/d') }}</td>
                                         <!-- 詳細ページへ遷移 -->

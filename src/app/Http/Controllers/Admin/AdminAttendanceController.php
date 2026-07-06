@@ -250,7 +250,7 @@ class AdminAttendanceController extends Controller
         $callback = function () use ($records) {
             // 出力先を準備
             $stream = fopen('php://output', 'w');
-            // csvヘッダーの作成 
+            // csvヘッダーの作成
             fputcsv($stream, [mb_convert_encoding('日付', 'SJIS-win', 'UTF-8'), mb_convert_encoding('出勤', 'SJIS-win', 'UTF-8'), mb_convert_encoding('退勤', 'SJIS-win', 'UTF-8'),
             mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'), mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')]);
             // 計勤怠データごとに休憩時間の計算

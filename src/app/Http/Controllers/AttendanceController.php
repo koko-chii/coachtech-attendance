@@ -37,6 +37,11 @@ class AttendanceController extends Controller
             ->whereDate('date', $today)
             ->first();
 
+        // 勤怠データに紐づく修正申請データ
+        $correctionRequest = $attendance
+            ? StampCorrectionRequest::where('attendance_record_id', $attendance->id)->latest()->first()
+            : null;
+
         // 休憩中ではないフラグ状態を変数(箱)に入れる
         $is_breaking = false;
         // 退勤済みではないフラグ状態を変数(箱)に入れる
@@ -61,12 +66,12 @@ class AttendanceController extends Controller
         // 勤怠管理画面に表示する
         return view('attendance', [
             'attendance'     => $attendance,
+            'correctionRequest' => $correctionRequest,
             'is_breaking'    => $is_breaking,
             'is_clocked_out' => $is_clocked_out,
             'today'          => $today->format('Y年n月j日'),
         ]);
     }
-
 
     // 出勤ボタンが押されたときの関数(機能)
     public function clockIn(): RedirectResponse
@@ -254,24 +259,26 @@ class AttendanceController extends Controller
         // 勤怠データ1件に関連する休憩情報と申請情報を取得
         $record->load(['breaks', 'applications']);
 
-
         // 承認待ち状態の申請データがあるか調べる
         $isPending = $record->applications ? $record->applications->contains('status', 'pending') : false;
+        // 承認待ち、または承認済みの最新申請データを取得して変数に代入
+        $correctionRequest = $record->applications ? $record->applications->sortByDesc('created_at')->first() : null;
 
         // 承認待ちデータがある場合、
         if ($isPending) {
             $pendingData = $record->applications->where('status', 'pending')->first();
+            $correctionRequest = $pendingData;
 
             // 出勤時刻・退勤時刻・備考を勤怠データに上書き
             if ($pendingData) {
                 $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
                 $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
-                $record->comment = $pendingData->requested_comment;
+                $record->comment = $pendingData->comment;
 
                 // 修正申請に休憩データがある場合
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
-                        
+
                     // 休憩データ1件を表すものを作成して返す
                         return new BreakLog([
                             'id' => $b['id'] ?? ($index + 1),
@@ -285,8 +292,13 @@ class AttendanceController extends Controller
             }
         }
 
+        // 承認済み、かつ過去の申請データが存在する場合、勤怠データの備考に上書き
+        if (!$isPending && $correctionRequest && $correctionRequest->comment) {
+            $record->comment = $correctionRequest->comment;
+        }
+
         // 勤怠詳細画面を表示する
-        return view('attendance_detail', compact('record', 'isPending'));
+        return view('attendance_detail', compact('record', 'isPending', 'correctionRequest'));
     }
 
     // 修正ボタン押下後の画面切り替え機能を使うための関数(機能)
@@ -323,7 +335,7 @@ class AttendanceController extends Controller
 
         // 新しい休憩時間が入力されているか確認
         if ($request->filled('new_break_in') || $request->filled('new_break_out')) {
-            
+
             // 新しい休憩データを配列の最後に追加
             $breaks[] = [
                 'break_in'  => $request->input('new_break_in'),
@@ -338,9 +350,8 @@ class AttendanceController extends Controller
             'requested_clock_in'   => $request->input('clock_in'),
             'requested_clock_out'  => $request->input('clock_out'),
             'requested_breaks'     => $breaks,
-            'requested_remarks'    => $request->input('comment'),
             'status'               => 'pending',
-            'reason'               => $request->input('comment'),
+            'comment' => $request->input('comment'),
         ]);
 
         // 申請一覧画面へ遷移する

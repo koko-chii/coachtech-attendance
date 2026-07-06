@@ -60,18 +60,10 @@
                         @endforeach
                     @endif
 
-                    <!-- 申請時に入力されデータベースに保存された申請理由を、備考欄に表示している -->
-                    <tr>
-                        <th>申請理由</th>
-                        <td>
-                            <span class="textReasonField">{{ $requestData->reason }}</span>
-                        </td>
-                    </tr>
-
                     <tr>
                         <th>備考</th>
                         <td>
-                            <textarea class="textareaRemarksField" name="comment" readonly>{{ $requestData->requested_comment }}</textarea>
+                            <textarea class="textareaRemarksField" name="comment" readonly>{{ $requestData->comment }}</textarea>
                         </td>
                     </tr>
                 </tbody>

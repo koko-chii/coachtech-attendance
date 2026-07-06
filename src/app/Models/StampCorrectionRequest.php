@@ -17,9 +17,8 @@ class StampCorrectionRequest extends Model
         'requested_clock_in',
         'requested_clock_out',
         'requested_breaks',
-        'requested_comment',
+        'comment',
         'status',
-        'reason',
     ];
 
     // 休憩申請データを配列扱いに変換する設定

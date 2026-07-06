@@ -1,7 +1,9 @@
+/* メイン画面 */
 body .main-content {
     background-color: #f3f4f6;
 }
 
+/* 勤怠詳細画面全体 */
 .attendanceDetailMain {
     width: 80%;
     margin-top: 30px;
@@ -9,6 +11,7 @@ body .main-content {
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }
 
+/* 勤怠詳細フォーム */
 .attendanceDetailForm {
     width: 70%;
     max-width: 1000px;
@@ -17,6 +20,7 @@ body .main-content {
     box-sizing: border-box;
 }
 
+/* タイトル */
 .attendanceDetailTitle {
     font-size: 24px;
     font-weight: 900;
@@ -28,17 +32,7 @@ body .main-content {
     box-sizing: border-box;
 }
 
-.alertMessage {
-    background-color: #ffebeb;
-    color: #ff0000;
-    padding: 14px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    border: 1px solid #ffd1d1;
-    font-size: 16px;
-}
-
+/* 勤怠詳細テーブル */
 .attendanceTable {
     width: 100%;
     background-color: #ffffff;
@@ -83,6 +77,7 @@ body .main-content {
     padding-right: 60px;
 }
 
+/* 日付表示 */
 .dateDisplayGroup {
     display: flex;
     align-items: center;
@@ -101,6 +96,7 @@ body .main-content {
     box-sizing: border-box;
 }
 
+/* 時刻乳入力 */
 .timeRangeGroup {
     display: flex;
     align-items: center;
@@ -128,10 +124,12 @@ body .main-content {
     border-color: #e5e5e5;
 }
 
+/* 時計アイコン非表示 */
 .inputTimeField::-webkit-calendar-picker-indicator {
-    display: none !important;
+    display: none;
 }
 
+/* ～区切り文字 */
 .timeSeparator {
     color: #4b5563;
     font-weight: normal;
@@ -140,6 +138,7 @@ body .main-content {
     text-align: center;
 }
 
+/* 備考 */
 .textareaRemarksField {
     width: 100%;
     max-width: 420px;
@@ -162,6 +161,7 @@ body .main-content {
     border-color: #e5e5e5;
 }
 
+/* 更新ボタンエリア */
 .formActionsPanel {
     display: flex;
     justify-content: flex-end;
@@ -186,6 +186,7 @@ body .main-content {
     opacity: 0.8;
 }
 
+/* 入力エラーメッセージ */
 .inputErrorMessage {
     color: #ff4d4f;
     font-size: 14px;
@@ -196,6 +197,7 @@ body .main-content {
     text-align: left;
 }
 
+/* 承認待ちメッセージエリア */
 .approvalPendingOutside {
     width: 70%;
     max-width: 1000px;

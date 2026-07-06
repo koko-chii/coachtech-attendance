@@ -128,7 +128,7 @@
                                         name="comment"
                                         class="textareaRemarksField"
                                         {{ $isPending ? 'disabled' : '' }}
-                                    >{{ old('comment', $record->comment) }}</textarea>
+                                    >{{ old('comment', $correctionRequest->comment ?? '') }}</textarea>
 
                                     @error('comment')
                                         <p class="inputErrorMessage">{{ $message }}</p>

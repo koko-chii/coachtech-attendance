@@ -47,7 +47,7 @@
                                         <td>承認待ち</td>
                                         <td>{{ $request->user->name ?? '' }}</td>
                                         <td>{{ $request->attendanceRecord->date ?? '' }}</td>
-                                        <td>{{ $request->requested_comment ?? '' }}</td>
+                                        <td>{{ $request->comment ?? '' }}</td>
                                         <td>{{ $request->created_at ? $request->created_at->format('Y/m/d') : '' }}</td>
                                         <td>
                                             <a class="button-link" href="{{ route('admin.request.approve', ['attendance_correct_request_id' => $request->id]) }}">詳細</a>
@@ -80,7 +80,7 @@
                                         <td>承認済み</td>
                                         <td>{{ $request->user->name ?? '' }}</td>
                                         <td>{{ $request->attendanceRecord->date ?? '' }}</td>
-                                        <td>{{ $request->requested_comment ?? '' }}</td>
+                                        <td>{{ $request->comment ?? '' }}</td>
                                         <td>{{ $request->created_at ? $request->created_at->format('Y/m/d') : '' }}</td>
                                         <td>
                                             <a class="button-link" href="{{ route('admin.request.approve', ['attendance_correct_request_id' => $request->id]) }}">詳細</a>

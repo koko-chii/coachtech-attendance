@@ -19,7 +19,7 @@
         <!-- 退勤してない場合 -->
         @elseif ($attendance && !$attendance->clock_out)
             <!-- もし休憩中なら休憩中表示 -->
-            @if ($is_breaking) 
+            @if ($is_breaking)
                 <div class="status-tag">休憩中</div>
             <!-- そうでないなら出勤中表示 -->
             @else
@@ -74,7 +74,7 @@
                     </form>
                 @endif
 
-            <!--退勤している場合のメッセージ表示  -->   
+            <!--退勤している場合のメッセージ表示  -->
             @else
                 <p class="attendance-end-message">お疲れ様でした。</p>
             @endif

@@ -1,13 +1,18 @@
+/* 全要素の初期設定 */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
+
+/* 画面全体 */
 body {
     background-color: #f6f8fa;
     font-family: "Helvetica Neue", Arial, sans-serif;
     color: #000000;
 }
+
+/* ヘッダー */
 .header {
     display: flex;
     justify-content: space-between;
@@ -17,28 +22,36 @@ body {
     padding: 0 40px;
     background-color: #000000;
 }
+
+/* ロゴ /*
 .header__logo {
     display: flex;
     align-items: center;
 }
+
 .header__logo img {
     height: auto;
     max-height: 40px;
     width: auto;
     display: block;
 }
+
+/* ナビゲーション */
 .header__nav {
     display: block;
 }
+
 .header__nav-list {
     display: flex;
     align-items: center;
     list-style: none;
     gap: 60px;
 }
+
 .header__nav-item {
     display: block;
 }
+
 .header__nav-link {
     color: #ffffff;
     text-decoration: none;
@@ -46,9 +59,12 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
+
 .header__nav-link:hover {
     opacity: 0.8;
 }
+
+/* メイン画面 */
 .main-content {
     display: block;
     width: 100%;
