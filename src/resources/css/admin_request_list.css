@@ -1,5 +1,7 @@
+/* Google Fonts読み込み */
 @import url('https://googleapis.com');
 
+/* 画面全体 */
 body {
     margin: 0;
     padding: 0;
@@ -9,6 +11,7 @@ body {
     color: #333333;
 }
 
+/* 申請一覧画面全体 */
 .requestListMain {
     width: 100%;
     min-height: calc(100vh - 70px);
@@ -16,17 +19,20 @@ body {
     box-sizing: border-box;
 }
 
+/* 申請一覧フォーム */
 .requestListForm {
     width: 55%;
     max-width: 1450px;
     margin: 0 auto;
 }
 
+/* 申請一覧エリア */
 .request-management {
     padding-top: 40px;
     padding-bottom: 60px;
 }
 
+/* タイトル */
 .page-title {
     font-size: 26px;
     font-weight: bold;
@@ -45,13 +51,7 @@ body {
     margin-right: 16px;
 }
 
-.success-message {
-    color: #ff4d4f;
-    font-size: 16px;
-    font-weight: bold;
-    margin-left: 20px;
-}
-
+/* タブ切り替え */
 .tab-navigation {
     display: flex;
     gap: 80px;
@@ -73,6 +73,7 @@ body {
     color: #000000;
 }
 
+/* テーブル全体 */
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
@@ -87,12 +88,14 @@ body {
     text-align: left;
 }
 
+/* テーブル共通 */
 .table-request th,
 .table-request td {
     font-size: 15px;
     vertical-align: middle;
 }
 
+/* テーブル見出し */
 .table-request th {
     color: #888888;
     font-weight: 700;
@@ -100,7 +103,9 @@ body {
     padding: 12px 10px;
 }
 
+/* テーブル内容 */
 .table-request tbody td {
+    color: #888888;
     border-bottom: 2px solid #f0f2f5;
     padding: 12px 10px;
 }
@@ -115,6 +120,7 @@ body {
     padding-right: 140px;
 }
 
+/* 詳細リンク */
 .button-link {
     color: #000000;
     font-weight: bold;

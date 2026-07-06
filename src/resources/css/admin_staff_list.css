@@ -1,30 +1,36 @@
+/* Google Fonts読み込み */
 @import url('https://googleapis.com');
 
+/* メイン画面 */
 body .main-content {
     background-color: #f3f4f6;
 }
 
+/* 画面全体 */
 body {
     margin: 0;
     padding: 0;
-    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; /* 使用するFontsを指定 */
     font-weight: 700;
     background-color: #f6f8fa;
     color: #333333;
 }
 
+/* スタッフ一覧画面全体 */
 .requestListMain {
     width: 100%;
     padding-top: 60px;
     padding-bottom: 60px;
 }
 
+/* スタッフ一覧エリア */
 .requestListForm {
-    width: 70%;
-    max-width: 900px;
+    width: 80%;
+    max-width: 950px;
     margin: 0 auto;
 }
 
+/* タイトル */
 .page-title {
     font-size: 26px;
     font-weight: bold;
@@ -35,6 +41,7 @@ body {
     color: #333333;
 }
 
+/* タイトル左の装飾 */
 .page-title::before {
     content: "";
     display: inline-block;
@@ -44,6 +51,7 @@ body {
     margin-right: 16px;
 }
 
+/* テーブル全体 */
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
@@ -52,6 +60,7 @@ body {
     padding: 10px 0;
 }
 
+/* スタッフ一覧テーブル */
 .table-request {
     width: 100%;
     border-collapse: collapse;
@@ -64,6 +73,7 @@ body {
     text-align: center;
 }
 
+/* テーブル見出し */
 .table-request th {
     color: #888888;
     font-weight: 700;
@@ -71,6 +81,7 @@ body {
     border-bottom: 3px solid #f0f2f5;
 }
 
+/* テーブル行 */
 .table-request tbody tr {
     border-bottom: 3px solid #f0f2f5;
 }
@@ -79,6 +90,7 @@ body {
     border-bottom: none;
 }
 
+/* テーブル内容 */
 .table-request td {
     color: #888888;
     font-weight: 700;
@@ -102,6 +114,7 @@ body {
     width: 40%;
 }
 
+/* 詳細リンク */
 .button-link {
     color: #000000;
     font-weight: bold;

@@ -1,16 +1,23 @@
+/* Google Fonts読み込み */
+@import url('https://googleapis.com');
+
+/* メイン画面 */
 body .main-content {
     background-color: #f3f4f6;
 }
 
+/* スタッフ別一覧画面全体 */
 #attendance-list-container {
     width: 90%;
     max-width: 1000px;
     margin: 40px auto;
+    font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; /* 使用するFontsを指定 */
     padding: 0 20px;
     box-sizing: border-box;
     font-family: 'M PLUS 1p', sans-serif;
 }
 
+/* 画面タイトル */
 #attendance-list-container h1 {
     font-size: 24px;
     font-weight: 900;
@@ -20,6 +27,7 @@ body .main-content {
     margin-bottom: 30px;
 }
 
+/* 月切替エリア */
 #month-selector {
     display: flex;
     align-items: center;
@@ -44,12 +52,14 @@ body .main-content {
     background-color: #f8fafc;
 }
 
+/* 表示中の月 */
 .current-month-display {
     font-size: 20px;
     font-weight: bold;
     color: #333333;
 }
 
+/* テーブル全体 */
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
@@ -59,6 +69,7 @@ body .main-content {
     margin-bottom: 24px;
 }
 
+/* スタッフ別一覧テーブル */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -72,12 +83,14 @@ table td {
     vertical-align: middle;
 }
 
+/* テーブル見出し */
 table th {
     color: #888888;
     font-weight: 700;
     border-bottom: 3px solid #f0f2f5;
 }
 
+/* テーブル行 */
 table tbody tr {
     border-bottom: 3px solid #f0f2f5;
 }
@@ -86,11 +99,13 @@ table tbody tr:last-child {
     border-bottom: none;
 }
 
+/* テーブル内容 */
 table td {
     color: #888888;
     font-weight: 700;
 }
 
+/* 詳細リンク */
 .detail-link {
     color: #000000;
     font-weight: bold;
@@ -101,6 +116,7 @@ table td {
     text-decoration: underline;
 }
 
+/* csvダウンロードボタンエリア */
 .csv-button-panel {
     display: flex;
     justify-content: flex-end;

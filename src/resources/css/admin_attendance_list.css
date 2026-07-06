@@ -1,5 +1,5 @@
-/* Google Fontsを読み込み */
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@400;700;900&display=swap');
+/* Google Fonts読み込み */
+@import url('https://googleapis.com');
 
 /* 勤怠一覧画面全体 */
 .attendance-list-container {
