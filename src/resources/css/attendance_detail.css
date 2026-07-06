@@ -1,5 +1,7 @@
+/* Google Fonts読み込み */
 @import url('https://googleapis.com');
 
+/* 勤怠詳細画面全体 */
 .attendanceDetailMain {
     width: 100%;
     background-color: #f3f4f6;
@@ -12,6 +14,7 @@
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
 }
 
+/* 勤怠詳細フォーム */
 .attendanceDetailForm {
     width: 70%;
     max-width: 1000px;
@@ -20,6 +23,7 @@
     box-sizing: border-box;
 }
 
+/* タイトル */
 .attendanceDetailTitle {
     font-size: 24px;
     font-weight: 900;
@@ -31,6 +35,7 @@
     box-sizing: border-box;
 }
 
+/* エラーメッセージ */
 .alertMessage {
     background-color: #ffebeb;
     color: #ff0000;
@@ -42,6 +47,7 @@
     font-size: 16px;
 }
 
+/* 勤怠詳細テーブル */
 .attendanceTable {
     width: 100%;
     background-color: #ffffff;
@@ -54,6 +60,7 @@
     margin-bottom: 24px;
 }
 
+/* テーブル行 */
 .attendanceTable tr {
     border-bottom: 1px solid #e5e5e5;
 }
@@ -69,6 +76,7 @@
     vertical-align: middle;
 }
 
+/* テーブル見出し */
 .attendanceTable th {
     width: 25%;
     color: #9ca3af;
@@ -77,6 +85,7 @@
     padding-left: 60px;
 }
 
+/* テーブル内容 */
 .attendanceTable td {
     width: 75%;
     color: #4b5563;
@@ -86,6 +95,7 @@
     padding-right: 60px;
 }
 
+/* 日付表示 */
 .dateDisplayGroup {
     display: flex;
     align-items: center;
@@ -99,6 +109,7 @@
     order: 1;
 }
 
+/* 年月日の間隔両性 */
 .dateDisplayGroup::before {
     content: "";
     display: block;
@@ -106,6 +117,7 @@
     order: 2;
 }
 
+/* 日付表示 */
 .dateDayText {
     width: 130px;
     text-align: left;
@@ -113,12 +125,14 @@
     order: 3;
 }
 
+/* 時間入力エリア */
 .timeRangeGroup {
     display: flex;
     align-items: center;
     gap: 24px;
 }
 
+/* 時間入力欄 */
 .inputTimeField {
     width: 130px;
     height: 40px;
@@ -133,15 +147,18 @@
     text-align: center;
 }
 
+/* 未入力時の表示 */
 .inputTimeField:invalid::-webkit-datetime-edit {
     color: transparent !important;
 }
 
+/* 時間入力アイコン非表示 */
 .inputTimeField::-webkit-calendar-picker-indicator {
     display: none !important;
     -webkit-appearance: none !important;
 }
 
+/* 入力不可時　*/
 .inputTimeField:disabled {
     background-color: #f9fafb;
     color: #9ca3af;
@@ -149,6 +166,7 @@
     border-color: #e5e5e5;
 }
 
+/* ～区切り */
 .timeSeparator {
     color: #4b5563;
     font-weight: normal;
@@ -157,6 +175,7 @@
     text-align: center;
 }
 
+/* 備考 */
 .textareaRemarksField {
     width: 100%;
     max-width: 420px;
@@ -172,6 +191,7 @@
     resize: none;
 }
 
+/* 備考入力不可時 */
 .textareaRemarksField:disabled {
     background-color: #f9fafb;
     color: #9ca3af;
@@ -179,6 +199,7 @@
     border-color: #e5e5e5;
 }
 
+/* ボタンエリア */
 .formActionsPanel {
     display: flex;
     justify-content: flex-end;
@@ -203,6 +224,7 @@
     opacity: 0.8;
 }
 
+/* 承認待ちメッセージ */
 .approvalPendingMessage {
     color: #ff4d4f;
     font-size: 20px;
@@ -215,6 +237,7 @@
     clear: both;
 }
 
+/* 入力エラーメッセージ */
 .inputErrorMessage {
     color: #ff4d4f;
     font-size: 14px;
@@ -225,12 +248,14 @@
     text-align: left;
 }
 
-.inputTimeField {
-    color: #333333;
+/* カレンダーアイコン表示 */
+.inputTimeField::-webkit-calendar-picker-indicator {
     opacity: 1;
 }
 
-.inputTimeField::-webkit-calendar-picker-indicator {
+/* 時間入力欄の文字色 */
+.inputTimeField {
+    color: #333333;
     opacity: 1;
 }
 

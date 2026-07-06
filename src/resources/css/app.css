@@ -1,10 +1,11 @@
-
+/* 画面全体 */
 html body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
 }
 
+/* ヘッダー */
 html body .header {
     background-color: #000000;
     color: #ffffff;
@@ -12,6 +13,7 @@ html body .header {
     box-sizing: border-box;
 }
 
+/* ヘッダー内 */
 html body .header-inner {
     padding: 15px 40px;
     display: flex;
@@ -21,17 +23,20 @@ html body .header-inner {
     box-sizing: border-box;
 }
 
+/* ロゴ */
 html body .logo {
     display: flex;
     align-items: center;
 }
 
+/* ロゴ画像 */
 html body .logo img {
     height: 40px;
     width: 400px;
     display: block;
 }
 
+/* ナビゲーション */
 html body .nav a {
     color: #ffffff;
     text-decoration: none;
@@ -41,6 +46,7 @@ html body .nav a {
     letter-spacing: 0.5px;
 }
 
+/* ヘッダー全体レイアウト */
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -51,6 +57,7 @@ html body .nav a {
     box-sizing: border-box;
 }
 
+/* メイン画面 */
 .main-content {
     display: block;
     width: 100%;
@@ -59,6 +66,7 @@ html body .nav a {
     background-color: #f6f8fa;
 }
 
+/* メイン画面直下にある子要素対象 */
 .main-content > * {
     margin-left: auto;
     margin-right: auto;

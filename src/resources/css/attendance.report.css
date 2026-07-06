@@ -1,5 +1,7 @@
+/* Google Fonts読み込み */
 @import url('https://googleapis.com');
 
+/* レポート画面全体 */
 .report-wrapper {
     max-width: 1000px;
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; /* 使用するFontsを指定 */
@@ -9,6 +11,7 @@
     box-sizing: border-box;
 }
 
+/* タイトル */
 .report-title {
     font-size: 22px;
     font-weight: bold;
@@ -16,16 +19,19 @@
     color: #111827;
 }
 
+/* レポート説明分 */
 .report-subtitle {
     color: #666;
     font-size: 14px;
     margin-bottom: 24px;
 }
 
+/* レポートの各セッション */
 .report-section {
     margin-bottom: 30px;
 }
 
+/* セッションタイトル */
 .section-title {
     font-size: 16px;
     font-weight: bold;
@@ -46,6 +52,7 @@
     margin-bottom: 12px;
 }
 
+/* 集計カード配置 */
 .card-container {
     display: flex;
     gap: 20px;
@@ -74,10 +81,12 @@
     color: #111827;
 }
 
+/* 月別推移テーブル */
 .trend-table {
     border-top: 1px solid #e5e7eb;
 }
 
+/* テーブルヘッダー */
 .table-header {
     display: flex;
     padding: 10px 0;
@@ -94,14 +103,17 @@
     font-weight: 500;
 }
 
+/* 月例 */
 .col-month {
     width: 25%;
 }
 
+/* 勤務時間列 */
 .col-work {
     width: 35%;
 }
 
+/* 残業時間列 */
 .col-overtime {
     width: 40%;
 }

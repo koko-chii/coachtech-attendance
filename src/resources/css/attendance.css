@@ -1,7 +1,9 @@
+/* 画面全t内の背景 */
 html, body, main {
     background-color: #f7f7f7;
 }
 
+/* ページ全体レイアウト */
 body {
     margin: 0;
     font-family: sans-serif;
@@ -11,6 +13,7 @@ body {
     min-height: 100vh;
 }
 
+/* メインコンテンツ */
 main {
     flex: 1;
     display: flex;
@@ -18,12 +21,14 @@ main {
     width: 100%;
 }
 
+/* コンテンツ全体 */
 .container {
     text-align: center;
     padding-top: 20vh;
     flex: 1;
 }
 
+/* 勤務状態表示 */
 .status-tag {
     display: inline-block;
     background-color: #dbdbdb;
@@ -35,6 +40,7 @@ main {
     margin-bottom: 35px;
 }
 
+/* 日付表示 */
 .date {
     font-size: 2.1em;
     color: #333;
@@ -43,6 +49,7 @@ main {
     letter-spacing: 0.5px;
 }
 
+/* 現在時刻表示 */
 .time {
     font-size: 7.2em;
     font-weight: bold;
@@ -51,6 +58,7 @@ main {
     letter-spacing: 2px;
 }
 
+/* ボタン配置エリア */
 .button-area {
     display: flex;
     justify-content: center;
@@ -93,6 +101,7 @@ main {
     background-color: #fafafa;
 }
 
+/* 退勤完了メッセージ */
 .attendance-end-message {
     font-size: 2.5em;
     font-weight: bold;

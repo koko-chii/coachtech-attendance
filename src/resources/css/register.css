@@ -1,6 +1,4 @@
-/* src/resources/css/register.css */
-@reference "app.css";
-
+/* ページ全体 */
 html body {
     background-color: #ffffff;
     margin: 0;
@@ -11,6 +9,7 @@ html body {
     min-height: 100vh;
 }
 
+/* 会員登録フォーム全体 */
 html body .register-box {
     position: absolute;
     top: 52%;
@@ -26,6 +25,7 @@ html body .register-box {
     padding: 0 20px;
 }
 
+/* タイトル */
 .register-box h1 {
     margin-top: 0;
     margin-bottom: 40px;
@@ -35,6 +35,7 @@ html body .register-box {
     font-weight: bold;
 }
 
+/* 入力項目 */
 .register-box .form-group {
     margin-bottom: 30px;
 }
@@ -47,6 +48,7 @@ html body .register-box {
     color: #000000;
 }
 
+/* 入力欄 */
 .register-box .form-group input {
     width: 100%;
     padding: 12px;
@@ -56,6 +58,7 @@ html body .register-box {
     font-size: 1rem;
 }
 
+/* 会員登録ボタン */
 html body .register-box .btn {
     width: 100%;
     background-color: #000000;
@@ -73,18 +76,21 @@ body .register-box .btn:hover {
     opacity: 0.8;
 }
 
+/* 入力エラーメッセージ　*/
 .register-box .error-message {
     color: red;
     font-size: 0.85em;
     margin-top: 5px;
 }
 
+/* ログイン画面案内 */
 .register-box p {
     text-align: center;
     margin-top: 30px;
     font-size: 0.95em;
 }
 
+/* ログイン画面リンク */
 .register-box p a {
     color: #4a90e2;
     text-decoration: none;

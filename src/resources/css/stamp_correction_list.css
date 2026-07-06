@@ -1,5 +1,7 @@
+/* Google Fonts読みこみ */
 @import url('https://googleapis.com');
 
+/* ページ全体 */
 body {
     margin: 0;
     padding: 0;
@@ -9,6 +11,7 @@ body {
     color: #333333;
 }
 
+/* 申請一覧画面全体 */
 .requestListMain {
     width: 100%;
     min-height: calc(100vh - 70px);
@@ -16,17 +19,20 @@ body {
     box-sizing: border-box;
 }
 
+/* コンテンツエリア */
 .requestListForm {
     width: 55%;
     max-width: 1450px;
     margin: 0 auto;
 }
 
+/* 申請一覧管理エリア */
 .request-management {
     padding-top: 40px;
     padding-bottom: 60px;
 }
 
+/* タイトル */
 .page-title {
     font-size: 26px;
     font-weight: bold;
@@ -35,7 +41,7 @@ body {
     margin-bottom: 50px;
     letter-spacing: 2px;
 }
-
+/* タイトル左側装飾 */
 .page-title::before {
     content: "";
     display: inline-block;
@@ -45,6 +51,7 @@ body {
     margin-right: 16px;
 }
 
+/* タブメニュー */
 .tab-navigation {
     display: flex;
     gap: 80px;
@@ -53,6 +60,7 @@ body {
     padding-bottom: 12px;
 }
 
+/* タブリンク */
 .tab-item {
     font-size: 16px;
     font-weight: bold;
@@ -62,18 +70,22 @@ body {
     user-select: none;
 }
 
+/* 詳細待ちタブ選択時 */
 #tab-pending:checked ~ .tab-navigation .label-pending {
     color: #000000;
 }
 
+/* 承認済みタブ選択時 */
 #tab-approved:checked ~ .tab-navigation .label-approved {
     color: #000000;
 }
 
+/* アクティブなタブ */
 .tab-item.is-active {
     color: #000000;
 }
 
+/* テーブル全体 */
 .table-wrapper {
     background-color: #ffffff;
     border-radius: 8px;
@@ -82,6 +94,7 @@ body {
     padding: 0;
 }
 
+/* 申請一覧テーブル */
 .table-request {
     width: 100%;
     border-collapse: collapse;
@@ -106,6 +119,7 @@ body {
     padding: 12px 10px;
 }
 
+/* １列目 */
 .table-request th:first-child,
 .table-request td:first-child {
     padding-left: 140px;
@@ -120,11 +134,13 @@ body {
     border-bottom: none;
 }
 
+/* テーブル文字 */
 .table-request td {
     color: #888888;
     font-weight: 700;
 }
 
+/* 詳細リンク */
 .button-link {
     color: #000000;
     font-weight: bold;
@@ -135,6 +151,7 @@ body {
     text-decoration: underline;
 }
 
+/* タイトルとメッセージの配置 */
 main.request-management .title-container {
     display: flex;
     flex-direction: row;
@@ -143,6 +160,7 @@ main.request-management .title-container {
     margin: 0 0 20px 0;
 }
 
+/* タイトル */
 main.request-management .page-title {
     font-size: 22px;
     font-weight: bold;
@@ -152,6 +170,7 @@ main.request-management .page-title {
     line-height: 1.2;
 }
 
+/* 成功メッセージ */
 main.request-management .success-message {
     color: #16a34a;
     font-size: 20px;
