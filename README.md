@@ -26,7 +26,6 @@
 
 ```mermaid
 erDiagram
-    users ||--o{ passkeys : ""
     users ||--o{ attendance_records : ""
     users ||--o{ stamp_correction_requests : ""
     attendance_records ||--o{ breaks : ""
@@ -39,17 +38,6 @@ erDiagram
         timestamp email_verified_at
         string password
         boolean admin_status
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    passkeys {
-        unsigned_bigint id
-        unsigned_bigint user_id
-        string name
-        string credential_id
-        json credential
-        timestamp last_used_at
         timestamp created_at
         timestamp updated_at
     }
