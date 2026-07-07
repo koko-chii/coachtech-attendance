@@ -1,5 +1,5 @@
 /* ログイン画面全体 */
-login-page-only {
+.login-page-only {
     box-sizing: border-box;
     display: block;
     width: 100vw;

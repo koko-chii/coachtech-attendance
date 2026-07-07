@@ -8,19 +8,13 @@
 
 ## 使用技術
 
-- フレームワーク：Laravel 12.0x
-
-- 言語：PHP 8.2
-
-- Webサーバー：Nginx
-
-- データベース：MySQL 8.0
-
-- コンテナ管理 :Docker Compose
-
-- DB管理ツール:phpMyAdmin
-
-- メールテスト:MailHog
+- フレームワーク： Laravel 12.0x
+- 言語         ： PHP 8.2
+- Webサーバー  ： Nginx
+- データベース  ： MySQL 8.0
+- コンテナ管理  : Docker Compose
+- DB管理ツール  : phpMyAdmin
+- メールテスト  : MailHog
 
 ## ER図
 
@@ -64,7 +58,7 @@ erDiagram
 
     breaks {
         unsigned_bigint id
-        unsigned_bigint foreignId
+        unsigned_bigint attendance_record_id
         time break_in
         time break_out
         timestamp created_at
@@ -88,79 +82,136 @@ erDiagram
 
 ## 開発環境URL
 
-http://○○○○○
+    - http://localhost/
+    - phpMyAdmin：http://localhost:8080/
+    - メール確認URL (Mailhog): http://localhost:8025/
 
 ## 動作環境
 
-○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+- OS: Windows 11 (WSL2 / Ubuntu)
+- Docker Desktop
+
 
 ## 環境構築手順
 
 1. **リポジトリをクローン**
 
     ```bash
-    git clone https://○○○○○○
+    git clone git@github.com:koko-chii/coachtech-attendance.git
     ```
 
-2. **.envファイルの準備**
+2. **ディレクトリの移動（Laravelソースコード階層へ）**
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+    ```bash
+    cd ~/coachtech/laravel/coachtech-attendance/src
+    ```
 
-3. **Composer依存パッケージのインストール**
+3. **.env ファイルの作成**
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+    ```bash
+    cp .env.example .env
+    ```
 
-4. **Laravel Sailの起動**
+4. **.env ファイルの修正**
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+    ```bash
+    DB_CONNECTION=mysql
+    DB_HOST=db
+    DB_PORT=3306
+    DB_DATABASE=coachtech_attendance
+    DB_USERNAME=root
+    DB_PASSWORD=root_password
 
-5. **アプリケーションキーの生成**
+    ```
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+5. **ディレクトリの移動（Docker設定階層へ戻る）**
 
-6. **データベースのマイグレーションと初期データ投入**
+    ```bash
+    cd ..
+    ```
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+6. **コンテナの起動**
 
-7. **フロントエンドのビルド**
+    ```bash
+    docker compose up -d --build
+    ```
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+7. **バックエンドPHPライブラリのインストール**
 
-8. **アプリケーションへのアクセス**
+    ```bash
+    docker compose exec -u 1000 php composer install
+    ```
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+8. **アプリケーションキーの生成**
+
+    ```bash
+    docker compose exec php php artisan key:generate
+    ```
+
+9. **画像の表示**
+
+    ```bash
+    docker compose exec php sh -c "rm -f public/storage && php artisan storage:link"
+    ```
+
+10. **Node.jsのインストール**
+
+    ```bash
+    docker compose exec php sh -c "apt-get update && apt-get install -y nodejs npm"
+    ```
+
+11. **フロントエンドのビルド**
+
+    ```bash
+    docker compose exec php sh -c "npm install && npm run build"
+    ```
+
+12. **マイグレーション・シーディングを実行**
+
+    ```bash
+    docker compose exec php php artisan migrate:fresh --seed
+    ```
+
+13. **権限付与（ストレージの書き込みエラー対策）**
+
+    ```bash
+    docker compose exec php chmod -R 777 storage
+    ```
+
 
 ## テスト実行
 
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
-    ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+```bash
+docker compose exec php php artisan test
+```
 
 ## 機能一覧
 
-- ○○○○○○ ○○○○○○
-- ○○○○○○ ○○○○○○
-- ○○○○○○ ○○○○○○
-- ○○○○○○ ○○○○○○
-- ○○○○○○ ○○○○○○
-- ○○○○○○ ○○○○○○
+- **スタッフ認証・メール認証** 新規会員登録、ログイン・ログアウト、Mailhog連携による認証制限
+- **勤怠登録** スタッフユーザーは自身の出勤時刻・退勤時刻・休憩開始時刻・休憩終了時刻の打刻ができる
+- **勤怠一覧の確認** スタッフユーザーは自身の勤怠月情報を確認できる
+- **勤怠詳細の確認、修正申請機能** スタッフユーザーは自身の勤怠詳細を確認・修正申請ができる
+- **申請一覧からの確認** スタッフユーザーは自身の修正申請一覧から承認待ち・承認済みを確認できる
+- **勤怠レポートの確認** スタッフユーザーはマイ勤怠レポートを確認できる
+- **管理者のログイン認証** 管理者は管理者機能にログイン・ログアウトができる
+- **勤怠一覧の確認** 管理者は日にち毎のスタッフ勤怠情報を確認できる
+- **勤怠詳細の確認・修正** 管理者は勤怠詳細の確認と、打刻時刻を直接修正できる
+- **スタッフ一覧の勤怠情報確認** 管理者はスタッフ一覧からスタッフの勤怠情報を確認できる
+- **スタッフ毎の勤怠情報確認**管理者はスタッフ一覧の詳細からスタッフ毎の勤怠情報を確認・csv出力ができる
+- **申請一覧の確認機能** 管理者は申請一覧から修正の承認待ち・承認済みの勤怠情報が確認できる
+- **勤怠修正申請の承認機能** 管理者は申請された勤怠修正情報を承認できる
+
 
 ## APIエンドポイント一覧
-
-○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○ ○○○○○○
+外部アプリケーションから勤怠データを取得・操作できるエンドポイントを提供しています。
+読み取り系（GET）は認証不要、書き込み系（POST / PUT / DELETE）は Laravel Sanctum 認証必須 で、
+PUT / DELETE は AttendanceRecordPolicy による認可（本人または管理者のみ操作可）が適用されます。
 
 | HTTPメソッド | URI | 概要 |
 |---|---|---|
-| GET | /○○○○○○/○○○○○○/○○○○○○ | ○○○○○○ |
-| GET | /○○○○○○/○○○○○○/○○○○○○ | ○○○○○○ |
-| GET | /○○○○○○/○○○○○○/○○○○○○ | ○○○○○○ |
-| GET | /○○○○○○/○○○○○○/○○○○○○ | ○○○○○○ |
-| GET | /○○○○○○/○○○○○○/○○○○○○ | ○○○○○○ |
+| GET | /api/v1/attendance-records | 勤怠一覧を取得 |
+| GET | /api/v1/attendance-records/{attendanceRecord} | 勤怠詳細を取得 |
+| POST | /api/v1/attendance-records | 勤怠を新規登録 |
+| PUT | /api/v1/attendance-records/{attendanceRecord} | 勤怠情報を更新 |
+| DELETE | /api/v1/attendance-records/{attendanceRecord} | 勤怠情報を削除 |
 
