@@ -38,11 +38,7 @@ erDiagram
         string email
         timestamp email_verified_at
         string password
-        text two_factor_secret
-        text two_factor_recovery
-        timestamp two_factor_confirmed
         boolean admin_status
-        string rememberToken
         timestamp created_at
         timestamp updated_at
     }
