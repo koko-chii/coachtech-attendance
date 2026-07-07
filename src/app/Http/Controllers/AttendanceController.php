@@ -127,7 +127,7 @@ class AttendanceController extends Controller
     }
 
    // 休憩ボタンが押されたときの関数(機能)
-    public function break(): \Illuminate\Http\RedirectResponse
+    public function break():RedirectResponse
     {
         // ログインしているユーザーをuser変数(箱)に入れる
         $user = Auth::user();
