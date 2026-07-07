@@ -20,83 +20,84 @@
 
 - DB管理ツール:phpMyAdmin
 
--メールテスト:MailHog
+- メールテスト:MailHog
 
 ## ER図
 
 ```mermaid
 erDiagram
-
-
-
+    users ||--o{ passkeys : ""
+    users ||--o{ attendance_records : ""
+    users ||--o{ stamp_correction_requests : ""
+    attendance_records ||--o{ breaks : ""
+    attendance_records ||--o{ stamp_correction_requests : ""
 
     users {
-        id
-        name
-        email
-        email_verified_at
-        password
-        two_factor_secret
-        two_factor_recovery
-        two_factor_confirmed
-        admin_status
-        rememberToken
-        created_at
-        updated_at
+        bigint id
+        string name
+        string email
+        timestamp email_verified_at
+        string password
+        text two_factor_secret
+        text two_factor_recovery
+        timestamp two_factor_confirmed
+        boolean admin_status
+        string rememberToken
+        timestamp created_at
+        timestamp updated_at
     }
 
     passkeys {
-        id
-        user_id
-        neme
-        credential_id
-        credential
-        last_used_at
-        created_at
-        updated_at
-        neme
+        unsigned_bigint id
+        unsigned_bigint user_id
+        string name
+        string credential_id
+        json credential
+        timestamp last_used_at
+        timestamp created_at
+        timestamp updated_at
     }
 
-    admin {
-        id
-        name
-        email
-        password
-        created_at
-        updated_at
+    admins {
+        unsigned_bigint id
+        string name
+        string email
+        string password
+        timestamp created_at
+        timestamp updated_at
     }
 
-    attendance_recoeds {
-        id
-        user_id
-        date
-        clodk_in
-        clodk_out
-        comment
-        created_at
-        updated_at  
+    attendance_records {
+        unsigned_bigint id
+        unsigned_bigint user_id
+        date date
+        time clock_in
+        time clock_out
+        text comment
+        timestamp created_at
+        timestamp updated_at
     }
 
     breaks {
-        id
-        foreignId
-        break_in
-        break_out
-        created_at
-        uupdated_at
+        unsigned_bigint id
+        unsigned_bigint foreignId
+        time break_in
+        time break_out
+        timestamp created_at
+        timestamp updated_at
     }
 
     stamp_correction_requests {
-        id
-        user_id
-        attendance_record_id
-        requested_clock_in
-        requested_clock_out
-        requested_breaks
-        comment
-        status
-        created_at
-        updated_at
+        unsigned_bigint id
+        unsigned_bigint user_id
+        unsigned_bigint attendance_record_id
+        time requested_clock_in
+        time requested_clock_out
+        json requested_breaks
+        text comment
+        string status
+        timestamp created_at
+        timestamp updated_at
     }
 
 ```
