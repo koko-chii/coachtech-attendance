@@ -191,26 +191,28 @@ class AdminAttendanceController extends Controller
                     $end = Carbon::parse($record->clock_out);
                     $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
 
-                    // 勤務時間がマイナスになった場合は0秒にする
-                    if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
+                // 勤務時間がマイナスになった場合は0秒にする
+                if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
                     // 秒を時間に変換し、勤務時間を計算
                     $workHours = floor($totalWorkSeconds / 3600);
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
                     $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
                 }
-                // 加工した勤務データを返す
-                return $record;
+
+            // 加工した勤務データを返す
+            return $record;
             })
+
             // 日付をキーにしてデータを取得しやすくする
             ->keyBy('date');
 
-        // 対象月の日付一覧を作成
-        $daysInMonth = [];
-        // 1日から月末までの日付を順番に追加
-        $daysCount = $currentMonth->daysInMonth;
-        for ($i = 1; $i <= $daysCount; $i++) {
-            $daysInMonth[] = $currentMonth->copy()->day($i);
-        }
+            // 対象月の日付一覧を作成
+            $daysInMonth = [];
+            // 1日から月末までの日付を順番に追加
+            $daysCount = $currentMonth->daysInMonth;
+            for ($i = 1; $i <= $daysCount; $i++) {
+                $daysInMonth[] = $currentMonth->copy()->day($i);
+            }
 
         // 指定したスタッフデータ・対象月の日付一覧・勤怠データ・年月データ形式変換・前月・翌月データをビューへ渡す
         return view('admin.admin_staff_attendance', [
@@ -326,7 +328,7 @@ class AdminAttendanceController extends Controller
             $attendance->update([
                 'clock_in'  => $requestData->requested_clock_in,
                 'clock_out' => $requestData->requested_clock_out,
-                'comment'   => $requestData->requested_comment,
+                'comment'   => $requestData->comment,
             ]);
 
             // もし修正データに休憩修正がある場合、既存データを削除

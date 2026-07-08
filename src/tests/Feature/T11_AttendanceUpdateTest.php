@@ -140,7 +140,7 @@ class T11_AttendanceUpdateTest extends TestCase
         $response = $this->actingAs($user)->patch(route('attendance.update', $record->id), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
-            'comment' => '修正申請テスト理由',
+            'comment' => '修正申請コメント',
         ]);
 
         // 修正申請データがデータベースへ保存されることを確認
@@ -148,7 +148,7 @@ class T11_AttendanceUpdateTest extends TestCase
             'user_id' => $user->id,
             'attendance_record_id' => $record->id,
             'status' => 'pending',
-            'reason' => '修正申請テスト理由',
+            'comment' => '修正申請コメント',
         ]);
     }
 
@@ -164,7 +164,7 @@ class T11_AttendanceUpdateTest extends TestCase
             'user_id' => $user->id,
             'attendance_record_id' => $record->id,
             'status' => 'pending',
-            'reason' => '承認待ちテスト理由表示確認',
+            'comment' => '承認待ち備考表示確認',
         ]);
 
         // 申請一覧画面へアクセス
@@ -172,7 +172,7 @@ class T11_AttendanceUpdateTest extends TestCase
 
         // 正常に表示し、承認待ちログインユーザーが行った修正申請が表示されていることを確認
         $response->assertStatus(200);
-        $response->assertSee('承認待ちテスト理由表示確認');
+        $response->assertSee('承認待ち備考表示確認');
     }
 
     #[Test]
@@ -187,7 +187,7 @@ class T11_AttendanceUpdateTest extends TestCase
             'user_id' => $user->id,
             'attendance_record_id' => $record->id,
             'status' => 'approved',
-            'reason' => '承認済みテスト理由表示確認',
+            'comment' => '承認済み備考表示確認',
         ]);
 
         // 申請一覧画面へアクセス(管理者・ユーザー共通)
@@ -195,7 +195,7 @@ class T11_AttendanceUpdateTest extends TestCase
 
         // 正常に表示し、承認済みに管理者が承認した修正申請が表示されることを確認
         $response->assertStatus(200);
-        $response->assertSee('承認済みテスト理由表示確認');
+        $response->assertSee('承認済み備考表示確認');
     }
 
     #[Test]
@@ -210,7 +210,7 @@ class T11_AttendanceUpdateTest extends TestCase
             'user_id' => $user->id,
             'attendance_record_id' => $record->id,
             'status' => 'pending',
-            'reason' => '詳細遷移確認用',
+            'comment' => '詳細遷移確認用',
         ]);
 
         // 申請一覧画面へアクセス

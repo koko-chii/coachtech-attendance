@@ -29,16 +29,14 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'attendance_record_id' => $attendance1->id,
             'user_id' => $user->id,
             'status' => 'pending',
-            'reason' => 'テスト理由',
-            'requested_comment' => '承認待ちの申請データ',
+            'comment' => '承認待ちの申請データ',
         ]);
         // 承認済みの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance2->id,
             'user_id' => $user->id,
             'status' => 'approved',
-            'reason' => 'テスト理由',
-            'requested_comment' => '承認済みの申請データ',
+            'comment' => '承認済みの申請データ',
         ]);
 
         // 管理者ログインして管理者用申請一覧画面の承認待ちタブを表示
@@ -64,16 +62,14 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'attendance_record_id' => $attendance1->id,
             'user_id' => $user->id,
             'status' => 'pending',
-            'reason' => 'テスト理由',
-            'requested_comment' => '承認待ちの申請データ',
+            'comment' => '承認待ちの申請データ',
         ]);
         // 承認済みの修正申請データの作成
         StampCorrectionRequest::create([
             'attendance_record_id' => $attendance2->id,
             'user_id' => $user->id,
             'status' => 'approved',
-            'reason' => 'テスト理由',
-            'requested_comment' => '承認済みの申請データ',
+            'comment' => '承認済みの申請データ',
         ]);
 
         // 管理者ログインして管理者用申請一覧画面の承認済みタブを表示
@@ -99,8 +95,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'status' => 'pending',
             'requested_clock_in' => '09:00',
             'requested_clock_out' => '18:00',
-            'reason' => 'テスト理由',
-            'requested_comment' => '詳細確認用コメント',
+            'comment' => '詳細確認用コメント',
         ]);
 
         // 管理者ログインして作成したスタッフの管理者用修正申請承認画面を表示
@@ -110,7 +105,6 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
         $response->assertSee('09:00');
         $response->assertSee('18:00');
         $response->assertSee('詳細確認用コメント');
-        $response->assertSee('テスト理由');
     }
 
     #[Test]
@@ -131,9 +125,8 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
             'user_id' => $user->id,
             'requested_clock_in' => '10:00:00',
             'requested_clock_out' => '19:00:00',
-            'requested_comment' => '承認後に反映される備考',
+            'comment' => '承認後に反映される備考',
             'status' => 'pending',
-            'reason' => 'テスト理由',
         ]);
 
         // 管理者ログインして作成したスタッフの管理者用修正申請承認画面を表示し、承認ボタンを押す
