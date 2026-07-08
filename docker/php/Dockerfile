@@ -23,4 +23,12 @@ COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
 # Composer（PHPのパッケージ管理ツール）をインストール
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+RUN addgroup -g 1000 app \
+    && adduser -D -u 1000 -G app app
+
+ENV HOME=/home/app
+ENV NPM_CONFIG_CACHE=/home/app/.npm
+
 WORKDIR /var/www/html
+
+USER app

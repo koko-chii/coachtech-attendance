@@ -26,7 +26,7 @@ erDiagram
     attendance_records ||--o{ stamp_correction_requests : ""
 
     users {
-        bigint id
+        unsigned_bigint id
         string name
         string email
         timestamp email_verified_at
@@ -100,19 +100,31 @@ erDiagram
     git clone git@github.com:koko-chii/coachtech-attendance.git
     ```
 
-2. **ディレクトリの移動（Laravelソースコード階層へ）**
+2. **プロジェクトディレクトリへ移動**
 
     ```bash
-    cd ~/coachtech/laravel/coachtech-attendance/src
+    cd coachtech-attendance
     ```
 
-3. **.env ファイルの作成**
+3. **コンテナの起動**
+
+    ```bash
+    docker compose up -d --build
+    ```
+
+4. **Laravelディレクトリへ移動**
+
+    ```bash
+    cd src
+    ```
+
+5. **.env ファイルの作成**
 
     ```bash
     cp .env.example .env
     ```
 
-4. **.env ファイルの修正**
+6. **.env ファイルの編集**
 
     ```bash
     DB_CONNECTION=mysql
@@ -124,22 +136,10 @@ erDiagram
 
     ```
 
-5. **ディレクトリの移動（Docker設定階層へ戻る）**
+7. **Composerパッケージをインストール**
 
     ```bash
-    cd ..
-    ```
-
-6. **コンテナの起動**
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-7. **バックエンドPHPライブラリのインストール**
-
-    ```bash
-    docker compose exec -u 1000 php composer install
+    docker compose exec php composer install
     ```
 
 8. **アプリケーションキーの生成**
@@ -148,31 +148,19 @@ erDiagram
     docker compose exec php php artisan key:generate
     ```
 
-9. **画像の表示**
-
-    ```bash
-    docker compose exec php sh -c "rm -f public/storage && php artisan storage:link"
-    ```
-
-10. **Node.jsのインストール**
-
-    ```bash
-    docker compose exec php sh -c "apt-get update && apt-get install -y nodejs npm"
-    ```
-
-11. **フロントエンドのビルド**
+9. **フロントエンドのインストール・ビルド**
 
     ```bash
     docker compose exec php sh -c "npm install && npm run build"
     ```
 
-12. **マイグレーション・シーディングを実行**
+10. **マイグレーション・シーディングを実行**
 
     ```bash
     docker compose exec php php artisan migrate:fresh --seed
     ```
 
-13. **権限付与（ストレージの書き込みエラー対策）**
+11. **権限付与（ストレージの書き込みエラー対策）**
 
     ```bash
     docker compose exec php chmod -R 777 storage
