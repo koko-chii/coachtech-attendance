@@ -103,28 +103,16 @@ erDiagram
 2. **プロジェクトディレクトリへ移動**
 
     ```bash
-    cd coachtech-attendance
+    cd coachtech-attendance/src
     ```
 
-3. **コンテナの起動**
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-4. **Laravelディレクトリへ移動**
-
-    ```bash
-    cd src
-    ```
-
-5. **.env ファイルの作成**
+3. **.env ファイルの作成**
 
     ```bash
     cp .env.example .env
     ```
 
-6. **.env ファイルの編集**
+4. **.env ファイルの編集**
 
     ```bash
     DB_CONNECTION=mysql
@@ -134,6 +122,18 @@ erDiagram
     DB_USERNAME=root
     DB_PASSWORD=root_password
 
+    ```
+
+5. **Laravelディレクトリへ移動**
+
+    ```bash
+    cd ..
+    ```
+
+6. **コンテナの起動**
+
+    ```bash
+    docker compose up -d --build
     ```
 
 7. **Composerパッケージをインストール**
@@ -148,22 +148,22 @@ erDiagram
     docker compose exec php php artisan key:generate
     ```
 
-9. **フロントエンドのインストール・ビルド**
-
-    ```bash
-    docker compose exec php sh -c "npm install && npm run build"
-    ```
-
-10. **マイグレーション・シーディングを実行**
+9. **マイグレーション・シーディングを実行**
 
     ```bash
     docker compose exec php php artisan migrate:fresh --seed
     ```
 
-11. **権限付与（ストレージの書き込みエラー対策）**
+10. **フロントエンドのインストール・ビルド**
 
     ```bash
-    docker compose exec php chmod -R 777 storage
+    docker compose exec php sh -c "npm install && npm run build"
+    ```
+
+11. **開発サーバー（Vite）の起動**
+
+    ```bash
+    docker compose exec php npm run dev
     ```
 
 
