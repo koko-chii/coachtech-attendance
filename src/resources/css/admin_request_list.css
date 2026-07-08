@@ -134,6 +134,7 @@ body {
 .success-message {
     color: #16a34a;
     font-size: 20px;
+    margin-left: 20px;
     font-weight: bold;
     text-align: center;
     padding: 10px 14px;
