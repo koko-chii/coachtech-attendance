@@ -124,7 +124,7 @@ erDiagram
 
     ```
 
-5. **Laravelディレクトリへ移動**
+5. **Docker Composeディレクトリへ移動**
 
     ```bash
     cd ..
@@ -163,7 +163,7 @@ erDiagram
 11. **開発サーバー（Vite）の起動**
 
     ```bash
-    docker compose exec php npm run dev
+    npm run dev
     ```
 
 
