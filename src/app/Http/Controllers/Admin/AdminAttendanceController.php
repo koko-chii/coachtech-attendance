@@ -234,7 +234,7 @@ class AdminAttendanceController extends Controller
         $currentMonth = Carbon::parse($currentMonthStr . '-01');
 
         // 指定したスタッフ・年月日の勤怠データと一緒に休憩データを取得
-        $records = AttendanceRecord::with('breakLogs')
+        $records = AttendanceRecord::with('breaks')
             ->where('user_id', $targetUser->id)
             ->whereYear('date', $currentMonth->year)
             ->whereMonth('date', $currentMonth->month)
@@ -255,7 +255,7 @@ class AdminAttendanceController extends Controller
             mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'), mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')]);
             // 計勤怠データごとに休憩時間の計算
             foreach ($records as $record) {
-                $totalBreakSeconds = $record->breakLogs->sum(function ($b): int {
+                $totalBreakSeconds = $record->breaks->sum(function ($b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
                     // carbon形式に変換して(文字列を日時を扱えるよう変換)csv出力
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
