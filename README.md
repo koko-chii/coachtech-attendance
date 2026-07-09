@@ -26,7 +26,7 @@ erDiagram
     attendance_records ||--o{ stamp_correction_requests : ""
 
     users {
-        unsigned bigint id
+        unsigned_bigint id
         string name
         string email
         timestamp email_verified_at
@@ -37,8 +37,8 @@ erDiagram
     }
 
     attendance_records {
-        unsigned bigint id
-        unsigned bigint user_id
+        unsigned_bigint id
+        unsigned_bigint user_id
         date date
         time clock_in
         time clock_out
@@ -48,8 +48,8 @@ erDiagram
     }
 
     breaks {
-        unsigned bigint id
-        unsigned bigint attendance_record_id
+        unsigned_bigint id
+        unsigned_bigint attendance_record_id
         time break_in
         time break_out
         timestamp created_at
@@ -57,9 +57,9 @@ erDiagram
     }
 
     stamp_correction_requests {
-        unsigned bigint id
-        unsigned bigint user_id
-        unsigned bigint attendance_record_id
+        unsigned_bigint id
+        unsigned_bigint user_id
+        unsigned_bigint attendance_record_id
         time requested_clock_in
         time requested_clock_out
         json requested_breaks
