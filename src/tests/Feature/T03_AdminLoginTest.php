@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 // 日本語の関数のためシステムにテストだと認識させる目印を読み込み
 use PHPUnit\Framework\Attributes\Test;
@@ -38,10 +38,11 @@ class T03_AdminLoginTest extends TestCase
     #[Test]
     public function 管理者_登録内容と一致しない場合バリデーションメッセージが表示される()
     {
-        Admin::create([
+        User::create([
             'name' => 'テスト管理者',
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
+            'admin_status' => true,
         ]);
 
         $response = $this->post('/admin/login', [

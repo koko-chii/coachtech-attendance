@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Admin;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
 // 日本語の関数のためシステムにテストだと認識させる目印を読み込み
@@ -20,10 +19,10 @@ class T12_AdminAttendanceListTest extends TestCase
     public function 遷移した際に現在の日付が表示される(): void
     {
         // 管理者ステータスのテスト用データを作成
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
 
         // 管理者用一覧画面へアクセス
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list'));
+        $response = $this->actingAs($admin)->get(route('admin.attendance.list'));
 
         // 正常に表示することを確認
         $response->assertStatus(200);
@@ -36,7 +35,7 @@ class T12_AdminAttendanceListTest extends TestCase
     #[Test]
     public function 前日を押下した時に前の日の勤怠情報が表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
 
         // 前日の日付を検索用のY-m-d形式で取得
         $previousDay = Carbon::today()->subDay()->format('Y-m-d');
@@ -44,7 +43,7 @@ class T12_AdminAttendanceListTest extends TestCase
         $previousDayDisplay = Carbon::today()->subDay()->isoFormat('YYYY年M月D日');
 
         // 理者用一覧画面へアクセス
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list', ['date' => $previousDay]));
+        $response = $this->actingAs($admin)->get(route('admin.attendance.list', ['date' => $previousDay]));
 
         // 正常に表示することを確認
         $response->assertStatus(200);
@@ -55,7 +54,7 @@ class T12_AdminAttendanceListTest extends TestCase
     #[Test]
     public function 翌日を押下した時に次の日の勤怠情報が表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
 
         // 翌日の日付を検索用のY-m-d形式で取得
         $nextDay = Carbon::today()->addDay()->format('Y-m-d');
@@ -63,7 +62,7 @@ class T12_AdminAttendanceListTest extends TestCase
         $nextDayDisplay = Carbon::today()->addDay()->isoFormat('YYYY年M月D日');
 
         // 管理者用一覧画面へアクセス
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list', ['date' => $nextDay]));
+        $response = $this->actingAs($admin)->get(route('admin.attendance.list', ['date' => $nextDay]));
 
         // 正常に表示されることを確認
         $response->assertStatus(200);
@@ -74,7 +73,7 @@ class T12_AdminAttendanceListTest extends TestCase
     #[Test]
     public function その日になされた全ユーザーの勤怠情報が正確に確認できる(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
 
         // テスト用ユーザーデータを作成
         $user1 = User::factory()->create(['name' => 'テスト太郎']);
@@ -100,7 +99,7 @@ class T12_AdminAttendanceListTest extends TestCase
         ]);
 
         // 管理者用一覧画面へアクセス
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.list'));
+        $response = $this->actingAs($admin)->get(route('admin.attendance.list'));
 
         // 正常に表示しすることを確認
         $response->assertStatus(200);

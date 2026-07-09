@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Admin;
 use App\Models\AttendanceRecord;
 use App\Models\BreakLog;
 // 日時取得計算機能
@@ -21,7 +20,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
     public function 勤怠詳細画面に表示されるデータが選択したものになっている(): void
     {
         // 管理者用ダミーデータ作成
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
         // スタッフ用ダミーデータ作成
         $user = User::factory()->create(['name' => '詳細テスト太郎']);
         // 本日の日付をcarbonオブジェクトで年月日形式で取得
@@ -44,7 +43,7 @@ class T13_AdminAttendanceDetailTest extends TestCase
         ]);
 
         // 管理者でログインして指定したIDの勤怠詳細画面を表示できるか検証
-        $response = $this->actingAs($admin, 'admin')->get(route('admin.attendance.detail', ['id' => $attendance->id]));
+        $response = $this->actingAs($admin)->get(route('admin.attendance.detail', ['id' => $attendance->id]));
 
         $response->assertStatus(200);
         $response->assertSee('詳細テスト太郎');
@@ -58,11 +57,11 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 出勤時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
         $attendance = AttendanceRecord::factory()->create();
 
         // 管理者ログインで指定したIDの管理者用勤怠詳細画面にアクセスし、修正時刻のエラーを検証
-        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '18:00',
             'clock_out' => '09:00',
             'comment' => '出勤時間エラーテスト',
@@ -78,10 +77,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 休憩開始時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             // 既存の休憩データはなく、休憩データを作成し設定
@@ -104,10 +103,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 休憩終了時間が退勤時間より後になっている場合エラーメッセージが表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
+        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', ['id' => $attendance->id]), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'breaks' => [
@@ -129,10 +128,10 @@ class T13_AdminAttendanceDetailTest extends TestCase
     #[Test]
     public function 備考欄が未入力の場合のエラーメッセージが表示される(): void
     {
-        $admin = Admin::factory()->create();
+        $admin = User::factory()->create(['admin_status' => true]);
         $attendance = AttendanceRecord::factory()->create();
 
-        $response = $this->actingAs($admin, 'admin')->patch(route('admin.attendance.update', $attendance), [
+        $response = $this->actingAs($admin)->patch(route('admin.attendance.update', $attendance), [
             'clock_in' => '09:00',
             'clock_out' => '18:00',
             'comment' => '',
