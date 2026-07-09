@@ -4,13 +4,13 @@
 
 ## 作成者
 
-松井　由美子
+松井 由美子
 
 ## 使用技術
 
 - フレームワーク：Laravel 12.x
 - 言語         ： PHP 8.2
-- Webサーバー　 ： Nginx
+- Webサーバー   ： Nginx
 - データベース  ： MySQL 8.0
 - コンテナ管理  ： Docker Compose
 - DB管理ツール  ： phpMyAdmin
@@ -160,12 +160,12 @@ erDiagram
     docker compose exec php sh -c "npm install && npm run build"
     ```
 
-11. **開発サーバー（Vite）の起動**
+## 開発サーバー（Vite）の起動
 
-    ```bash
-    npm run dev
-    ```
-
+```bash
+docker compose exec php npm run dev
+```
+※起動したまま別ターミナルで操作してください。
 
 ## テスト実行
 
