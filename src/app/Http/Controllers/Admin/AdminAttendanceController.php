@@ -125,8 +125,9 @@ class AdminAttendanceController extends Controller
             }
         }
 
-        // 修正完了メッセージと一緒に勤怠一覧画面へ遷移を返す
-        return redirect()->route('admin.attendance.list')->with('success_message', '勤怠データを修正しました');
+        // 修正完了メッセージと一緒にスタッフ別勤怠一覧画面へ遷移を返す
+        return redirect()->route('admin.attendance.staff', ['id' => $attendance->user_id])
+            ->with('success_message', '勤怠情報を修正しました。');
     }
 
     //スタッフ一覧画面を表示するメソッド

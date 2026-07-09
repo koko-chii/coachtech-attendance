@@ -26,7 +26,7 @@ erDiagram
     attendance_records ||--o{ stamp_correction_requests : ""
 
     users {
-        unsigned_bigint id
+        unsigned bigint id
         string name
         string email
         timestamp email_verified_at
@@ -36,18 +36,9 @@ erDiagram
         timestamp updated_at
     }
 
-    admins {
-        unsigned_bigint id
-        string name
-        string email
-        string password
-        timestamp created_at
-        timestamp updated_at
-    }
-
     attendance_records {
-        unsigned_bigint id
-        unsigned_bigint user_id
+        unsigned bigint id
+        unsigned bigint user_id
         date date
         time clock_in
         time clock_out
@@ -57,8 +48,8 @@ erDiagram
     }
 
     breaks {
-        unsigned_bigint id
-        unsigned_bigint attendance_record_id
+        unsigned bigint id
+        unsigned bigint attendance_record_id
         time break_in
         time break_out
         timestamp created_at
@@ -66,9 +57,9 @@ erDiagram
     }
 
     stamp_correction_requests {
-        unsigned_bigint id
-        unsigned_bigint user_id
-        unsigned_bigint attendance_record_id
+        unsigned bigint id
+        unsigned bigint user_id
+        unsigned bigint attendance_record_id
         time requested_clock_in
         time requested_clock_out
         json requested_breaks
@@ -85,6 +76,22 @@ erDiagram
 - http://localhost/
 - phpMyAdmin：http://localhost:8080/
 - メール確認URL (Mailhog): http://localhost:8025/
+
+## テスト用ログイン情報
+
+### 一般ユーザー
+- **ユーザー1（メール認証済み）**
+  - メールアドレス: `user1@example.com`
+  - パスワード: `password`
+- **ユーザー2 (メール認証済み)**
+  - メールアドレス: `user2@example.com`
+  - パスワード: `password`
+
+### 管理者ユーザー
+- **ユーザー3（admin_status=true）**
+  - メールアドレス: `user3@example.com`
+  - パスワード: `password`
+
 
 ## 動作環境
 

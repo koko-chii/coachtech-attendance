@@ -6,8 +6,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 // ユーザー情報のデーターベース操作機能(Userモデル)を使うための読み込み
 use App\Models\User;
-// 管理者情報のデーターベース操作機能(Adminモデル)を使うための読み込み
-use App\Models\Admin;
 // データーベースの休憩データーを操作するBreakLogモデルを使うための読み込み
 use App\Models\BreakLog;
 // 勤怠管理のモデルを使うための読み込み
@@ -21,48 +19,58 @@ class AttendanceSeeder extends Seeder
 {
     public function run(): void
     {
-        // ユーザー情報1 の名前、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻
+        // スタッフユーザー1、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻(認証済み)
         $user1 = User::create([
             'name' => 'ユーザー1',
             'email' => 'user1@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'admin_status' => false, // 一般ユーザー
         ]);
 
-        // ユーザー情報2
-        User::create([
+        // スタッフユーザー2、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻(認証済み)
+        $user2 = User::create([
             'name' => 'ユーザー2',
             'email' => 'user2@example.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
+            'admin_status' => false, // 一般ユーザー
         ]);
 
-        // ユーザー情報3(管理者テーブルへ保存) メール認証不要
-        Admin::create([
+        // 管理者ユーザー3、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻
+        $user3 = User::create([
             'name' => 'ユーザー3(管理者)',
             'email' => 'user3@example.com',
             'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'admin_status' => true, // 管理者ユーザー権限
         ]);
 
-        // 今現在の日時を取得してnow変数(箱)へしまう
+        // 今現在の日時を取得して変数(箱)へしまう
         $now = Carbon::now();
 
-        // 過去5ヶ月分のデータを順番に作成(5か月前、4か月前....1か月前) 現在から5か月前に戻り、月初めの1日から作成する 出勤日数のカウント開始のためにリセットする
+        // ユーザー1のダミーデータ
+        // 過去5ヶ月分のデータを順番に作成 現在から5か月前に戻り、月初めの1日から作成する
         for ($i = 5; $i >= 1; $i--) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
+            // 出勤日数のカウント開始のためにリセット
             $createdDays = 0;
 
-            // ユーザー1へのデーター投入 平日15日分データーができるまで打刻を繰り返す 9時から18時の勤務のデーターを登録する 平日9時18時の勤務で1回分増やしてcreatedDays変数(箱)にしまう ズレるのを防ぐため毎日、日付を1日進めて$monthDateを上書きする
+            // 平日15日分データーができるまで打刻を繰り返す
             while ($createdDays < 15) {
                 if (!$monthDate->isWeekend()) {
+                    // 9時から18時の勤務のデーターを登録する
                     $this->createRecord($user1->id, $monthDate, '09:00:00', '18:00:00');
+
+                     // 平日9時18時の勤務で1回分増やしズレるのを防ぐ
                     $createdDays++;
                 }
+                // 毎日、日付を1日進める
                 $monthDate->addDay();
             }
         }
 
-        // 当月のデータ作成 (特殊パターン)
+        // 当月の特殊パターンデータ作成
         $currentMonthDate = (clone $now)->startOfMonth();
         $patterns = [
             ...array_fill(0, 10, ['09:00:00', '18:00:00']), // 通常 10日
@@ -72,12 +80,62 @@ class AttendanceSeeder extends Seeder
             ...array_fill(0, 1,  ['08:00:00', '21:00:00']), // 長時間労働 1日 (8:00-21:00)
         ];
 
-        // ユーザー1へのデーター投入 特殊パターンの出勤17日分を繰り返す 土日の場合スキップする 土日は1日進める 平日になったら出退勤打刻を登録する カレンダーを1日進めておく
+        // 特殊パターンの出勤17日分を繰り返す
+        foreach ($patterns as $pattern) {
+            // 土日の場合スキップする
+            while ($currentMonthDate->isWeekend()) {
+                // 土日は1日進める
+                $currentMonthDate->addDay();
+            }
+            // 平日になったら出退勤打刻を登録
+            $this->createRecord($user1->id, $currentMonthDate, $pattern[0], $pattern[1]);
+            // カレンダーを1日進める
+            $currentMonthDate->addDay();
+        }
+
+        // ユーザー2のダミーデータ
+        for ($i = 5; $i >= 1; $i--) {
+            $monthDate = (clone $now)->subMonths($i)->startOfMonth();
+            $createdDays = 0;
+
+            while ($createdDays < 15) {
+                if (!$monthDate->isWeekend()) {
+                    $this->createRecord($user2->id, $monthDate, '09:00:00', '18:00:00');
+                    $createdDays++;
+                }
+                $monthDate->addDay();
+            }
+        }
+
+        $currentMonthDate = (clone $now)->startOfMonth();
         foreach ($patterns as $pattern) {
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
-            $this->createRecord($user1->id, $currentMonthDate, $pattern[0], $pattern[1]);
+            $this->createRecord($user2->id, $currentMonthDate, $pattern[0], $pattern[1]);
+            $currentMonthDate->addDay();
+        }
+
+        // ユーザー3（管理者）のダミーデータ
+        for ($i = 5; $i >= 1; $i--) {
+            $monthDate = (clone $now)->subMonths($i)->startOfMonth();
+            $createdDays = 0;
+
+            while ($createdDays < 15) {
+                if (!$monthDate->isWeekend()) {
+                    $this->createRecord($user3->id, $monthDate, '09:00:00', '18:00:00');
+                    $createdDays++;
+                }
+                $monthDate->addDay();
+            }
+        }
+
+        $currentMonthDate = (clone $now)->startOfMonth();
+        foreach ($patterns as $pattern) {
+            while ($currentMonthDate->isWeekend()) {
+                $currentMonthDate->addDay();
+            }
+            $this->createRecord($user3->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
     }
@@ -85,10 +143,10 @@ class AttendanceSeeder extends Seeder
     // ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
     private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void
     {
-        // 年月日をデーター形式でdateStr変数(箱)にしまう
+        // 年月日をデーター形式で変数(箱)にしまう
         $dateStr = $date->format('Y-m-d');
 
-        // 勤怠管理テーブルに打刻データーを登録し、そのIDを取得する 従業員ID、勤務日時形式、出退勤時刻(出勤時の退勤は空っぽでOK)、新規作成・更新を保存する
+        // 勤怠データの従業員ID、勤務日時形式、出退勤時刻を新規作成・更新を保存
         $attendance = AttendanceRecord::create([
             'user_id' => $userId,
             'date' => $dateStr,
@@ -96,7 +154,7 @@ class AttendanceSeeder extends Seeder
             'clock_out' => $endTime,
         ]);
 
-        // 休憩テーブルに打刻データを登録する 休憩入戻時刻、新規作成・更新データーを保存する
+        // 休憩テーブルに打刻データを登録する 休憩入戻時刻、新規作成・更新データを保存する
         BreakLog::create([
             'attendance_record_id' => $attendance->id,
             'break_in' => '12:00:00',

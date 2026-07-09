@@ -11,13 +11,6 @@
     <!-- 念月日の表示 -->
     <h1>{{ $date->format('Y年n月j日') }}の勤怠</h1>
 
-    <!-- 修正完了メッセージ -->
-    @if (session('success_message'))
-        <div class="success-message-wrapper">
-            <p class="successMessage">{{ session('success_message') }}</p>
-        </div>
-    @endif
-
     <!-- 日付変更エリア -->
     <nav class="date-selector">
         <a class="nav-btn" href="{{ route('admin.attendance.list', ['date' => $date->copy()->subDay()->format('Y-m-d')]) }}">← 前日</a>

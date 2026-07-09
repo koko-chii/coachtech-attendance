@@ -174,22 +174,3 @@ body .main-content {
     background-color: #f3f4f6;
 }
 
-/* 成功メッセージ */
-.success-message-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 20px 0 24px;
-}
-
-.successMessage {
-    color: #16a34a;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 16px;
-    padding: 10px 14px;
-    background-color: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    border-radius: 20px;
-}

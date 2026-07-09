@@ -21,4 +21,11 @@ class IndexAttendanceRecordRequest extends FormRequest
             'page' => ['nullable', 'integer', 'min:1'],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'per_page.max' => '100以下の数値を指定してください。',
+        ];
+    }
 }

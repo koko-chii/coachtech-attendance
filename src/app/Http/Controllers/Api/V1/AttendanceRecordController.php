@@ -51,7 +51,7 @@ class AttendanceRecordController extends Controller
             // 指定した1ページの勤怠データを取得
             ->paginate($perPage);
 
-        //　取得した勤怠データをJSONに変換して正しく表示して返す
+        // 取得した勤怠データをJSONに変換して正しく表示して返す
         return AttendanceRecordResource::collection($records);
     }
 

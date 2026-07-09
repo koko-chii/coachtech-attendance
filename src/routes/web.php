@@ -16,6 +16,10 @@ use App\Http\Controllers\Admin\AdminRequestController;
 // ログイン済みの場合は勤怠登録画面へ、未ログインの場合はログイン画面へ自動転送
 Route::get('/', function () {
     if (Auth::check()) {
+        // もしログインしているユーザーが管理者なら管理者一覧へ自動振り分け
+        if (Auth::user()->admin_status) {
+            return redirect()->route('admin.attendance.list');
+        }
         return redirect()->route('attendance.index');
     }
     return redirect('/login');
@@ -79,7 +83,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/login', [AdminLoginController::class, 'login'])->name('login.submit');
 
     // 認証が必須な管理者用ルート
-    Route::middleware(['auth:admin'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         // 管理者ログアウト
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 

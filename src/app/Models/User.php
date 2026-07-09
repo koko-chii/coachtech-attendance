@@ -30,6 +30,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
+        'admin_status',
     ];
 
     // パスワードと自動ログインはガードされている(ヒドゥン)

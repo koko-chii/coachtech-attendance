@@ -7,7 +7,16 @@
 @section('content')
 <div id="attendance-list-container">
     <!-- スタッフ一覧からの詳細画面 -->
-    <h1>{{ $targetUser->name }}さんの勤怠</h1>
+    <h1 class="attendance-title-wrapper">
+        <span class="title-text">{{ $targetUser->name }}さんの勤怠</span>
+
+        <!-- 修正完了メッセージ -->
+        @if (session('success_message'))
+            <div class="success-message-wrapper">
+                <p class="successMessage">{{ session('success_message') }}</p>
+            </div>
+        @endif
+    </h1>
 
     <div id="month-selector">
         <a href="{{ route('admin.attendance.staff', ['id' => $targetUser->id, 'month' => $prevMonth]) }}" class="nav-btn">&larr; 前月</a>
