@@ -82,11 +82,13 @@ class AttendanceSeeder extends Seeder
 
         // 特殊パターンの出勤17日分を繰り返す
         foreach ($patterns as $pattern) {
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             // 土日の場合スキップする
             while ($currentMonthDate->isWeekend()) {
                 // 土日は1日進める
                 $currentMonthDate->addDay();
             }
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             // 平日になったら出退勤打刻を登録
             $this->createRecord($user1->id, $currentMonthDate, $pattern[0], $pattern[1]);
             // カレンダーを1日進める
@@ -109,9 +111,11 @@ class AttendanceSeeder extends Seeder
 
         $currentMonthDate = (clone $now)->startOfMonth();
         foreach ($patterns as $pattern) {
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             $this->createRecord($user2->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
@@ -132,9 +136,11 @@ class AttendanceSeeder extends Seeder
 
         $currentMonthDate = (clone $now)->startOfMonth();
         foreach ($patterns as $pattern) {
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
+            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             $this->createRecord($user3->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
@@ -162,3 +168,4 @@ class AttendanceSeeder extends Seeder
         ]);
     }
 }
+

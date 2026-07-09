@@ -77,13 +77,14 @@ erDiagram
 - phpMyAdmin：http://localhost:8080/
 - メール確認URL (Mailhog): http://localhost:8025/
 
-## テスト用ログイン情報
+## テスト用ログインユーザー
+*全てメール認証済み
 
 ### 一般ユーザー
-- **ユーザー1（メール認証済み）**
+- **ユーザー1**
   - メールアドレス: `user1@example.com`
   - パスワード: `password`
-- **ユーザー2 (メール認証済み)**
+- **ユーザー2**
   - メールアドレス: `user2@example.com`
   - パスワード: `password`
 
