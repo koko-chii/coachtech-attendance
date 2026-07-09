@@ -9,7 +9,7 @@
 ## 使用技術
 
 - フレームワーク：Laravel 12.x
-- 言語         ： PHP 8.2
+- 言語          ： PHP 8.2
 - Webサーバー   ： Nginx
 - データベース  ： MySQL 8.0
 - コンテナ管理  ： Docker Compose
@@ -141,28 +141,21 @@ erDiagram
     docker compose exec php composer install
     ```
 
-8. **フロントエンドのパッケージをインストール**
-
-    ```bash
-   docker compose exec node npm install
-    ```
-
-9. **アプリケーションキーの生成**
+8. **アプリケーションキーの生成**
 
     ```bash
     docker compose exec php php artisan key:generate
     ```
 
-10. **マイグレーション・シーディングを実行**
+9. **マイグレーション・シーディングを実行**
 
     ```bash
     docker compose exec php php artisan migrate:fresh --seed
     ```
 
-
 > **補足**
 >
-> `docker compose up -d --build` を実行すると、`node` コンテナでVite開発サーバーが自動的に起動します。そのため、`npm run dev` を別途実行する必要はありません。
+> docker compose up -d --build を実行すると、node コンテナで npm install と Vite開発サーバー（npm run dev）が自動的に実行されます。そのため、追加で npm install や npm run dev を実行する必要はありません。
 
 ## テスト実行
 
