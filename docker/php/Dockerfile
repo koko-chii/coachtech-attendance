@@ -9,9 +9,7 @@ RUN apk update && apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     zip \
-    libzip-dev \
-    nodejs \
-    npm
+    libzip-dev
 
 # PHP拡張機能のインストール（MySQL接続や画像処理用）
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -27,7 +25,6 @@ RUN addgroup -g 1000 app \
     && adduser -D -u 1000 -G app app
 
 ENV HOME=/home/app
-ENV NPM_CONFIG_CACHE=/home/app/.npm
 
 WORKDIR /var/www/html
 

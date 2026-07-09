@@ -121,7 +121,6 @@ erDiagram
     DB_DATABASE=coachtech_attendance
     DB_USERNAME=root
     DB_PASSWORD=root_password
-
     ```
 
 5. **Docker Composeディレクトリへ移動**
@@ -142,30 +141,28 @@ erDiagram
     docker compose exec php composer install
     ```
 
-8. **アプリケーションキーの生成**
+8. **フロントエンドのパッケージをインストール**
+
+    ```bash
+   docker compose exec node npm install
+    ```
+
+9. **アプリケーションキーの生成**
 
     ```bash
     docker compose exec php php artisan key:generate
     ```
 
-9. **マイグレーション・シーディングを実行**
+10. **マイグレーション・シーディングを実行**
 
     ```bash
     docker compose exec php php artisan migrate:fresh --seed
     ```
 
-10. **フロントエンドのインストール・ビルド**
 
-    ```bash
-    docker compose exec php sh -c "npm install && npm run build"
-    ```
-
-## 開発サーバー（Vite）の起動
-
-```bash
-docker compose exec php npm run dev
-```
-※起動したまま別ターミナルで操作してください。
+> **補足**
+>
+> `docker compose up -d --build` を実行すると、`node` コンテナでVite開発サーバーが自動的に起動します。そのため、`npm run dev` を別途実行する必要はありません。
 
 ## テスト実行
 

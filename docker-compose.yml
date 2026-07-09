@@ -27,6 +27,18 @@ services:
     networks:
       - coachtech-network
 
+  node:
+    image: node:20
+    container_name: coachtech-node
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - coachtech-network
+
   # データベース (MySQL)
   db:
     image: mysql:8.0
