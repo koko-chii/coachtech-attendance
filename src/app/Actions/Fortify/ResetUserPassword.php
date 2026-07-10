@@ -6,8 +6,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 // バリデーションの呼び出し
 use Illuminate\Support\Facades\Validator;
-// バリデーションエラー機能の呼び出し
-use Illuminate\Validation\ValidationException;
 // パスワードをリセットするためのルールを呼び出し
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
 
@@ -17,7 +15,13 @@ class ResetUserPassword implements ResetsUserPasswords
     // PassWordValidationRulesで作成したトレイト(パスワードルール)を呼出す
     use PasswordValidationRules;
 
-    // ユーザーのパスワードをリセットするための関数(機能)
+    /**
+     * ユーザーのパスワードをリセットする
+     *
+     * @param User $user パスワードを変更するユーザーのデータ
+     * @param array $input 新しいパスワードが入っている箱
+     * @return void 戻り値なし
+     */
     public function reset(User $user, array $input): void
     {
        // 画面から直接データが届かない場所のためRequestファイルは動かせない。

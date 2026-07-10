@@ -5,7 +5,6 @@ namespace App\Actions\Fortify;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 // パスワードを更新するためのルールを呼び出し
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 
@@ -15,7 +14,13 @@ class UpdateUserPassword implements UpdatesUserPasswords
     // passwordのルールを定義するトレイト(部品)を呼び出す
     use PasswordValidationRules;
 
-    // ユーザーのパスワードを更新するための関数(機能)
+    /**
+     * ユーザーのパスワードを更新する
+     *
+     * @param User $user パスワードを変更するユーザーのデータ
+     * @param array $input 現在のパスワードや新しいパスワードが入っている箱
+     * @return void 戻り値なし
+     */
     public function update(User $user, array $input): void
     {
         //  画面から直接データが届かない場所のためRequestファイルは動かせない。
@@ -29,7 +34,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
             'current_password.current_password' => __('The provided password does not match your current password.'),
         ])->validateWithBag('updatePassword');
 
-        // 致した場合はパスワードを暗号化して保存する
+        //一致した場合はパスワードを暗号化して保存する
         $user->forceFill([
             'password' => Hash::make($input['password']),
         ])->save();

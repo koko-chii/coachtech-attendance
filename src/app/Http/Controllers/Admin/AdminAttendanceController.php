@@ -9,16 +9,19 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
-use App\Http\Requests\AdminAttendanceUpdateRequest;
-// 打刻修正申請データを管理するためのモデル
-use App\Models\StampCorrectionRequest;
 use App\Models\BreakLog;
 use App\Models\User;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller
 {
-    // 管理者用勤怠一覧画面を表示
+    /**
+     * 管理者用勤怠一覧画面を表示する
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @return View 管理者用勤怠一覧画面の表示
+     */
     public function showDailyList(Request $request): View
     {
         // リクエストから日付を取得し、未指定なら当日の日付を設定
@@ -38,7 +41,12 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    // 管理者用勤怠詳細画面を表示
+    /**
+     * 管理者用勤怠詳細画面を表示する
+     *
+     * @param int $id 勤怠レコードのID
+     * @return View 管理者用勤怠詳細画面の表示
+     */
     public function showDetail(int $id): View
     {
         // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
@@ -80,7 +88,13 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    // 管理者が勤怠修正を行った際の更新処理
+    /**
+     * 管理者が勤怠修正を行った際の更新処理
+     *
+     * @param AdminAttendanceUpdateRequest $request 画面からの入力データが入った箱
+     * @param int $id 勤怠レコードのID
+     * @return RedirectResponse 修正後のリダイレクト先
+     */
     public function updateDetail(AdminAttendanceUpdateRequest $request, int $id): RedirectResponse
     {
         // 勤怠データと一緒に休憩データを取得
@@ -115,14 +129,14 @@ class AdminAttendanceController extends Controller
         // 休憩データがある場合、既存の休憩データをIDごとに更新
         if (!empty($breaks)) {
             $attendance->breaks()->delete();
-            foreach ($breaks as $breakData) {
+            collect($breaks)->each(function ($breakData) use ($attendance) {
                 if (!empty($breakData['break_in'])) {
                     $attendance->breaks()->create([
                         'break_in'  => $breakData['break_in'] ?? null,
                         'break_out' => $breakData['break_out'] ?? null,
                     ]);
                 }
-            }
+            });
         }
 
         // 修正完了メッセージと一緒にスタッフ別勤怠一覧画面へ遷移を返す
@@ -130,7 +144,11 @@ class AdminAttendanceController extends Controller
             ->with('success_message', '勤怠情報を修正しました。');
     }
 
-    //スタッフ一覧画面を表示するメソッド
+    /**
+     * スタッフ一覧画面を表示する
+     *
+     * @return View 管理者用スタッフ一覧画面
+     */
     public function showStaffList(): View
     {
         // 管理者ではないユーザー情報を取得
@@ -140,7 +158,13 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_staff_list', compact('users'));
     }
 
-    // スタッフ管理画面 指定したスタッフの勤怠一覧画面を表示
+    /**
+     * 指定したスタッフの勤怠一覧画面を表示する
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @param int $id スタッフ（ユーザー）のID
+     * @return View スタッフの勤怠一覧画面
+     */
     public function showStaffAttendance(Request $request, int $id): View
     {
         // URLで指定したIDのスタッフデータを取得
@@ -226,8 +250,15 @@ class AdminAttendanceController extends Controller
         ]);
     }
 
-    // Csv出力処理
-    public function downloadCsv(Request $request, int $id)
+    /**
+     * 指定したスタッフの月間勤怠データをCSVファイルとして出力・ダウンロードする
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @param int $id スタッフ（ユーザー）のID
+     * @return StreamedResponse CSVファイルのダウンロードレスポンス
+     */
+    public function downloadCsv(Request $request, int $id): StreamedResponse
+    {
     {
         // 指定したスタッフデータを取得
         $targetUser = User::findOrFail($id);
@@ -254,10 +285,16 @@ class AdminAttendanceController extends Controller
             // 出力先を準備
             $stream = fopen('php://output', 'w');
             // csvヘッダーの作成
-            fputcsv($stream, [mb_convert_encoding('日付', 'SJIS-win', 'UTF-8'), mb_convert_encoding('出勤', 'SJIS-win', 'UTF-8'), mb_convert_encoding('退勤', 'SJIS-win', 'UTF-8'),
-            mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'), mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')]);
+            fputcsv($stream, [
+                mb_convert_encoding('日付', 'SJIS-win', 'UTF-8'),
+                mb_convert_encoding('出勤', 'SJIS-win', 'UTF-8'),
+                mb_convert_encoding('退勤', 'SJIS-win', 'UTF-8'),
+                mb_convert_encoding('休憩時間', 'SJIS-win', 'UTF-8'),
+                mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')
+            ]);
+
             // 計勤怠データごとに休憩時間の計算
-            foreach ($records as $record) {
+            collect($records)->each(function (AttendanceRecord $record) use ($stream) {
                 $totalBreakSeconds = $record->breaks->sum(function ($b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
                     // carbon形式に変換して(文字列を日時を扱えるよう変換)csv出力
@@ -281,7 +318,7 @@ class AdminAttendanceController extends Controller
                     $breakTime,
                     $workTime
                 ]);
-            }
+            });
             // csvの出力終了
             fclose($stream);
         };
@@ -290,7 +327,11 @@ class AdminAttendanceController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    // 申請一覧画面の処理
+    /**
+     * 修正申請の一覧画面を表示する
+     *
+     * @return View 申請一覧画面
+     */
     public function showRequestList(): View
     {
         // 修正申請データと一緒にスタッフデータと勤怠データを取得
@@ -304,7 +345,12 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_request_list', compact('pendingRequests', 'approvedRequests'));
     }
 
-    // 修正申請の承認画面の処理
+    /**
+     * 修正申請の承認画面を表示する
+     *
+     * @param int $id 修正申請レコードのID
+     * @return View 修正申請の承認画面
+     */
     public function showApproveView(int $id): View
     {
         // 修正申請データと一緒にスタッフデータと勤怠データを1件だけ取得
@@ -316,7 +362,13 @@ class AdminAttendanceController extends Controller
         return view('admin.admin_request_approve', compact('requestData', 'isPending'));
     }
 
-    // 承認ボタンを押した後の処理
+    /**
+     * 修正申請を承認する
+     *
+     * @param Request $request 画面からの入力データが入った箱
+     * @param int $id 修正申請レコードのID
+     * @return RedirectResponse 承認完了後のリダイレクト先
+     */
     public function approveRequest(Request $request, int $id): RedirectResponse
     {
         // 修正申請データを1件だけ取得
@@ -354,7 +406,8 @@ class AdminAttendanceController extends Controller
             // 管理者用申請一覧の「承認済み」タブへ遷移と一緒に、メッセージを返す
             return redirect()->route('attendance_correction_request.index')->with('success_message', '申請を承認しました。');
 
-        }
+        }// 安全なリダイレクト
+        return redirect()->route('attendance_correction_request.index');
     }
 }
 

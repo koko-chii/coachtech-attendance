@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\Validator;
 // laravelのCreateNewUsersrルールを実装するクラス
 class CreateNewUser implements CreatesNewUsers
 {
-    // ユーザー情報を新規作成するため(データの受取・チェック・保存)を1つにまとめたcreateメソッド
-    // public 公開範囲(誰でも自由に) function関数(機能) create(この関数の名前。今回は新規作成)
+    /**
+     * ユーザー情報を新規作成
+     *
+     * @param array $input ユーザーの入力データ
+     * @return User 安全に作成されたデータ
+     */
     public function create(array $input): User
     {
         // ユーザーが入力したデータを受取り、バリデーションチェックをしてもらう

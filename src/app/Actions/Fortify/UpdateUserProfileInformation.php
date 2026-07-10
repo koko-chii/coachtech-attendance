@@ -8,14 +8,19 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
 // バリデーションルールの呼び出し
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 // プロフィール更新ルールを呼出す
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 // プロフィール更新ルールを実装するクラス(設置)
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
-    // プロフィールを更新するための関数(機能)
+    /**
+     * ユーザーのプロフィール情報を更新する
+     *
+     * @param User $user プロフィールを変更するユーザーのデータ
+     * @param array $input 新しい名前やメールアドレスが入っている箱
+     * @return void 戻り値なし
+     */
     public function update(User $user, array $input): void
     {
         // 画面から直接データが届かない場所のためRequestファイルは動かせない。
@@ -48,7 +53,13 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         }
     }
 
-    // プロフィール更新ルールを行うための関数(機能)
+    /**
+     * ユーザーのプロフィール情報を更新する
+     *
+     * @param User $user プロフィールを変更するユーザーのデータ
+     * @param array $input 新しい名前やメールアドレスが入っている箱
+     * @return void 戻り値なし
+     */
     protected function updateVerifiedUser(User $user, array $input): void
     {
         // 新しい名前とメールアドレスを保存し、メール認証をリセットする。
