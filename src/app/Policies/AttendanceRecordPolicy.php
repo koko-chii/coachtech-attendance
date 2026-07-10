@@ -29,7 +29,7 @@ class AttendanceRecordPolicy
 
     // 勤怠データを削除するユーザーの確認
     public function delete(User $user, AttendanceRecord $attendanceRecord): bool
-    {   
+    {
         // スタッフIDを確認し、自分の勤怠データだけ操作可能
         return $user->id === $attendanceRecord->user_id;
     }
