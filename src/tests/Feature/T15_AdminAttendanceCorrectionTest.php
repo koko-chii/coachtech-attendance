@@ -39,7 +39,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
         ]);
 
         // 管理者ログインして管理者用申請一覧画面の承認待ちタブを表示
-        $response = $this->actingAs($admin)->get(route('admin.request.list', ['tab' => 'pending']));
+        $response = $this->actingAs($admin)->get(route('attendance_correction_request.index', ['tab' => 'pending']));
 
         // 画面表示の検証
         $response->assertStatus(200);
@@ -72,7 +72,7 @@ class T15_AdminAttendanceCorrectionTest extends TestCase
         ]);
 
         // 管理者ログインして管理者用申請一覧画面の承認済みタブを表示
-        $response = $this->actingAs($admin)->get(route('admin.request.list', ['tab' => 'approved']));
+        $response = $this->actingAs($admin)->get(route('attendance_correction_request.index', ['tab' => 'approved']));
 
         $response->assertStatus(200);
         $response->assertSee('承認済みの申請データ');

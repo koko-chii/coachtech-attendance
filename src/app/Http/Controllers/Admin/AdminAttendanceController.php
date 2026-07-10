@@ -352,7 +352,8 @@ class AdminAttendanceController extends Controller
             // ステータスを承認済みに更新
             $requestData->update(['status' => 'approved']);
             // 管理者用申請一覧の「承認済み」タブへ遷移と一緒に、メッセージを返す
-            return redirect()->route('admin.request.list')->with('success_message', '申請を承認しました。');
+            return redirect()->route('attendance_correction_request.index')->with('success_message', '申請を承認しました。');
+
         }
     }
 }

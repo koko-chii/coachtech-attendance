@@ -87,9 +87,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 管理者ログアウト
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
-        // 修正申請一覧画面
-        Route::get('/stamp_correction_request/list', [AdminAttendanceController::class, 'showRequestList'])->name('request.list');
-
         // 修正申請承認画面
         Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminAttendanceController::class, 'showApproveView'])->name('request.approve');
 
