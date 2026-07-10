@@ -367,16 +367,16 @@ class AttendanceController extends Controller
         // 現在日時を取得
         $now = Carbon::now();
         // 現在から6か月前の月初の日付を取得
-        $sixMonthsAgo = $now->copy()->startOfMonth()->subMonths(5);
+        $sixMonthsAgo = Carbon::now()->startOfMonth()->subMonths(5);
         // 集計の終わりを今月末に広げる
-        $now = Carbon::now()->endOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
 
 
         // 1件の勤怠データと一緒に休憩データを取得
         $records = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
             ->where('date', '>=', $sixMonthsAgo->format('Y-m-d'))
-            ->where('date', '<=', $now->format('Y-m-d'))
+            ->where('date', '<=', $endDate->format('Y-m-d'))
             ->get();
 
         // 月ごとの集計データを保存

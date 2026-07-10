@@ -50,10 +50,19 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    // 1対多のリレーションを使うための関数(機能)
+     // 1対多のリレーションを使うための関数(機能)
     public function attendanceRecords(): HasMany
     {
         // ユーザーは複数存在する勤怠データ(1対多のリレーション)を引っ張ってくる
         return $this->hasMany(AttendanceRecord::class, 'user_id');
+    }
+
+    public function hasVerifiedEmail(): bool
+    {
+        // 管理者ユーザーはメール認証を常に完了済みにする
+        if ($this->admin_status === true) {
+            return true;
+        }
+        return ! is_null($this->email_verified_at);
     }
 }

@@ -113,7 +113,7 @@ class AttendanceSeeder extends Seeder
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
-            // ★修正：$pattern[0] と $pattern[1] を正しく指定します
+
             $this->createRecord($user2->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
@@ -137,12 +137,11 @@ class AttendanceSeeder extends Seeder
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
-            // ★修正：$pattern[0] と $pattern[1] を正しく指定します
+
             $this->createRecord($user3->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
     }
-
 
     // ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
     private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void
