@@ -82,14 +82,13 @@ class AttendanceSeeder extends Seeder
 
         // 特殊パターンの出勤17日分を繰り返す
         foreach ($patterns as $pattern) {
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             // 土日の場合スキップする
             while ($currentMonthDate->isWeekend()) {
                 // 土日は1日進める
                 $currentMonthDate->addDay();
             }
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             // 平日になったら出退勤打刻を登録
+            // ★修正：$pattern[0] と $pattern[1] を指定して、残業や遅刻の時刻を正確に渡します
             $this->createRecord($user1->id, $currentMonthDate, $pattern[0], $pattern[1]);
             // カレンダーを1日進める
             $currentMonthDate->addDay();
@@ -111,11 +110,10 @@ class AttendanceSeeder extends Seeder
 
         $currentMonthDate = (clone $now)->startOfMonth();
         foreach ($patterns as $pattern) {
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
+            // ★修正：$pattern[0] と $pattern[1] を正しく指定します
             $this->createRecord($user2->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
@@ -136,15 +134,15 @@ class AttendanceSeeder extends Seeder
 
         $currentMonthDate = (clone $now)->startOfMonth();
         foreach ($patterns as $pattern) {
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
             while ($currentMonthDate->isWeekend()) {
                 $currentMonthDate->addDay();
             }
-            if ($currentMonthDate->greaterThanOrEqualTo($now->startOfDay())) { break; }
+            // ★修正：$pattern[0] と $pattern[1] を正しく指定します
             $this->createRecord($user3->id, $currentMonthDate, $pattern[0], $pattern[1]);
             $currentMonthDate->addDay();
         }
     }
+
 
     // ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
     private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void

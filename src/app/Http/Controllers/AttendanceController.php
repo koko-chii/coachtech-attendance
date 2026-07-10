@@ -356,10 +356,10 @@ class AttendanceController extends Controller
 
         // 申請一覧画面へ遷移する
         return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました');
-
     }
 
     // レポートを表示するための処理
+        // レポートを表示するための処理
     public function report(Request $request): View
     {
         // スタッフの認証チェック
@@ -367,7 +367,10 @@ class AttendanceController extends Controller
         // 現在日時を取得
         $now = Carbon::now();
         // 現在から6か月前の月初の日付を取得
-        $sixMonthsAgo = $now->copy()->subMonths(5)->startOfMonth();
+        $sixMonthsAgo = $now->copy()->startOfMonth()->subMonths(5);
+        // 集計の終わりを今月末に広げる
+        $now = Carbon::now()->endOfMonth();
+
 
         // 1件の勤怠データと一緒に休憩データを取得
         $records = AttendanceRecord::with('breaks')
@@ -379,7 +382,8 @@ class AttendanceController extends Controller
         // 月ごとの集計データを保存
         $monthlyData = collect();
         for ($i = 5; $i >= 0; $i--) {
-            $monthStr = $now->copy()->subMonths($i)->format('Y-m');
+            // ★修正：はみ出しバグを防ぐため「今月の1日」を基準にして安全に過去の月を割り出します
+            $monthStr = Carbon::now()->startOfMonth()->subMonths($i)->format('Y-m');
 
             // 指定した年月の勤怠データだけ取得
             $monthRecords = $records->filter(fn($r) => Carbon::parse($r->date)->format('Y-m') === $monthStr);
