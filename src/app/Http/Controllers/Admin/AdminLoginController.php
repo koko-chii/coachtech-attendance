@@ -24,14 +24,24 @@ use Illuminate\Http\Request;
 // Laravelのコントローラー機能を継承したクラス
 class AdminLoginController extends Controller
 {
-    // 管理者ログイン画面を表示するメソッド
+    /**
+     * 管理者ログイン画面を表示
+     *
+     * @return View 管理者ログイン画面のビュー
+     */
     public function showLoginForm(): View
     {
         // 管理者ログイン画面を表示
         return view('admin.auth.login');
     }
 
-    // 管理者ログイン認証を行うメソッド
+    /**
+     * 管理者ログインの認証処理を行う
+     *
+     * @param AdminLoginRequest $request ログイン入力データが入った箱
+     * @return RedirectResponse 認証成功後のリダイレクト先
+     * @throws ValidationException 認証失敗時のバリデーションエラー
+     */
     public function login(AdminLoginRequest $request): RedirectResponse
     {
         // メールアドレスとパスワードを取得
@@ -51,7 +61,12 @@ class AdminLoginController extends Controller
         ]);
     }
 
-    // 管理者ログアウト処理を行うメソッド
+    /**
+     * 管理者ログアウト処理を行う
+     *
+     * @param Request $request セッション操作用のリクエストデータが入った箱
+     * @return RedirectResponse ログアウト後のリダイレクト先
+     */
     public function logout(Request $request): RedirectResponse
     {
         // ログイン時の認証ガードからログアウト

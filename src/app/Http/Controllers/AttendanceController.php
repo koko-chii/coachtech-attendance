@@ -24,7 +24,11 @@ use App\Http\Requests\UpdateAttendanceRequest;
 // 勤怠管理コントローラーを作成するためのクラス(設置)
 class AttendanceController extends Controller
 {
-    // 勤怠管理画面を表示するための関数(機能)
+    /**
+     * 勤怠管理画面を表示する
+     *
+     * @return View 勤怠管理画面のビュー
+     */
     public function index(): View
     {
         // ログイン済みユーザー情報を取得し、user変数(箱)に入れる
@@ -73,7 +77,11 @@ class AttendanceController extends Controller
         ]);
     }
 
-    // 出勤ボタンが押されたときの関数(機能)
+    /**
+     * 出勤ボタンが押されたときの打刻処理を行う
+     *
+     * @return RedirectResponse 元の画面へのリダイレクト
+     */
     public function clockIn(): RedirectResponse
     {
         // ログインしているユーザー情報をuser変数(箱)にしまう
@@ -99,7 +107,11 @@ class AttendanceController extends Controller
         return redirect()->back();
     }
 
-    // 退勤ボタンが押されたときの関数(機能)
+    /**
+     * 退勤ボタンが押されたときの打刻処理を行う
+     *
+     * @return RedirectResponse 元の画面へのリダイレクト
+     */
     public function clockOut(): RedirectResponse
     {
         // ログインしているユーザー情報をuser変数(箱)にいれる
@@ -126,7 +138,11 @@ class AttendanceController extends Controller
         return redirect()->back();
     }
 
-   // 休憩ボタンが押されたときの関数(機能)
+    /**
+     * 休憩ボタン（または休憩戻りボタン）が押されたときの処理を行う
+     *
+     * @return RedirectResponse 元の画面へのリダイレクト
+     */
     public function break():RedirectResponse
     {
         // ログインしているユーザーをuser変数(箱)に入れる
@@ -173,7 +189,12 @@ class AttendanceController extends Controller
         return redirect()->back();
     }
 
-    // 勤怠一覧画面でユーザーから送られてきたリクエストを実行するための関数(機能)
+    /**
+     * 従業員自身の月間勤怠一覧画面を表示する
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @return View 勤怠一覧画面のビュー
+     */
     public function showList(Request $request): View
     {
         // ログインユーザーの情報を取得
@@ -249,7 +270,12 @@ class AttendanceController extends Controller
         ]);
     }
 
-    // 勤怠詳細画面を表示するための関数(機能)
+    /**
+     * 勤怠詳細画面を表示する
+     *
+     * @param int $id 勤怠レコードのID
+     * @return View 勤怠詳細画面のビュー
+     */
     public function show(int $id): View
     {
         // ログインユーザー情報から勤怠登録データと一緒に休憩データを持ってきて変数(箱)にしまう
@@ -301,7 +327,13 @@ class AttendanceController extends Controller
         return view('attendance_detail', compact('record', 'isPending', 'correctionRequest'));
     }
 
-    // 修正ボタン押下後の画面切り替え機能を使うための関数(機能)
+    /**
+     * 従業員からの勤怠修正申請を受け付け、承認待ちデータを作成する
+     *
+     * @param UpdateAttendanceRequest $request 画面からの修正入力データが入った箱
+     * @param int $id 勤怠レコードのID
+     * @return RedirectResponse 申請完了後のリダイレクト先
+     */
     public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
     {
         // 備考欄の未入力チェック、出勤・退勤時間の前後関係の入力チェックを行う
@@ -316,15 +348,20 @@ class AttendanceController extends Controller
 
         // もし休憩データの修正がある場合、退勤時間より後になっていないか不適切な値をチェック
         if ($request->has('breaks')) {
-            foreach ($request->input('breaks') as $breakId => $breakData) {
+            collect($request->input('breaks'))->each(function ($breakData, $breakId) use ($request) {
                 // 安全対策：データが存在するときだけ比較を行うように判定（isset）を追加
                 if (isset($breakData['break_in']) && $breakData['break_in'] > $request->input('clock_out')) {
-                    return back()->withErrors(['breaks.' . $breakId . '.break_in' => '休憩時間が不適切な値です']);
+                    // Collectionのeach内でエラーを投げることで安全にリダイレクトさせる
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'breaks.' . $breakId . '.break_in' => '休憩時間が不適切な値です'
+                    ]);
                 }
                 if (isset($breakData['break_out']) && $breakData['break_out'] > $request->input('clock_out')) {
-                    return back()->withErrors(['breaks.' . $breakId . '.break_out' => '休憩時間もしくは退勤時間が不適切な値です']);
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'breaks.' . $breakId . '.break_out' => '休憩時間もしくは退勤時間が不適切な値です'
+                    ]);
                 }
-            }
+            });
         }
 
         // 勤怠登録からユーザーの修正する情報を見つける
@@ -358,8 +395,12 @@ class AttendanceController extends Controller
         return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました');
     }
 
-    // レポートを表示するための処理
-        // レポートを表示するための処理
+    /**
+     * マイ勤怠レポート画面を表示するための月間集計処理を行う
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @return View マイ勤怠レポート画面のビュー
+     */
     public function report(Request $request): View
     {
         // スタッフの認証チェック
@@ -371,7 +412,6 @@ class AttendanceController extends Controller
         // 集計の終わりを今月末に広げる
         $endDate = Carbon::now()->endOfMonth();
 
-
         // 1件の勤怠データと一緒に休憩データを取得
         $records = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
@@ -379,10 +419,15 @@ class AttendanceController extends Controller
             ->where('date', '<=', $endDate->format('Y-m-d'))
             ->get();
 
-        // 月ごとの集計データを保存
+        // 月ごとの集計データを保存する箱を準備
         $monthlyData = collect();
-        for ($i = 5; $i >= 0; $i--) {
-            // ★修正：はみ出しバグを防ぐため「今月の1日」を基準にして安全に過去の月を割り出します
+
+        // 過去6か月分を集計
+        collect()->times(6, function (int $number) use ($records, $monthlyData) {
+            // $numberは1から6まで入るため、引き算を使って過去5か月前から今月までのインデックス（5〜0）を作ります
+            $i = 6 - $number;
+
+            // はみ出しバグを防ぐため「今月の1日」を基準にして安全に過去の月を割り出します
             $monthStr = Carbon::now()->startOfMonth()->subMonths($i)->format('Y-m');
 
             // 指定した年月の勤怠データだけ取得
@@ -436,7 +481,7 @@ class AttendanceController extends Controller
                 'overtime_minutes' => (int)floor(($totalOvertimeSeconds % 3600) / 60),
                 'raw_work_seconds' => $totalWorkSeconds,
             ]);
-        }
+        });
 
         // 6か月分の総勤務時間を秒で集計
         $grandTotalWorkSeconds = $monthlyData->sum('raw_work_seconds');

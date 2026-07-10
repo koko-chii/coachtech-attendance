@@ -259,7 +259,6 @@ class AdminAttendanceController extends Controller
      */
     public function downloadCsv(Request $request, int $id): StreamedResponse
     {
-    {
         // 指定したスタッフデータを取得
         $targetUser = User::findOrFail($id);
         // URLで指定が無い場合、現在の年月を設定

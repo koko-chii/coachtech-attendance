@@ -12,7 +12,11 @@ use App\Http\Controllers\Admin\AdminAttendanceController;
 // コントローラー機能を継承した勤怠修正申請機能を作成するためのクラス
 class StampCorrectionRequestController extends Controller
 {
-    // 勤怠申請一覧画面を表示するための関数(機能)
+    /**
+     * 勤怠申請一覧画面を表示する（管理者の場合は管理者用一覧処理に委譲する）
+     *
+     * @return View 勤怠申請一覧画面のビュー
+     */
     public function index(): View
     {
         // ログイン中のユーザー情報を取得
