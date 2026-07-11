@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 // 管理者コントローラーの読み込み
 use App\Http\Controllers\Admin\AdminAttendanceController;
+use Illuminate\Http\Request;
 
 // コントローラー機能を継承した勤怠修正申請機能を作成するためのクラス
 class StampCorrectionRequestController extends Controller
@@ -17,13 +18,13 @@ class StampCorrectionRequestController extends Controller
      *
      * @return View 勤怠申請一覧画面のビュー
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         // ログイン中のユーザー情報を取得
         $user = Auth::user();
 
         // もし管理者（admin_statusがtrue）なら、管理者用の画面処理へ丸投げする
-        if ($user && $user->admin_status) {
+        if ($user && $user->admin_status && $request->session()->get('login_entrance') !== 'staff') {
             return app(AdminAttendanceController::class)->showRequestList();
         }
         // ログイン中のユーザーIDを取得

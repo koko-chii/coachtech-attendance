@@ -13,6 +13,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 // laravel標準装備のServiceProviderを継承したオリジナルのFortifyServiceProviderを作成するた目のクラス(設置)
 class FortifyServiceProvider extends ServiceProvider
@@ -80,5 +83,27 @@ class FortifyServiceProvider extends ServiceProvider
                 ($credentialId ?: $request->session()->getId()).'|'.$request->ip()
             );
         });
+
+        // ログイン認証のカスタマイズ処理
+        Fortify::authenticateUsing(function (Request $request) {
+           // スタッフユーザーまたは管理者を探す
+            $user = User::where(Fortify::username(), $request->input(Fortify::username()))->first();
+
+            // パスワードが一致しているかチェック
+            if ($user && Hash::check($request->input('password'), $user->password)) {
+
+               // もしログインした画面がスタッフ用画面からの場合
+                if (!$request->is('admin/*') && !$request->is('admin')) {
+                    // スタッフ用の入り口から入った目印を刻む
+                    $request->session()->put('login_entrance', 'staff');
+                }
+
+                // 認証成功としてユーザーを返す
+                return $user;
+            }
+
+            return null;
+        });
     }
 }
+
