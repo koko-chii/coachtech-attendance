@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Schema;
 // マイグレーションを実行するための新しいクラス(設置)
 return new class extends Migration
 {
-    // テーブルを変更(追加修正)するための関数(機能)
+    /**
+     * テーブルに2段階認証用カラムを追加
+     *
+     * @return void 戻り値なし
+     */
     public function up(): void
     {
         // usersテーブルのパスワード項目の後に２段階認証項目を追加してtable変数(箱)にいれる設計指示
@@ -31,7 +35,11 @@ return new class extends Migration
         });
     }
 
-    // テーブルを削除するための関数(機能)
+    /**
+     * 追加した2段階認証用カラムを削除
+     *
+     * @return void 戻り値なし
+     */
     public function down(): void
     {
         // 2段階認証、リカバリーコード、日時形式の項目をusersテーブルから削除する設計指示

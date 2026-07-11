@@ -10,14 +10,18 @@ use Carbon\Carbon;
 // laravel標準のバリデーション機能を継承したクラス
 class AdminAttendanceUpdateRequest extends FormRequest
 {
-    // リクエストの実行権限を判定
+    /**
+     * リクエストの実行権限をチェック
+     */
     public function authorize(): bool
     {
         // リクエスト許可
         return true;
     }
 
-    // バリデーションルールを定義
+    /**
+     * バリデーションルールを定義
+     */
     public function rules(): array
     {
         // 出勤時刻・退勤時刻・備考は必須、休憩時刻は空欄可
@@ -29,7 +33,9 @@ class AdminAttendanceUpdateRequest extends FormRequest
         ];
     }
 
-    // バリデーションメッセージを定義
+    /**
+     * バリデーションエラーメッセージを定義
+     */
     public function messages(): array
     {
         return [
@@ -39,7 +45,12 @@ class AdminAttendanceUpdateRequest extends FormRequest
         ];
     }
 
-    // バリデーション後の追加チェックを設定
+    /**
+     * バリデーション後の追加チェックを設定（出退勤時間と休憩時間の不整合をチェック）
+     *
+     * @param mixed $validator バリデータインスタンス
+     * @return void
+     */
     protected function withValidator($validator): void
     {
         // 出勤時刻と退勤時刻を時刻形式（H:i）に変換
@@ -56,7 +67,8 @@ class AdminAttendanceUpdateRequest extends FormRequest
 
             // 複数の休憩入力データを時刻形式(H:i)に変換
             if ($this->has('breaks') && is_array($this->input('breaks'))) {
-                foreach ($this->input('breaks') as $index => $breakData) {
+                // ★規約徹底：foreachを避け、Collectionのeachメソッドを活用して休憩データを1件ずつチェックします
+                collect($this->input('breaks'))->each(function ($breakData, $index) use ($validator, $clockIn, $clockOut) {
                     $breakIn  = filled($breakData['break_in'] ?? null) ? Carbon::parse($breakData['break_in'])->format('H:i') : null;
                     $breakOut = filled($breakData['break_out'] ?? null) ? Carbon::parse($breakData['break_out'])->format('H:i') : null;
 
@@ -70,7 +82,8 @@ class AdminAttendanceUpdateRequest extends FormRequest
                                 '休憩時間が不適切な値です'
                             );
 
-                            continue;
+                            // Collectionのeach内では、returnがforeachでのcontinueと同じ役割（次のデータの処理へ進む）になります
+                            return;
                         }
                     }
 
@@ -94,7 +107,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
                             );
                         }
                     }
-                }
+                });
             }
 
             // 追加の休憩入力データを時刻形式(H:i)に変換

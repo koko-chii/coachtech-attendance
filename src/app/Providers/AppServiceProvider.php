@@ -9,13 +9,21 @@ use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 // laravelの基本機能を継承したアプリの機能設定を提供するクラス
 class AppServiceProvider extends ServiceProvider
 {
-    // サービスを登録する処理
+    /**
+     * アプリケーションのサービスを登録
+     *
+     * @return void 戻り値なし
+     */
     public function register(): void
     {
         //
     }
 
-    // アプリ起動時の初期設定
+    /**
+     * アプリケーションの起動時の初期設定
+     *
+     * @return void 戻り値なし
+     */
     public function boot(): void
     {
         // ログインしていないユーザーの移動先を/loginに固定

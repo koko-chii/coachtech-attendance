@@ -7,11 +7,17 @@ use Illuminate\Validation\Rule;
 
 class StoreAttendanceRecordRequest extends FormRequest
 {
+    /**
+     * リクエストの実行権限をチェック
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルールを定義
+     */
     public function rules(): array
     {
         return [
@@ -28,6 +34,9 @@ class StoreAttendanceRecordRequest extends FormRequest
         ];
     }
 
+    /**
+     * バリデーションエラーメッセージを定義
+     */
     public function messages(): array
     {
         return [

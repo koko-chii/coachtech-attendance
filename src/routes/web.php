@@ -10,8 +10,6 @@ use App\Http\Controllers\StampCorrectionRequestController;
 use App\Http\Controllers\Admin\AdminLoginController;
 // 管理者用勤怠一覧コントローラーの読み込み
 use App\Http\Controllers\Admin\AdminAttendanceController;
-use App\Http\Controllers\Admin\AdminStaffController;
-use App\Http\Controllers\Admin\AdminRequestController;
 
 // ログイン済みの場合は勤怠登録画面へ、未ログインの場合はログイン画面へ自動転送
 Route::get('/', function () {

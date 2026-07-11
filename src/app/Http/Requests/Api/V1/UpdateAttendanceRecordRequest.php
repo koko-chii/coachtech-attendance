@@ -7,11 +7,17 @@ use Illuminate\Validation\Rule;
 
 class UpdateAttendanceRecordRequest extends FormRequest
 {
+    /**
+     * リクエストの実行権限をチェック
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルールを定義
+     */
     public function rules(): array
     {
         $attendanceRecord = $this->route('attendanceRecord');
@@ -31,6 +37,9 @@ class UpdateAttendanceRecordRequest extends FormRequest
         ];
     }
 
+    /**
+     * バリデーションエラーメッセージを定義
+     */
     public function messages(): array
     {
         return [

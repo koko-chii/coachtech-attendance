@@ -6,6 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * 新しくattendance_recordsテーブルを作成
+     *
+     * @return void 戻り値なし
+     */
     public function up(): void
     {
         // 勤怠管理テーブルを作成するための設計指示
@@ -22,6 +27,11 @@ return new class extends Migration
         });
     }
 
+    /**
+     * attendance_recordsテーブルを削除
+     *
+     * @return void 戻り値なし
+     */
     public function down(): void
     {
         // マイグレーションを削除するときに勤怠管理テーブルもまとめて消す

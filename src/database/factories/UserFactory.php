@@ -15,7 +15,11 @@ class UserFactory extends Factory
     // パスワードの暗号化処理を、一時的に保存しておく変数(箱)
     protected static ?string $password;
 
-    // ダミーデーターを作成するための関数(機能)
+    /**
+     * モデルのデフォルトのダミー状態（データ構造）を定義
+     *
+     * @return array ダミーデータの配列
+     */
     public function definition(): array
     {
         // ダミーデータには、名前とメール認証したメールアドレス、暗号化したパスワード、ログイン保持トークン(ランダム英数字10字)を定義する
@@ -29,7 +33,11 @@ class UserFactory extends Factory
         ];
     }
 
-    // メール未認証のダミーデーターを作成するための関数(機能)
+    /**
+     * メール未認証状態のダミーデータを生成する設定を定義
+     *
+     * @return static ファクトリのインスタンス
+     */
     public function unverified(): static
     {
         // メール認証日時を空っぽに書き換える

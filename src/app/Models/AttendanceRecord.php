@@ -27,20 +27,32 @@ class AttendanceRecord extends Model
         'comment',
     ];
 
-    // スタッフデータに紐づけるための機能
+    /**
+     * スタッフデータに紐づけるための機能
+     *
+     * @return BelongsTo 従業員ユーザーとのリレーション関係
+     */
     public function user(): BelongsTo
     {
         // スタッフデータに紐づけて返す
         return $this->belongsTo(User::class);
     }
 
-    // 休憩情報データ一覧に紐づけるための機能
+    /**
+     * 休憩情報データ一覧に紐づけるための機能
+     *
+     * @return HasMany 休憩情報データとの1対多のリレーション関係
+     */
     public function breaks(): HasMany
     {
         return $this->hasMany(BreakLog::class);
     }
 
-    // 修正申請データーに紐づけるための機能
+    /**
+     * 修正申請データーに紐づけるための機能
+     *
+     * @return HasMany 修正申請データとの1対多のリレーション関係
+     */
     public function applications(): HasMany
     {
         return $this->hasMany(StampCorrectionRequest::class);

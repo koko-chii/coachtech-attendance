@@ -12,6 +12,8 @@ use App\Models\AttendanceRecord;
 use App\Models\BreakLog;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use App\Http\Requests\AdminAttendanceUpdateRequest;
+use App\Models\StampCorrectionRequest;
 
 // 管理者の勤怠管理に関する処理を行うクラス
 class AdminAttendanceController extends Controller

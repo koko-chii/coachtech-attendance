@@ -9,7 +9,11 @@ use Laravel\Passkeys\Passkeys;
 // マイグレーションを実行するための新しいクラス(設置)
 return new class extends Migration
 {
-    // マイグレーションを実行するための関数(機能)
+    /**
+     * マイグレーションを実行する
+     *
+     * @return void 戻り値なし
+     */
     public function up(): void
     {
         // 新しくパスキーテーブルを作成するための設計指示
@@ -29,7 +33,11 @@ return new class extends Migration
         });
     }
 
-    // マイグレーションを削除するときの関数(機能)
+    /**
+     * マイグレーションテーブルを削除
+     *
+     * @return void 戻り値なし
+     */
     public function down(): void
     {
         // パスキーテーブルもまとめて削除する設計指示

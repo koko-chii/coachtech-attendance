@@ -4,8 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// マイグレーションを実行するための新しいクラス(設置)
 return new class extends Migration
 {
+    /**
+     * 新しくbreaksテーブルを作成
+     *
+     * @return void 戻り値なし
+     */
     public function up(): void
     {
         // 休憩テーブルを作成するための設計指示
@@ -21,6 +27,11 @@ return new class extends Migration
         });
     }
 
+    /**
+     * breaksテーブルを削除
+     *
+     * @return void 戻り値なし
+     */
     public function down(): void
     {
         // マイグレーション(部屋)を削除するときは休憩テーブル(棚)もまとめて消す

@@ -17,12 +17,21 @@ use Laravel\Fortify\Fortify;
 // laravel標準装備のServiceProviderを継承したオリジナルのFortifyServiceProviderを作成するた目のクラス(設置)
 class FortifyServiceProvider extends ServiceProvider
 {
+    /**
+     * アプリケーションのサービスを登録
+     *
+     * @return void 戻り値なし
+     */
     public function register(): void
     {
         //
     }
 
-    // 起動したとき自動で実行するための関数(機能)
+    /**
+     * アプリケーション起動時の初期設定
+     *
+     * @return void 戻り値なし
+     */
     public function boot(): void
     {
         // 会員登録画面が起動したら自動で会員登録画面を表示する

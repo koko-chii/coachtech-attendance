@@ -17,6 +17,11 @@ use Carbon\Carbon;
 // Seeder機能を継承したオリジナルの勤怠管理初期データー投入機能を作成するためのクラス(設置)
 class AttendanceSeeder extends Seeder
 {
+    /**
+     * ダミーデータの投入処理実行
+     *
+     * @return void 戻り値なし
+     */
     public function run(): void
     {
         // スタッフユーザー1、メールアドレス、パスワードの暗号化、メール認証日時は現在時刻(認証済み)
@@ -51,24 +56,19 @@ class AttendanceSeeder extends Seeder
 
         // ユーザー1のダミーデータ
         // 過去5ヶ月分のデータを順番に作成 現在から5か月前に戻り、月初めの1日から作成する
-        for ($i = 5; $i >= 1; $i--) {
+        collect($monthIndexes)->each(function (int $i) use ($now, $user1) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
-            // 出勤日数のカウント開始のためにリセット
             $createdDays = 0;
 
-            // 平日15日分データーができるまで打刻を繰り返す
             while ($createdDays < 15) {
                 if (!$monthDate->isWeekend()) {
-                    // 9時から18時の勤務のデーターを登録する
                     $this->createRecord($user1->id, $monthDate, '09:00:00', '18:00:00');
-
-                     // 平日9時18時の勤務で1回分増やしズレるのを防ぐ
                     $createdDays++;
                 }
-                // 毎日、日付を1日進める
                 $monthDate->addDay();
             }
-        }
+        });
+
 
         // 当月の特殊パターンデータ作成
         $currentMonthDate = (clone $now)->startOfMonth();
@@ -81,21 +81,16 @@ class AttendanceSeeder extends Seeder
         ];
 
         // 特殊パターンの出勤17日分を繰り返す
-        foreach ($patterns as $pattern) {
-            // 土日の場合スキップする
-            while ($currentMonthDate->isWeekend()) {
-                // 土日は1日進める
-                $currentMonthDate->addDay();
+        collect($patterns)->each(function (array $pattern) use (&$currentMonthDate1, $user1) {
+            while ($currentMonthDate1->isWeekend()) {
+                $currentMonthDate1->addDay();
             }
-            // 平日になったら出退勤打刻を登録
-            // ★修正：$pattern[0] と $pattern[1] を指定して、残業や遅刻の時刻を正確に渡します
-            $this->createRecord($user1->id, $currentMonthDate, $pattern[0], $pattern[1]);
-            // カレンダーを1日進める
-            $currentMonthDate->addDay();
-        }
+            $this->createRecord($user1->id, $currentMonthDate1, $pattern[0], $pattern[1]);
+            $currentMonthDate1->addDay();
+        });
 
         // ユーザー2のダミーデータ
-        for ($i = 5; $i >= 1; $i--) {
+        collect($monthIndexes)->each(function (int $i) use ($now, $user2) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
 
@@ -106,20 +101,20 @@ class AttendanceSeeder extends Seeder
                 }
                 $monthDate->addDay();
             }
-        }
+        });
 
         $currentMonthDate = (clone $now)->startOfMonth();
-        foreach ($patterns as $pattern) {
-            while ($currentMonthDate->isWeekend()) {
-                $currentMonthDate->addDay();
+        collect($patterns)->each(function (array $pattern) use (&$currentMonthDate2, $user2) {
+            while ($currentMonthDate2->isWeekend()) {
+                $currentMonthDate2->addDay();
             }
+            $this->createRecord($user2->id, $currentMonthDate2, $pattern[0], $pattern[1]);
+            $currentMonthDate2->addDay();
+        });
 
-            $this->createRecord($user2->id, $currentMonthDate, $pattern[0], $pattern[1]);
-            $currentMonthDate->addDay();
-        }
 
         // ユーザー3（管理者）のダミーデータ
-        for ($i = 5; $i >= 1; $i--) {
+        collect($monthIndexes)->each(function (int $i) use ($now, $user3) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
 
@@ -130,20 +125,27 @@ class AttendanceSeeder extends Seeder
                 }
                 $monthDate->addDay();
             }
-        }
+        });
 
         $currentMonthDate = (clone $now)->startOfMonth();
-        foreach ($patterns as $pattern) {
-            while ($currentMonthDate->isWeekend()) {
-                $currentMonthDate->addDay();
+        collect($patterns)->each(function (array $pattern) use (&$currentMonthDate3, $user3) {
+            while ($currentMonthDate3->isWeekend()) {
+                $currentMonthDate3->addDay();
             }
-
-            $this->createRecord($user3->id, $currentMonthDate, $pattern[0], $pattern[1]);
-            $currentMonthDate->addDay();
-        }
+            $this->createRecord($user3->id, $currentMonthDate3, $pattern[0], $pattern[1]);
+            $currentMonthDate3->addDay();
+        });
     }
 
-    // ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
+    /**
+     * ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
+     *
+     * @param int $userId 従業員（ユーザー）のID
+     * @param Carbon $date 対象となる日付データ
+     * @param string $startTime 出勤時刻 (HH:MM:SS)
+     * @param string $endTime 退勤時刻 (HH:MM:SS)
+     * @return void 戻り値なし
+     */
     private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void
     {
         // 年月日をデーター形式で変数(箱)にしまう

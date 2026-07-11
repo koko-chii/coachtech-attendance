@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// ユーザーテストデーターを作成するための呼び出し
-use Database\Factories\UserFactory;
 // 大量のテストデーターを作成するための呼び出し
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 // 勤怠管理画面に認証機能をするための呼出し
@@ -14,8 +12,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 // laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
 use Illuminate\Database\Eloquent\Relations\HasMany;
-// データーベースの勤怠登録データーを操作するAttendanceRecordモデルを使うための読み込み
-use App\Models\AttendanceRecord;
 // API用の認証システムトークン
 use Laravel\Sanctum\HasApiTokens;
 
@@ -40,7 +36,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
-    // データの形式を正しく変換するための関数(機能)
+    /**
+     * データの形式を正しく変換するための関数(機能)
+     *
+     * @return array キャスト設定の配列
+     */
     protected function casts(): array
     {
         // メール認証の日時を日付形式に、パスワードは暗号化に変換して返す
@@ -50,13 +50,22 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-     // 1対多のリレーションを使うための関数(機能)
+    /**
+     * 1対多のリレーションを使うための関数(機能)
+     *
+     * @return HasMany 勤怠データとの1対多のリレーション関係
+     */
     public function attendanceRecords(): HasMany
     {
         // ユーザーは複数存在する勤怠データ(1対多のリレーション)を引っ張ってくる
         return $this->hasMany(AttendanceRecord::class, 'user_id');
     }
 
+    /**
+     * ユーザーがメール認証を完了しているか、または管理者であるかを判定
+     *
+     * @return bool 認証済み（または管理者）の場合はtrue
+     */
     public function hasVerifiedEmail(): bool
     {
         // 管理者ユーザーはメール認証を常に完了済みにする

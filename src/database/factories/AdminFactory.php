@@ -14,7 +14,11 @@ class AdminFactory extends Factory
     // 管理者用ダミーデータが作成するモデルを指定
     protected $model = Admin::class;
 
-    // 管理者用ダミーデータを定義
+    /**
+     * 管理者用ダミーデータを定義
+     *
+     * @return array ダミーデータの配列
+     */
     public function definition(): array
     {
         // 名前・メールアドレス・暗号化したパスワードのダミーデータを返す

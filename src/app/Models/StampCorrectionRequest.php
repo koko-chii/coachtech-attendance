@@ -26,14 +26,22 @@ class StampCorrectionRequest extends Model
         'requested_breaks' => 'array',
     ];
 
-    // ユーザー情報に紐づけるための機能
+    /**
+     * この修正申請を提出したスタッフユーザーのデータを取得
+     *
+     * @return BelongsTo 従業員ユーザーとのリレーション関係
+     */
     public function user(): BelongsTo
     {
         // 修正申請(子)からをユーザー(親)へ紐づけ
         return $this->belongsTo(User::class);
     }
 
-    // 勤怠データーに紐づけるための機能
+    /**
+     * この修正申請の対象となっている親の勤怠レコードを取得
+     *
+     * @return BelongsTo 勤怠レコードとのリレーション関係
+     */
     public function attendanceRecord(): BelongsTo
     {
         // 修正申請から勤怠データーへ紐づけ

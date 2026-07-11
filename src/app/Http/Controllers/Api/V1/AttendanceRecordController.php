@@ -28,7 +28,12 @@ class AttendanceRecordController extends Controller
     // 操作権限をチェック
     use AuthorizesRequests;
 
-    // 勤怠一覧をJSONレスポンスで返すための処理
+    /**
+     * 勤怠一覧をJSONレスポンスで返すための処理
+     *
+     * @param IndexAttendanceRecordRequest $request 検索条件やページ数が含まれるリクエスト箱
+     * @return AnonymousResourceCollection API用の勤怠データコレクション（複数件）
+     */
     public function index(IndexAttendanceRecordRequest $request): AnonymousResourceCollection
     {
         $perPage = (int) $request->input('per_page', 20);
@@ -55,7 +60,12 @@ class AttendanceRecordController extends Controller
         return AttendanceRecordResource::collection($records);
     }
 
-    // スマホ等で送られた勤怠データを登録し、API用にJSON形式に返す処理
+    /**
+     * スマホ等で送られた勤怠データを登録し、API用にJSON形式に返す処理
+     *
+     * @param StoreAttendanceRecordRequest $request 新規登録データが含まれるリクエスト箱
+     * @return JsonResponse ステータスコード201を含むAPI用JSONレスポンス
+     */
     public function store(StoreAttendanceRecordRequest $request): JsonResponse
     {
         // API用のバリデーションチェック済みの勤怠データを作成

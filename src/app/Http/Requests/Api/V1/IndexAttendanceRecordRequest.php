@@ -6,11 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class IndexAttendanceRecordRequest extends FormRequest
 {
+    /**
+     * リクエストの実行権限をチェック
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * バリデーションルールを定義
+     */
     public function rules(): array
     {
         return [
@@ -22,6 +28,9 @@ class IndexAttendanceRecordRequest extends FormRequest
         ];
     }
 
+    /**
+     * バリデーションエラーメッセージを定義
+     */
     public function messages()
     {
         return [

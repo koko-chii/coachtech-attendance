@@ -11,10 +11,17 @@ use App\Http\Resources\Api\V1\ApplicationResource;
 // APIレスポンス用のJSONデータに変換する機能を継承した勤怠データクラス
 class AttendanceRecordResource extends JsonResource
 {
-    // APIレスポンス用のJSONデータをdataキーで包む
+    /**
+     * APIレスポンス用のJSONデータをdataキーで包む
+     */
     public static $wrap = 'data';
 
-    // APIレスポンス用のJSONデータに変換する処理を宣言
+    /**
+     * APIレスポンス用のJSONデータに変換する処理を宣言
+     *
+     * @param Request $request 画面からのリクエストデータが入った箱
+     * @return array 整形されたレスポンスデータの配列
+     */
     public function toArray(Request $request): array
     {
         // JSONデータとして内容を配列で返す

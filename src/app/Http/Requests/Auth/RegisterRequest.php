@@ -7,14 +7,18 @@ use Illuminate\Foundation\Http\FormRequest;
 // FormRequest機能を継承したオリジナル会員登録機能を作成するためのクラス(設置)
 class RegisterRequest extends FormRequest
 {
-    // 入力チェックの許可を判定するための関数(機能)
+    /**
+     *入力チェックの許可を判定するための関数(機能)
+     */
     public function authorize(): bool
     {
         // 誰でも許可する
         return true;
     }
 
-    // 入力チェックのルールをきめるための関数(機能)
+    /**
+     * 入力チェックのルールをきめるための関数(機能)
+     */
     public function rules(): array
     {
         // 名前の入力必須、文字列、255字以内
@@ -27,7 +31,9 @@ class RegisterRequest extends FormRequest
         ];
     }
 
-    // エラーメッセージを決めるための関数(機能)
+    /**
+     * エラーメッセージを決めるための関数(機能)
+     */
     public function messages(): array
     {
         // 名前とメールアドレスと、パスワードが未入力の場合
