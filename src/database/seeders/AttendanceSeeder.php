@@ -18,7 +18,7 @@ use Carbon\Carbon;
 class AttendanceSeeder extends Seeder
 {
     /**
-     * ダミーデータの投入処理実行
+     * データベース初期データの投入処理を実行する
      *
      * @return void 戻り値なし
      */
@@ -54,42 +54,54 @@ class AttendanceSeeder extends Seeder
         // 今現在の日時を取得して変数(箱)へしまう
         $now = Carbon::now();
 
-        // ユーザー1のダミーデータ
-        // 過去5ヶ月分のデータを順番に作成 現在から5か月前に戻り、月初めの1日から作成する
+        // 当月の特殊パターンデータ作成
+        $patterns = [
+            ...array_fill(0, 10, ['09:00:00', '18:00:00']), // 通常 10日
+            ...array_fill(0, 3,  ['09:00:00', '20:00:00']), // 残業 3日
+            ...array_fill(0, 2,  ['09:30:00', '18:00:00']), // 遅刻 2日
+            ...array_fill(0, 1,  ['09:00:00', '17:00:00']), // 早退 1日
+            ...array_fill(0, 1,  ['08:00:00', '21:00:00']), // 長時間労働 1日
+        ];
+
+        // 各ユーザーの過去データ生成（5から1まで減少する5回分）
+        $monthIndexes = [5, 4, 3, 2, 1];
+
+        // ユーザー1のダミーデータ作成
+        // 過去5ヶ月分の数字を1つずつ取り出し、過去の勤務データを繰り返し作成
         collect($monthIndexes)->each(function (int $i) use ($now, $user1) {
+            // 現在から１か月ずつ戻り、その月の月初を基準点にする
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
 
+            // 平日の勤怠データが15日分できるまで、毎日打刻データを繰り返し登録
             while ($createdDays < 15) {
+                // 土日ではない場合
                 if (!$monthDate->isWeekend()) {
+                    // ユーザー1の出退勤データ（9時から18時）を新しく登録
                     $this->createRecord($user1->id, $monthDate, '09:00:00', '18:00:00');
+                    // 登録できた日数のカウントを1日増やす
                     $createdDays++;
                 }
+                // カレンダーの日付を1日進める
                 $monthDate->addDay();
             }
         });
 
-
-        // 当月の特殊パターンデータ作成
-        $currentMonthDate = (clone $now)->startOfMonth();
-        $patterns = [
-            ...array_fill(0, 10, ['09:00:00', '18:00:00']), // 通常 10日
-            ...array_fill(0, 3,  ['09:00:00', '20:00:00']), // 残業 3日 (9:00-20:00)
-            ...array_fill(0, 2,  ['09:30:00', '18:00:00']), // 遅刻 2日 (9:30-18:00)
-            ...array_fill(0, 1,  ['09:00:00', '17:00:00']), // 早退 1日 (9:00-17:00)
-            ...array_fill(0, 1,  ['08:00:00', '21:00:00']), // 長時間労働 1日 (8:00-21:00)
-        ];
-
-        // 特殊パターンの出勤17日分を繰り返す
+        // 1日からスタートするよう設定
+        $currentMonthDate1 = (clone $now)->startOfMonth();
+        // 出勤パターンを1つずつ取り出し、今月の平日のみに勤怠データを割り当てる
         collect($patterns)->each(function (array $pattern) use (&$currentMonthDate1, $user1) {
+             // 週末である限り、日付を先に進めるループ処理を開始
             while ($currentMonthDate1->isWeekend()) {
                 $currentMonthDate1->addDay();
             }
+            // 平日の日付でデータベースに勤怠レコードを1件作成
             $this->createRecord($user1->id, $currentMonthDate1, $pattern[0], $pattern[1]);
+            // 次へ進むために、日付をさらに1日分進める
             $currentMonthDate1->addDay();
         });
 
-        // ユーザー2のダミーデータ
+        // ユーザー2のダミーデータ作成
         collect($monthIndexes)->each(function (int $i) use ($now, $user2) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
@@ -103,7 +115,7 @@ class AttendanceSeeder extends Seeder
             }
         });
 
-        $currentMonthDate = (clone $now)->startOfMonth();
+        $currentMonthDate2 = (clone $now)->startOfMonth();
         collect($patterns)->each(function (array $pattern) use (&$currentMonthDate2, $user2) {
             while ($currentMonthDate2->isWeekend()) {
                 $currentMonthDate2->addDay();
@@ -112,8 +124,7 @@ class AttendanceSeeder extends Seeder
             $currentMonthDate2->addDay();
         });
 
-
-        // ユーザー3（管理者）のダミーデータ
+        // ユーザー3（管理者）のダミーデータ作成
         collect($monthIndexes)->each(function (int $i) use ($now, $user3) {
             $monthDate = (clone $now)->subMonths($i)->startOfMonth();
             $createdDays = 0;
@@ -127,11 +138,12 @@ class AttendanceSeeder extends Seeder
             }
         });
 
-        $currentMonthDate = (clone $now)->startOfMonth();
+        $currentMonthDate3 = (clone $now)->startOfMonth();
         collect($patterns)->each(function (array $pattern) use (&$currentMonthDate3, $user3) {
             while ($currentMonthDate3->isWeekend()) {
                 $currentMonthDate3->addDay();
             }
+            // ★完全復元
             $this->createRecord($user3->id, $currentMonthDate3, $pattern[0], $pattern[1]);
             $currentMonthDate3->addDay();
         });
@@ -140,10 +152,10 @@ class AttendanceSeeder extends Seeder
     /**
      * ユーザーID、日付、出退勤時刻を個別に作成するための関数(設置)
      *
-     * @param int $userId 従業員（ユーザー）のID
+     * @param int $userId スタッフユーザーのID
      * @param Carbon $date 対象となる日付データ
-     * @param string $startTime 出勤時刻 (HH:MM:SS)
-     * @param string $endTime 退勤時刻 (HH:MM:SS)
+     * @param string $startTime 出勤時刻
+     * @param string $endTime 退勤時刻
      * @return void 戻り値なし
      */
     private function createRecord(int $userId, Carbon $date, string $startTime, string $endTime): void
