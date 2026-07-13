@@ -7,7 +7,7 @@
 
 /* 画面全体 */
 body {
-    background-color: #f6f8fa;
+    background-color: #f0f0f5;
     font-family: "Helvetica Neue", Arial, sans-serif;
     color: #000000;
 }
@@ -23,7 +23,7 @@ body {
     background-color: #000000;
 }
 
-/* ロゴ /*
+/* ロゴ */
 .header__logo {
     display: flex;
     align-items: center;
@@ -70,7 +70,7 @@ body {
     width: 100%;
     min-height: calc(100vh - 70px);
     padding-top: 70px;
-    background-color: #f6f8fa;
+    background-color: #f0f0f5;
 }
 
 .main-content > * {

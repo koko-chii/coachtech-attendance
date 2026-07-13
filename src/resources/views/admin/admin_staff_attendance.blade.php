@@ -6,7 +6,7 @@
 
 @section('content')
 <div id="attendance-list-container">
-    <!-- スタッフ一覧からの詳細画面 -->
+    <!-- スタッフ一覧からのスタッフ別一覧 -->
     <h1 class="attendance-title-wrapper">
         <span class="title-text">{{ $targetUser->name }}さんの勤怠</span>
 
@@ -21,7 +21,7 @@
     <div id="month-selector">
         <a href="{{ route('admin.attendance.staff', ['id' => $targetUser->id, 'month' => $prevMonth]) }}" class="nav-btn">&larr; 前月</a>
         <span class="current-month-display">
-            <span>📅</span> {{ $currentMonth }}
+            <span class="calendar-icon">📅</span>{{ str_replace(['年', '月'], ['/', ''], $currentMonth) }}
         </span>
         <a href="{{ route('admin.attendance.staff', ['id' => $targetUser->id, 'month' => $nextMonth]) }}" class="nav-btn">翌月 &rarr;</a>
     </div>

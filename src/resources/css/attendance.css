@@ -1,13 +1,12 @@
 /* 画面全t内の背景 */
 html, body, main {
-    background-color: #f7f7f7;
+    background-color: #f0f0f5;
 }
 
 /* ページ全体レイアウト */
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: #ededed;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -94,11 +93,13 @@ main {
 .btn-white {
     background-color: #ffffff;
     color: #000000;
-    border: 1px solid #cccccc;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
 }
 
 .btn-white:hover {
-    background-color: #fafafa;
+    background-color: #ffffff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* 退勤完了メッセージ */

@@ -8,6 +8,7 @@
     @yield('title') - coachtech</title>
     @vite(['resources/js/app.js', 'resources/css/admin_common.css'])
     @yield('css')
+    <link href="https://googleapis.com" rel="stylesheet">
 
 </head>
 <body>

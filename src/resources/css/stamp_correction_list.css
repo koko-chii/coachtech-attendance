@@ -7,7 +7,6 @@ body {
     padding: 0;
     font-family: 'M PLUS 1p', "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     font-weight: 700;
-    background-color: #f6f8fa;
     color: #333333;
 }
 
@@ -15,14 +14,14 @@ body {
 .requestListMain {
     width: 100%;
     min-height: calc(100vh - 70px);
-    background-color: #f6f8fa;
+    background-color: #f0f0f5;
     box-sizing: border-box;
 }
 
 /* コンテンツエリア */
 .requestListForm {
-    width: 55%;
-    max-width: 1450px;
+    width: 90%;
+    max-width: 1000px;
     margin: 0 auto;
 }
 

@@ -16,10 +16,11 @@
     <div id="month-selector">
         <a href="{{ route('attendance.list', ['month' => $prevMonth]) }}" class="nav-btn">&larr; 前月</a>
         <span class="current-month-display">
-            <span>📅</span> {{ $currentMonth }}
+            <span>📅</span> {{ str_replace(['年', '月'], ['/', ''], $currentMonth) }}
         </span>
         <a href="{{ route('attendance.list', ['month' => $nextMonth]) }}" class="nav-btn">翌月 &rarr;</a>
     </div>
+
 
     <!-- 勤怠データーを表示する全体の囲み -->
     <div class="table-wrapper">

@@ -4,7 +4,7 @@
 /* 勤怠詳細画面全体 */
 .attendanceDetailMain {
     width: 100%;
-    background-color: #f3f4f6;
+    background-color: #f0f0f5;;
     min-height: calc(100vh - 70px);
     display: flex;
     justify-content: center;

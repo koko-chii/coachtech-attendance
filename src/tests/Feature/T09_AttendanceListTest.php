@@ -57,7 +57,7 @@ class T09_AttendanceListTest extends TestCase
 
         // 画面に現在の年月が表示されることを検証
         $response->assertStatus(200);
-        $response->assertSee('2026年06月');
+        $response->assertSee('2026/06');
     }
 
     // 前月を押下した時に表示月の前月の情報が表示されるを検証する機能
@@ -76,7 +76,7 @@ class T09_AttendanceListTest extends TestCase
 
         // 移動後の画面に前月の情報が表示されることを検証
         $nextResponse->assertStatus(200);
-        $nextResponse->assertSee('2026年05月');
+        $nextResponse->assertSee('2026/05');
     }
 
     // 翌月を押下した時に表示月の翌月の情報が表示されることを検証する機能
@@ -94,7 +94,7 @@ class T09_AttendanceListTest extends TestCase
 
         // 移動後の画面に翌月の情報が表示されることを検証
         $nextResponse->assertStatus(200);
-        $nextResponse->assertSee('2026年07月');
+        $nextResponse->assertSee('2026/07');
     }
 
     // 詳細を押下するとその日の勤怠詳細画面に遷移することを検証する機能
