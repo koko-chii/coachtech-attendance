@@ -336,33 +336,6 @@ class AttendanceController extends Controller
      */
     public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
     {
-        // 備考欄の未入力チェック、出勤・退勤時間の前後関係の入力チェックを行う
-        $request->validate([
-            'comment'   => ['required'],
-            'clock_in'  => ['required'],
-            'clock_out' => ['required', 'after:clock_in'],
-        ], [
-            'comment.required' => '備考を記入してください',
-            'clock_out.after'  => '出勤時間もしくは退勤時間が不適切な値です',
-        ]);
-
-        // もし休憩データの修正がある場合、退勤時間より後になっていないか不適切な値をチェック
-        if ($request->has('breaks')) {
-            collect($request->input('breaks'))->each(function ($breakData, $breakId) use ($request) {
-                // 安全対策：データが存在するときだけ比較を行うように判定（isset）を追加
-                if (isset($breakData['break_in']) && $breakData['break_in'] > $request->input('clock_out')) {
-                    // Collectionのeach内でエラーを投げることで安全にリダイレクトさせる
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'breaks.' . $breakId . '.break_in' => '休憩時間が不適切な値です'
-                    ]);
-                }
-                if (isset($breakData['break_out']) && $breakData['break_out'] > $request->input('clock_out')) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        'breaks.' . $breakId . '.break_out' => '休憩時間もしくは退勤時間が不適切な値です'
-                    ]);
-                }
-            });
-        }
 
         // 勤怠登録からユーザーの修正する情報を見つける
         $record = AttendanceRecord::findOrFail($id);
