@@ -65,7 +65,7 @@ class AdminAttendanceController extends Controller
             if ($pendingData) {
                 $attendance->setAttribute('clock_in', $pendingData->requested_clock_in);
                 $attendance->setAttribute('clock_out', $pendingData->requested_clock_out);
-                $attendance->setAttribute('remarks', $pendingData->requested_remarks);
+                $attendance->setAttribute('comment', $pendingData->comment);
 
                 // 承認待ちの修正申請データに休憩時刻の修正値がある場合
                 if (!empty($pendingData->requested_breaks)) {
@@ -78,7 +78,7 @@ class AdminAttendanceController extends Controller
                         ]);
                     });
                     // 修正後の休憩データを、勤怠データに紐づく休憩情報としてセットする
-                    $attendance->setRelation('breakLogs', $formattedBreaks);
+                    $attendance->setRelation('breaks', $formattedBreaks);
                 }
             }
         }

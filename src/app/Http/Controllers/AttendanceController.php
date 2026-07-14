@@ -319,7 +319,7 @@ class AttendanceController extends Controller
         }
 
         // 承認済み、かつ過去の申請データが存在する場合、勤怠データの備考に上書き
-        if (!$isPending && $correctionRequest && $correctionRequest->comment) {
+        if ($correctionRequest && $correctionRequest->comment) {
             $record->comment = $correctionRequest->comment;
         }
 
