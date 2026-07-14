@@ -9,7 +9,7 @@
 @section('content')
 <div class="attendance-list-container">
     <!-- 念月日の表示 -->
-    <h1>{{ $date->format('Y年n月j日') }}の勤怠</h1>
+    <h2>{{ $date->format('Y年n月j日') }}の勤怠</h2>
 
     <!-- 日付変更エリア -->
     <nav class="date-selector">

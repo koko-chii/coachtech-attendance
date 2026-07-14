@@ -7,7 +7,7 @@
 @section('content')
 <div id="attendance-list-container">
     <!-- スタッフ一覧からのスタッフ別一覧 -->
-    <h1 class="attendance-title-wrapper">
+    <h2 class="attendance-title-wrapper">
         <span class="title-text">{{ $targetUser->name }}さんの勤怠</span>
 
         <!-- 修正完了メッセージ -->
@@ -16,7 +16,7 @@
                 <p class="successMessage">{{ session('success_message') }}</p>
             </div>
         @endif
-    </h1>
+    </h2>
 
     <div id="month-selector">
         <a href="{{ route('admin.attendance.staff', ['id' => $targetUser->id, 'month' => $prevMonth]) }}" class="nav-btn">&larr; 前月</a>

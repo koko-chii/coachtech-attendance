@@ -9,7 +9,7 @@
 @section('content')
 <div class="login-page-only">
     <div class="login-container">
-        <h1 class="login-title">管理者ログイン</h1>
+        <h2 class="login-title">管理者ログイン</h2>
 
         @if (session('login_failed') || $errors->has('login_failed'))
             <div class="error-message">

@@ -9,7 +9,7 @@
 @section('content')
 <div class="attendanceDetailMain">
     <div class="attendanceDetailForm">
-        <h1 class="attendanceDetailTitle">勤怠詳細</h1>
+        <h2 class="attendanceDetailTitle">勤怠詳細</h2>
 
         <form action="{{ route('admin.attendance.update', $attendance->id) }}" method="POST">
             <!-- 不正なフォーム送信を防ぐための認証トークン-->

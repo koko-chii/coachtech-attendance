@@ -69,14 +69,14 @@ class AdminAttendanceController extends Controller
 
                 // 承認待ちの修正申請データに休憩時刻の修正値がある場合
                 if (!empty($pendingData->requested_breaks)) {
-                    $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
+                    $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($breakData, $index) {
                     // 修正された休憩時刻をBreakLog形式に変換して返す
-                    return new BreakLog([
-                            'id' => $b['id'] ?? ($index + 1),
-                            'break_in' => isset($b['break_in']) ? \Carbon\Carbon::parse($b['break_in'])->format('H:i') : null,
-                            'break_out' => isset($b['break_out']) ? \Carbon\Carbon::parse($b['break_out'])->format('H:i') : null,
-                        ]);
-                    });
+                        return new BreakLog([
+                                'id'        => $breakData['id'] ?? ($index + 1),
+                                'break_in'  => isset($breakData['break_in']) ? \Carbon\Carbon::parse($breakData['break_in'])->format('H:i') : null,
+                                'break_out' => isset($breakData['break_out']) ? \Carbon\Carbon::parse($breakData['break_out'])->format('H:i') : null,
+                            ]);
+                        });
                     // 修正後の休憩データを、勤怠データに紐づく休憩情報としてセットする
                     $attendance->setRelation('breaks', $formattedBreaks);
                 }
@@ -389,15 +389,15 @@ class AdminAttendanceController extends Controller
             if (!empty($requestData->requested_breaks)) {
                 $attendance->breaks()->delete();
                 // 新しい休憩データを1件ずつ作成
-                collect($requestData->requested_breaks)->each(function (array $b) use ($attendance) {
+                collect($requestData->requested_breaks)->each(function (array $breakData) use ($attendance) {
                     // 空データをスキップ
-                    if (empty($b['break_in']) || empty($b['break_out'])) {
+                    if (empty($breakData['break_in']) || empty($breakData['break_out'])) {
                         return;
                     }
                     // データベースの休憩データを新しく作る
                     $attendance->breaks()->create([
-                        'break_in'  => $b['break_in'],
-                        'break_out' => $b['break_out'],
+                        'break_in'  => $breakData['break_in'],
+                        'break_out' => $breakData['break_out'],
                     ]);
                 });
             }

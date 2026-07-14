@@ -223,9 +223,9 @@ class AttendanceController extends Controller
                 $record->clock_out = $record->clock_out;
 
                 // Collectionメソッドを使って休憩時間の合計秒数を計算（N+1問題を防止）
-                $totalBreakSeconds = $record->breaks->sum(function (BreakLog $b): int {
-                    if (!$b->break_in || !$b->break_out) return 0;
-                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                $totalBreakSeconds = $record->breaks->sum(function (BreakLog $break): int {
+                    if (!$break->break_in || !$break->break_out) return 0;
+                    return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
 
                 // 合計休憩時間を秒計算し、何時間何分に変換し変数(箱)にしまう
@@ -303,13 +303,13 @@ class AttendanceController extends Controller
 
                 // 修正申請に休憩データがある場合
                 if (!empty($pendingData->requested_breaks)) {
-                    $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($b, $index) {
+                    $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($break, $index) {
 
                     // 休憩データ1件を表すものを作成して返す
                         return new BreakLog([
-                            'id' => $b['id'] ?? ($index + 1),
-                            'break_in' => isset($b['break_in']) ? Carbon::parse($b['break_in'])->format('H:i') : null,
-                            'break_out' => isset($b['break_out']) ? Carbon::parse($b['break_out'])->format('H:i') : null,
+                            'id' => $break['id'] ?? ($index + 1),
+                            'break_in' => isset($break['break_in']) ? Carbon::parse($break['break_in'])->format('H:i') : null,
+                            'break_out' => isset($break['break_out']) ? Carbon::parse($break['break_out'])->format('H:i') : null,
                         ]);
                     });
                     // 休憩データを1件の勤怠データに紐づける
@@ -404,44 +404,44 @@ class AttendanceController extends Controller
             $monthStr = Carbon::now()->startOfMonth()->subMonths($i)->format('Y-m');
 
             // 指定した年月の勤怠データだけ取得
-            $monthRecords = $records->filter(fn($r) => Carbon::parse($r->date)->format('Y-m') === $monthStr);
+            $monthRecords = $records->filter(fn($record) => Carbon::parse($record->date)->format('Y-m') === $monthStr);
 
             // 出勤時刻または退勤時刻が無い場合、0を返す
-            $totalWorkSeconds = $monthRecords->sum(function ($r) {
-                if (!$r->clock_in || !$r->clock_out) {
+            $totalWorkSeconds = $monthRecords->sum(function ($record) {
+                if (!$record->clock_in || !$record->clock_out) {
                     return 0;
                 }
                 // 出退勤時刻を文字列からにcarbonに変換し秒単位で計算
-                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
                 // 休憩開始時刻または休憩終了時刻が無い場合、0を返す
-                $breakSeconds = $r->breaks->sum(function ($b) {
-                    if (!$b->break_in || !$b->break_out) {
+                $breakSeconds = $record->breaks->sum(function ($break) {
+                    if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
                     // 休憩時刻をcarbon形式に変換し秒単位で計算して返す
-                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                    return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
                 // 休憩時間を差し引いた労働時間を0未満にならないようにして返す
                 return max(0, $staySeconds - $breakSeconds);
             });
 
             // 月ごとの残業時間を秒単位で計算し、出退勤時刻が無い場合、0を返す
-            $totalOvertimeSeconds = $monthRecords->sum(function ($r) {
-                if (!$r->clock_in || !$r->clock_out) {
+            $totalOvertimeSeconds = $monthRecords->sum(function ($record) {
+                if (!$record->clock_in || !$record->clock_out) {
                     return 0;
                 }
                 // 出退勤時刻をcarbonに変換し、秒単位で計算
-                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
                 // 休憩開始時刻または休憩終了時刻が無い場合、0を返す
-                $breakSeconds = $r->breaks->sum(function ($b) {
-                    if (!$b->break_in || !$b->break_out) {
+                $breakSeconds = $record->breaks->sum(function ($break) {
+                    if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
                     // 休憩時間をcarbon形式に変換し、秒単位で計算して返す
-                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                    return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
                 // 休憩時間を差し引いた労働時間を0未満にならないようにして秒で取得
-                $workSeconds = max(0, $staySeconds - $breakSeconds);
+                $workSeconds= max(0, $staySeconds - $breakSeconds);
                 // 8時間を超えた分を残業時間として返す
                 return max(0, $workSeconds - 28800);
             });
@@ -460,20 +460,20 @@ class AttendanceController extends Controller
         $grandTotalWorkSeconds = $monthlyData->sum('raw_work_seconds');
 
         // 出勤時刻または退勤時刻が無い場合、0を返す
-        $grandTotalOvertimeSeconds = $records->sum(function ($r) {
-            if (!$r->clock_in || !$r->clock_out) {
+        $grandTotalOvertimeSeconds = $records->sum(function ($record) {
+            if (!$record->clock_in || !$record->clock_out) {
                 return 0;
             }
             // 出勤時刻と退勤時刻をcarbonに変換し、秒計算
-            $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+            $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
             // 休憩時間を秒で取得
-            $breakSeconds = $r->breaks->sum(function ($b) {
+            $breakSeconds = $record->breaks->sum(function ($break) {
                 // 休憩開始時刻または休憩終了時刻が無い場合、0で返す
-                if (!$b->break_in || !$b->break_out) {
+                if (!$break->break_in || !$break->break_out) {
                     return 0;
                 }
                 // 休憩開始時刻と休憩終了時刻をcarbon形式で取得し、秒計算
-                return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
             });
             // 休憩時間を差し引いた労働時間を0未満にならないようにして秒単位で返す
             $workSeconds = max(0, $staySeconds - $breakSeconds);
@@ -495,29 +495,29 @@ class AttendanceController extends Controller
         // 現在年月を取得
         $currentMonthStr = $now->format('Y-m');
         // 日付をcarbonに変換し、年月に変換して当月の勤怠データを抽出
-        $currentMonthRecords = $records->filter(fn($r) => Carbon::parse($r->date)->format('Y-m') === $currentMonthStr);
+        $currentMonthRecords = $records->filter(fn($record) => Carbon::parse($record->date)->format('Y-m') === $currentMonthStr);
 
         $anomaly = [
             // 出勤時間をcarbonに変換し、9時より遅い場合は遅刻で数える
-            'lateness' => $currentMonthRecords->filter(fn($r) => Carbon::parse($r->clock_in)->format('H:i:s') > '09:00:00')->count(),
+            'lateness' => $currentMonthRecords->filter(fn($record) => Carbon::parse($record->clock_in)->format('H:i:s') > '09:00:00')->count(),
             // 退勤時間をcarbonに変換し、18時より早い場合は早退で数える
-            'early_leave' => $currentMonthRecords->filter(fn($r) => $r->clock_out && Carbon::parse($r->clock_out)->format('H:i:s') < '18:00:00')->count(),
+            'early_leave' => $currentMonthRecords->filter(fn($record) => $record->clock_out && Carbon::parse($record->clock_out)->format('H:i:s') < '18:00:00')->count(),
             // 長時間労働の勤怠を数える
-            'long_working' => $currentMonthRecords->filter(function ($r) {
+            'long_working' => $currentMonthRecords->filter(function ($record) {
                 // 出勤時刻または退勤時刻が無い場合、除外する
-                if (!$r->clock_in || !$r->clock_out) {
+                if (!$record->clock_in || !$record->clock_out) {
                     return false;
                 }
                 // 出勤時刻と退勤時刻をcarbonに変換し秒計算
-                $staySeconds = Carbon::parse($r->clock_in)->diffInSeconds(Carbon::parse($r->clock_out));
+                $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
                 // 休憩時間を秒計算
-                $breakSeconds = $r->breaks->sum(function ($b) {
+                $breakSeconds = $record->breaks->sum(function ($break) {
                     // 休憩開始または休憩終了時刻が無い場合、0を返す
-                    if (!$b->break_in || !$b->break_out) {
+                    if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
                     // 休憩時刻をcarobnに変換して秒で返す
-                    return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
+                    return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
                 // 勤務時間が10時間を超えるか判定して数える
                 return ($staySeconds - $breakSeconds) > 36000;

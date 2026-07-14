@@ -8,13 +8,13 @@
 <div class="requestListMain">
     <div class="requestListForm">
         <main class="request-management">
-            <h1 class="page-title">申請一覧
+            <h2 class="page-title">申請一覧
                 @if(session('success_message'))
                     <span class="success-message">
                         {{ session('success_message') }}
                     </span>
                 @endif
-            </h1>
+            </h2>
 
             <!-- 承認待ちと承認済みの切替 -->
             <div class="tab-navigation">

@@ -8,7 +8,7 @@
 <div class="requestListMain">
     <div class="requestListForm">
         <main class="request-management">
-            <h1 class="page-title">スタッフ一覧</h1>
+            <h2 class="page-title">スタッフ一覧</h2>
 
             <div class="table-wrapper">
                 <table class="table-request">
