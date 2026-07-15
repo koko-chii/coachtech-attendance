@@ -28,8 +28,10 @@ class T17_ApiAttendanceReadTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data',
-                'meta' => ['current_page', 'last_page', 'per_page', 'total']
-            ]);
+                'meta' => ['current_page', 'last_page', 'per_page', 'total'],
+            ])
+            ->assertJsonCount(3, 'data')
+            ->assertJsonPath('meta.total', 3);
     }
 
     #[Test]
@@ -45,17 +47,36 @@ class T17_ApiAttendanceReadTest extends TestCase
         // JSON形式で勤怠詳細データが、正しく表示することを検証
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
+            'data' => [
                 'id',
                 'user_id',
                 'date',
                 'clock_in',
                 'clock_out',
-                'user',
-                'breaks',
-                'stamp_correction_requests'
-                ]
-            ]);
+                'total_time',
+                'total_break_time',
+                'comment',
+
+                'user' => [
+                    'id',
+                    'name',
+                ],
+
+                'breaks' => [
+                    '*' => [
+                        'id',
+                        'break_in',
+                        'break_out',
+                    ],
+                ],
+
+                'applications' => [
+                    '*' => [
+                        'id',
+                    ],
+                ],
+            ]
+        ]);
     }
 
     #[Test]

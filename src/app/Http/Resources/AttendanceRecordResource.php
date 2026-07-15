@@ -29,12 +29,15 @@ class AttendanceRecordResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
+            'user' => new UserResource($this->whenLoaded('user')),
             'date' => $this->date,
             'clock_in' => $this->clock_in,
             'clock_out' => $this->clock_out,
-            'user' => new UserResource($this->whenLoaded('user')),
+            'total_time' => $this->total_time,
+            'total_break_time' => $this->total_break_time,
+            'comment' => $this->comment,
             'breaks' => AttendanceBreakResource::collection($this->whenLoaded('breaks')),
-            'stamp_correction_requests' => ApplicationResource::collection($this->whenLoaded('applications')),
+            'applications' => ApplicationResource::collection($this->whenLoaded('applications')),
         ];
     }
 
