@@ -3,15 +3,12 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-// ユーザーのメールアドレスの確認機能を呼び出す
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
-// バリデーションルールの呼び出し
 use Illuminate\Validation\Rule;
-// プロフィール更新ルールを呼出す
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
-// プロフィール更新ルールを実装するクラス(設置)
+// プロフィール更新ルールを実装するクラス
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
     /**
@@ -23,28 +20,26 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        // 画面から直接データが届かない場所のためRequestファイルは動かせない。
-        // プロフィールの更新ルールを呼出し(名前入力必須、文字列、255文字以内)
+        // Requestファイルを利用できないため、プロフィール更新ルールを作成
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
 
-            // メールアドレス入力必須、文字列、メール形式、255字以内、
-            // 他ユーザーとの重複不可だけど自分のアドレスは許可)
             'email' => [
                 'required',
                 'string',
                 'email',
                 'max:255',
+                // 他ユーザーとのメールアドレス重複不可、自分のメールアドレスは許可
                 Rule::unique('users')->ignore($user->id),
             ],
-            // これらのルールを組み合わせてプロフィール更新のバリデーションを行う
+        // プロフィール更新フォーム用のエラーとしてバリデーション実行
         ])->validateWithBag('updateProfileInformation');
 
-        // メール認証通過しなければエラーメッセージの表示
-        // 通過できれば名前とメールアドレスを更新保存
+        // メールアドレス変更するユーザーがメール認証必要な場合、認証状態をリセット
         if ($input['email'] !== $user->email &&
             $user instanceof MustVerifyEmail) {
             $this->updateVerifiedUser($user, $input);
+         // メール認証のリセットが不要な場合、そのままプロフィール情報を更新
         } else {
             $user->forceFill([
                 'name' => $input['name'],
@@ -54,7 +49,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     }
 
     /**
-     * ユーザーのプロフィール情報を更新する
+     * メール認証が必要なユーザーのプロフィールを更新する
      *
      * @param User $user プロフィールを変更するユーザーのデータ
      * @param array $input 新しい名前やメールアドレスが入っている箱
@@ -62,7 +57,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     protected function updateVerifiedUser(User $user, array $input): void
     {
-        // 新しい名前とメールアドレスを保存し、メール認証をリセットする。
+        // 名前とメールアドレスを更新し、メール認証状態をリセット
         $user->forceFill([
             'name' => $input['name'],
             'email' => $input['email'],

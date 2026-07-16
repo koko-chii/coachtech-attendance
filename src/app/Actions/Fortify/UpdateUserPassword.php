@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Validator;
 // パスワードを更新するためのルールを呼び出し
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
 
-// パスワードを更新するためのルールを実装するクラス(設置)
+// パスワード更新ルールを実装するクラス
 class UpdateUserPassword implements UpdatesUserPasswords
 {
-    // passwordのルールを定義するトレイト(部品)を呼び出す
+    // パスワードルールを共有するトレイト
     use PasswordValidationRules;
 
     /**
@@ -23,9 +23,8 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update(User $user, array $input): void
     {
-        //  画面から直接データが届かない場所のためRequestファイルは動かせない。
-        // パスワード更新のルールを呼出し(パスワードの入力必須、文字列、現在のパスワードと一致)の
-        // パスワードルールを組み合わせてバリデーションを行う
+        //  Requestを利用できないたえめ、共通パスワードルールを使ってバリデーションを行う
+        // 現在のパスワードは入力必須、登録済みのパスワードとの一致を確認
         Validator::make($input, [
             'current_password' => ['required', 'string', 'current_password:web'],
             'password' => $this->passwordRules(),

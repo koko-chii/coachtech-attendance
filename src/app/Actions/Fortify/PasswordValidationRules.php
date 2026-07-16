@@ -2,10 +2,9 @@
 
 namespace App\Actions\Fortify;
 
-// パスワードのオリジナルバリデーションルールを作成するための呼び出し
 use Illuminate\Validation\Rules\Password;
 
-// パスワードのバリデーションルールを色々なファイルで共通に使えるトレイト(部品)を作成
+// パスワードのバリデーションルールを共有するためのトレイト(共通機能をまとめた部品)
 trait PasswordValidationRules
 {
     /**
