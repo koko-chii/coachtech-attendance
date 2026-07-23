@@ -3,25 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-// AdminLoginRequestクラスをこのファイルで利用するための読み込み
 use App\Http\Requests\AdminLoginRequest;
-
-// Laravelの認証機能を使うためのインポート
 use Illuminate\Support\Facades\Auth;
-
-// バリデーションエラー時の例外処理に使うためのインポート
 use Illuminate\Validation\ValidationException;
-
-// 別のページへ移動する機能を使うためのインポート
 use Illuminate\Http\RedirectResponse;
-
-// 画面表示機能を使うためのインポート
 use Illuminate\View\View;
-
-// リクエスト機能(セッション破棄など)を使うための読み込み
 use Illuminate\Http\Request;
 
-// Laravelのコントローラー機能を継承したクラス
 class AdminLoginController extends Controller
 {
     /**
@@ -31,31 +19,30 @@ class AdminLoginController extends Controller
      */
     public function showLoginForm(): View
     {
-        // 管理者ログイン画面を表示
         return view('admin.auth.login');
     }
 
     /**
      * 管理者ログインの認証処理を行う
      *
-     * @param AdminLoginRequest $request ログイン入力データが入った箱
-     * @return RedirectResponse 認証成功後のリダイレクト先
-     * @throws ValidationException 認証失敗時のバリデーションエラー
+     * @param AdminLoginRequest $request ログイン情報
+     * @return RedirectResponse 勤怠一覧画面へリダイレクト
+     * @throws ValidationException 認証に失敗した場合
      */
     public function login(AdminLoginRequest $request): RedirectResponse
     {
         // メールアドレスとパスワードを取得
         $credentials = $request->only('email', 'password');
 
+        // 管理者ユーザーのみ認証対象とする
         $credentials['admin_status'] = true;
 
-        // ログイン後に管理者かチェック 認証されたら管理者用勤怠一覧画面に遷移
+        // 管理者として認証し、成功したら勤怠一覧画面へ遷移
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('admin.attendance.list');
         }
 
-        // 認証失敗時はエラーメッセージを返す
         throw ValidationException::withMessages([
             'login_failed' => 'ログイン情報が登録されていません',
         ]);
@@ -64,20 +51,19 @@ class AdminLoginController extends Controller
     /**
      * 管理者ログアウト処理を行う
      *
-     * @param Request $request セッション操作用のリクエストデータが入った箱
-     * @return RedirectResponse ログアウト後のリダイレクト先
+     * @param Request $request リクエスト情報
+     * @return RedirectResponse 管理者ログイン画面へリダイレクト
      */
     public function logout(Request $request): RedirectResponse
     {
-        // ログイン時の認証ガードからログアウト
+        // 管理者アカウントからログアウト
         Auth::logout();
 
-        // 現在のセッションを無効化し、トークンを作り直す
+        // セッションを無効化し、トークンを再生成する
         // CSRFトークンは正規画面から送信されたことを証明する秘密の文字列
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // ログアウト後は管理者ログイン画面へ戻る
         return redirect()->route('admin.login');
     }
 }

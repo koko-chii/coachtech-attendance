@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-// laravelのバリデーションを継承したクラス
 class AdminLoginRequest extends FormRequest
 {
     /**

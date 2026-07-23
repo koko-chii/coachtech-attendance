@@ -2,26 +2,16 @@
 
 namespace App\Http\Controllers;
 
-// リクエスト機能を使うための呼び出し
 use Illuminate\Http\Request;
-// 認証機能を使うための呼び出し
 use Illuminate\Support\Facades\Auth;
-// 現在の時刻の取得や、勤務時間の計算機能を使うための呼び出し
 use Carbon\Carbon;
-// 勤務時間の打刻機能を使うための呼び出し
 use App\Models\AttendanceRecord;
-// Laravel標準のView機能を使うための読み込み
 use Illuminate\Contracts\View\View;
-// データーベースの休憩データーを操作する休憩情報モデルを使うための読み込み
 use App\Models\BreakLog;
-// laravel標準の画面切り替え機能を使うための読み込み
 use Illuminate\Http\RedirectResponse;
-// 修正申請データを操作するモデルの読み込み
 use App\Models\StampCorrectionRequest;
-// 修正申請データーを操作するモデルの読み込み
 use App\Http\Requests\UpdateAttendanceRequest;
 
-// 勤怠管理コントローラーを作成するためのクラス(設置)
 class AttendanceController extends Controller
 {
     /**
@@ -31,43 +21,36 @@ class AttendanceController extends Controller
      */
     public function index(): View
     {
-        // ログイン済みユーザー情報を取得し、user変数(箱)に入れる
         $user = Auth::user();
-        // 今日の日付情報を取得し、today変数(箱)に入れる
         $today = Carbon::today();
 
-        // ユーザー情報と出勤データーを探し、勤怠管理変数(箱)に入れる
+        // ログインユーザーの当日の勤怠データを取得
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
-        // 勤怠データに紐づく修正申請データ
+        // 最新の修正申請を取得
         $correctionRequest = $attendance
             ? StampCorrectionRequest::where('attendance_record_id', $attendance->id)->latest()->first()
             : null;
 
-        // 休憩中ではないフラグ状態を変数(箱)に入れる
+        // 画面表示用の初期状態
         $is_breaking = false;
-        // 退勤済みではないフラグ状態を変数(箱)に入れる
         $is_clocked_out = false;
 
-        // 出退勤情報と休憩中の情報を取得し、休憩戻りがまだか調べる
-        // (直訳)もし出勤していて退勤していなければ
-        // 勤怠管理データーから探し出し休憩から戻ってないか調べる。
+        // 勤務状態の判定
         if ($attendance) {
-            // もし既に退勤していたら退勤済みフラグをtrue(真)にする
+            // 退勤済か判定
             if ($attendance->clock_out) {
                 $is_clocked_out = true;
-            // 休憩中なら休憩終了が空か判定
             } else {
+                // 終了時刻が未登録の休憩があれば休憩中と判定
                 $is_breaking = $attendance->breaks()
                     ->whereNull('break_out')
                     ->exists();
             }
         }
 
-        // 出勤情報と休憩中情報、今日の日付と表示方法、退勤済み情報を箱にしまい、
-        // 勤怠管理画面に表示する
         return view('attendance', [
             'attendance'     => $attendance,
             'correctionRequest' => $correctionRequest,
@@ -78,23 +61,21 @@ class AttendanceController extends Controller
     }
 
     /**
-     * 出勤ボタンが押されたときの打刻処理を行う
+     * 出勤打刻を行う
      *
      * @return RedirectResponse 元の画面へのリダイレクト
      */
     public function clockIn(): RedirectResponse
     {
-        // ログインしているユーザー情報をuser変数(箱)にしまう
         $user = Auth::user();
-        // 今日の日時情報を取得計算し、today変数(箱)にしまう
         $today = Carbon::today();
 
-        // 今日出勤しているユーザーデータを調べexists変数(箱)にしまう(重複を防ぐため)
+        // 当日の勤怠データが登録済みか確認
         $exists = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->exists();
 
-        // もし出勤していなかったらユーザー情報と出勤日時を日付形式にして新たに作成する
+        // 未登録の場合のみ出勤データを作成
         if (!$exists) {
             AttendanceRecord::create([
                 'user_id'  => $user->id,
@@ -103,81 +84,71 @@ class AttendanceController extends Controller
             ]);
         }
 
-        // 元の画面に戻す
         return redirect()->back();
     }
 
     /**
-     * 退勤ボタンが押されたときの打刻処理を行う
+     * 退勤打刻を行う
      *
      * @return RedirectResponse 元の画面へのリダイレクト
      */
     public function clockOut(): RedirectResponse
     {
-        // ログインしているユーザー情報をuser変数(箱)にいれる
         $user = Auth::user();
-        // 今日の日時情報を取得し、today変数(箱)にいれる
         $today = Carbon::today();
 
-        // 今日出勤しているユーザーデーターを1つ探しattendance変数(箱)にいれる
+        // 当日の勤怠データを取得
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
-        // もし出勤していて退勤がまだなら退勤日時を日付形式にして更新する
+        // 未退勤の場合のみ退勤時刻を登録
         if ($attendance && !$attendance->clock_out) {
             $attendance->update([
                 'clock_out' => Carbon::now()->toTimeString(),
             ]);
 
-            // 元の画面に戻す（仕様書通りのメッセージをセッションに添えて返す）
             return redirect()->back()->with('message', 'お疲れ様でした。');
         }
 
-        // 元の画面に戻す
         return redirect()->back();
     }
 
     /**
-     * 休憩ボタン（または休憩戻りボタン）が押されたときの処理を行う
+     * 休憩開始・休憩終了の打刻を行う
      *
      * @return RedirectResponse 元の画面へのリダイレクト
      */
     public function break():RedirectResponse
     {
-        // ログインしているユーザーをuser変数(箱)に入れる
         $user = Auth::user();
-        // 今日の日付を取得してtoday変数(箱)にいれる
         $today = Carbon::today();
-        // 今現在の日付と正確な時刻を取得してnow変数(箱)に入れる
         $now = Carbon::now();
 
-        // 今日出勤しているユーザー情報を1つ探し出す
+        // 当日の勤怠データを1つ取得
         $attendance = AttendanceRecord::where('user_id', $user->id)
             ->whereDate('date', $today)
             ->first();
 
-        // 出勤していない、または既に退勤している場合は戻し返す
+        // 出勤前または退勤後は処理を行わない
         if (!$attendance || $attendance->clock_out) {
             return redirect()->back();
         }
 
-        // 休憩ボタンが押され休憩戻はまだの情報が1件でもあるか探し出す
+        // 休憩中データを1件取得
         $activeBreak = $attendance->breaks()
             ->whereNull('break_out')
             ->first();
 
 
-        // もしたくさんの休憩情報のなかに休憩中を見つけたらactiveBreak変数(箱)へしまう
-        // 休憩戻を押したら、now変数(箱)のデータを現在の時刻形式で更新する
+        // 休憩中の場合は休憩終了時刻を登録
         if ($activeBreak) {
             $activeBreak->update([
                 'break_out'  => $now->toTimeString(),
                 'updated_at' => $now,
             ]);
         }
-        // 休憩中情報が無かったら、新しく休憩中テーブル
-        // (勤怠管理情報、休憩入時刻形式情報、新規休憩入り情報、更新情報)を登録する
+        // 休憩中でない場合は休憩開始を登録
         else {
             $attendance->breaks()->create([
                 'break_in'   => $now->toTimeString(),
@@ -185,55 +156,54 @@ class AttendanceController extends Controller
                 'updated_at' => $now,
             ]);
         }
-        // 元の画面に戻す
+
         return redirect()->back();
     }
 
     /**
-     * 従業員自身の月間勤怠一覧画面を表示する
+     * 従業員の月間勤怠一覧を表示する
      *
-     * @param Request $request 画面からのリクエストデータが入った箱
-     * @return View 勤怠一覧画面のビュー
+     * @param Request $request リクエスト情報
+     * @return View 勤怠一覧画面
      */
     public function showList(Request $request): View
     {
-        // ログインユーザーの情報を取得
         $user = Auth::user();
 
-        // ユーザーが指定した年月を取得
+        // 表示対象の年月を取得
         $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
         // 取得した年月の1日を取得
         $currentMonth = Carbon::parse($currentMonthStr . '-01');
 
-        // ユーザーが指定した年月の前月の情報を取得し、変数(箱)prevMonthにしまう
+        // 前月・翌月を取得
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         // ユーザーが指定した年月の翌月情報を取得し、変数(箱)nextMonthにしまう
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
-        // 勤怠登録データーからこのユーザー情報を探す(休憩データも一緒に取得N+1問題防止)
+        // 勤怠登録データーを取得(休憩データも一緒に取得N+1問題防止)
         $attendances = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
             ->whereYear('date', $currentMonth->year)
             ->whereMonth('date', $currentMonth->month)
             ->get()
             ->map(function (AttendanceRecord $record): AttendanceRecord {
-                // 承認されるまでは元の確定データのみを使って計算する
-                // テストコードが直接参照する元のカラム名に値を確実にセットする
+
+            // 承認されるまでは元の確定データのみを使って計算する
                 $record->clock_in = $record->clock_in;
                 $record->clock_out = $record->clock_out;
 
-                // Collectionメソッドを使って休憩時間の合計秒数を計算（N+1問題を防止）
+                // 休憩時間を集計（N+1問題を防止）
                 $totalBreakSeconds = $record->breaks->sum(function (BreakLog $break): int {
                     if (!$break->break_in || !$break->break_out) return 0;
                     return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
 
-                // 合計休憩時間を秒計算し、何時間何分に変換し変数(箱)にしまう
+                // 休憩時間を表示形式へ変換
                 $breakHours = floor($totalBreakSeconds / 3600);
                 $breakMinutes = floor(($totalBreakSeconds % 3600) / 60);
                 $record->display_break_time = $totalBreakSeconds > 0 ? sprintf('%02d:%02d', $breakHours, $breakMinutes) : '00:00';
 
-                // もし出勤記録があれば(退勤時間-出勤時間-休憩時間）勤務秒数を計算
+                // 勤務時間を計算(退勤時間-出勤時間-休憩時間）
                 $record->display_work_time = '';
                 if ($record->clock_in && $record->clock_out) {
                     $start = Carbon::parse($record->clock_in);
@@ -242,25 +212,24 @@ class AttendanceController extends Controller
 
                     if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
 
-                    // 合計勤務秒数を何時間何分に変換し変数(箱)にしまう
+                    // 勤務時間を表示形式へ変換
                     $workHours = floor($totalWorkSeconds / 3600);
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
                     $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
                 }
-                // 計算した勤務時間を返す
+
                 return $record;
             })
-            // 返されたrecordをデータキーにして、勤怠データを扱いやすくする
+            // 日付けをキーにして扱いやすく変換
             ->keyBy('date');
 
-        // 日付を昇順に並べる
+        // 当月の日付を昇順に並べる
         $daysInMonth = [];
         $daysCount = $currentMonth->daysInMonth;
         for ($i = 1; $i <= $daysCount; $i++) {
             $daysInMonth[] = $currentMonth->copy()->day($i);
         }
 
-        // 勤怠一覧画面を表示する
         return view('attendance_list', [
             'daysInMonth'  => $daysInMonth,
             'attendances'  => $attendances,
@@ -273,87 +242,86 @@ class AttendanceController extends Controller
     /**
      * 勤怠詳細画面を表示する
      *
-     * @param int $id 勤怠レコードのID
+     * @param int $id 勤怠データID
      * @return View 勤怠詳細画面のビュー
      */
     public function show(int $id): View
     {
-        // ログインユーザー情報から勤怠登録データと一緒に休憩データを持ってきて変数(箱)にしまう
+        // ログインユーザーの勤怠データを取得
         $record = AttendanceRecord::where('user_id', auth()->id())
             ->findOrFail($id);
 
-        // 勤怠データ1件に関連する休憩情報と申請情報を取得
+        // 勤怠データ1件に関連するデータを読み込む
         $record->load(['breaks', 'applications']);
 
-        // 承認待ち状態の申請データがあるか調べる
+        // 承認待ち申請があるか判定
         $isPending = $record->applications ? $record->applications->contains('status', 'pending') : false;
-        // 承認待ち、または承認済みの最新申請データを取得して変数に代入
+
+        // 最新の修正申請を取得
         $correctionRequest = $record->applications ? $record->applications->sortByDesc('created_at')->first() : null;
 
-        // 承認待ちデータがある場合、
+        // 承認待ち申請内容を画面表示用データへ反映
         if ($isPending) {
             $pendingData = $record->applications->where('status', 'pending')->first();
             $correctionRequest = $pendingData;
 
-            // 出勤時刻・退勤時刻・備考を勤怠データに上書き
+            // 申請内容で勤怠データを上書き
             if ($pendingData) {
                 $record->clock_in = Carbon::parse($pendingData->requested_clock_in)->format('H:i');
                 $record->clock_out = $pendingData->requested_clock_out ? Carbon::parse($pendingData->requested_clock_out)->format('H:i') : null;
                 $record->comment = $pendingData->comment;
 
-                // 修正申請に休憩データがある場合
+                // 申請された休憩データを画面表示用に整形
                 if (!empty($pendingData->requested_breaks)) {
                     $formattedBreaks = collect(array_values($pendingData->requested_breaks))->map(function ($break, $index) {
 
-                    // 休憩データ1件を表すものを作成して返す
                         return new BreakLog([
                             'id' => $break['id'] ?? ($index + 1),
                             'break_in' => isset($break['break_in']) ? Carbon::parse($break['break_in'])->format('H:i') : null,
                             'break_out' => isset($break['break_out']) ? Carbon::parse($break['break_out'])->format('H:i') : null,
                         ]);
                     });
-                    // 休憩データを1件の勤怠データに紐づける
+                    // 画面表示用の休憩データを設定
                     $record->setRelation('breaks', $formattedBreaks);
                 }
             }
         }
 
-        // 承認済み、かつ過去の申請データが存在する場合、勤怠データの備考に上書き
+        // 最新の申請備考を表示
         if ($correctionRequest && $correctionRequest->comment) {
             $record->comment = $correctionRequest->comment;
         }
 
-        // 勤怠詳細画面を表示する
         return view('attendance_detail', compact('record', 'isPending', 'correctionRequest'));
     }
 
     /**
-     * 従業員からの勤怠修正申請を受け付け、承認待ちデータを作成する
+     * 勤怠修正申請を登録する
      *
-     * @param UpdateAttendanceRequest $request 画面からの修正入力データが入った箱
-     * @param int $id 勤怠レコードのID
-     * @return RedirectResponse 申請完了後のリダイレクト先
+     * @param UpdateAttendanceRequest $request 修正内容
+     * @param int $id 勤怠データID
+     * @return RedirectResponse 申請一覧画面へリダイレクト
      */
     public function update(UpdateAttendanceRequest $request, int $id): RedirectResponse
     {
 
-        // 勤怠登録からユーザーの修正する情報を見つける
+        // 対象の勤怠データを取得
         $record = AttendanceRecord::findOrFail($id);
 
-        // 休憩データを取得 なければ空配列
+        // 入力された休憩データを取得
         $breaks = $request->input('breaks', []);
 
-        // 新しい休憩時間が入力されているか確認
+        // 新しい休憩時間が入力されている場合は追加
         if ($request->filled('new_break_in') || $request->filled('new_break_out')) {
 
-            // 新しい休憩データを配列の最後に追加
+            // 新しい休憩データを追加
             $breaks[] = [
                 'break_in'  => $request->input('new_break_in'),
                 'break_out' => $request->input('new_break_out'),
             ];
         }
 
-        // 元の勤怠は書き換えず、勤怠修正申請データを承認待ちとして作成する
+        // 修正申請を承認待ちで登録
         StampCorrectionRequest::create([
             'user_id'              => auth()->id(),
             'attendance_record_id' => $record->id,
@@ -364,89 +332,85 @@ class AttendanceController extends Controller
             'comment' => $request->input('comment'),
         ]);
 
-        // 申請一覧画面へ遷移する
         return redirect('/stamp_correction_request/list')->with('success_message', '修正を申請しました');
     }
 
     /**
      * マイ勤怠レポート画面を表示するための月間集計処理を行う
      *
-     * @param Request $request 画面からのリクエストデータが入った箱
+     * @param Request $request リクエスト情報
      * @return View マイ勤怠レポート画面のビュー
      */
     public function report(Request $request): View
     {
-        // スタッフの認証チェック
+        // 集計対象期間を設定
         $user = Auth::user();
-        // 現在日時を取得
         $now = Carbon::now();
-        // 現在から6か月前の月初の日付を取得
+        // 6か月間
         $sixMonthsAgo = Carbon::now()->startOfMonth()->subMonths(5);
-        // 集計の終わりを今月末に広げる
         $endDate = Carbon::now()->endOfMonth();
 
-        // 1件の勤怠データと一緒に休憩データを取得
+        // 集計対象の勤怠データを取得
         $records = AttendanceRecord::with('breaks')
             ->where('user_id', $user->id)
             ->where('date', '>=', $sixMonthsAgo->format('Y-m-d'))
             ->where('date', '<=', $endDate->format('Y-m-d'))
             ->get();
 
-        // 月ごとの集計データを保存する箱を準備
+        // 月ごとの集計データを準備
         $monthlyData = collect();
 
         // 過去6か月分を集計
         collect()->times(6, function (int $number) use ($records, $monthlyData) {
-            // $numberは1から6まで入るため、引き算を使って過去5か月前から今月までのインデックス（5〜0）を作ります
             $i = 6 - $number;
 
-            // はみ出しバグを防ぐため「今月の1日」を基準にして安全に過去の月を割り出します
+            //月初開始
             $monthStr = Carbon::now()->startOfMonth()->subMonths($i)->format('Y-m');
 
-            // 指定した年月の勤怠データだけ取得
+            // 対象月の勤怠データを取得
             $monthRecords = $records->filter(fn($record) => Carbon::parse($record->date)->format('Y-m') === $monthStr);
 
-            // 出勤時刻または退勤時刻が無い場合、0を返す
+            // 月の勤務時間を秒で集計
             $totalWorkSeconds = $monthRecords->sum(function ($record) {
                 if (!$record->clock_in || !$record->clock_out) {
                     return 0;
                 }
-                // 出退勤時刻を文字列からにcarbonに変換し秒単位で計算
+                // 秒単位の勤務時間
                 $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
                 // 休憩開始時刻または休憩終了時刻が無い場合、0を返す
                 $breakSeconds = $record->breaks->sum(function ($break) {
                     if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
-                    // 休憩時刻をcarbon形式に変換し秒単位で計算して返す
+                    // 休憩開始時刻と休憩終了時刻をcarbon形式に変換し、差を秒単位で計算
                     return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
-                // 休憩時間を差し引いた労働時間を0未満にならないようにして返す
+                // 休憩時間を差し引いた労働時間を0未満にならないようにする
                 return max(0, $staySeconds - $breakSeconds);
             });
 
-            // 月ごとの残業時間を秒単位で計算し、出退勤時刻が無い場合、0を返す
+            // 月の残業時間を秒単位で集計、出退勤時刻が無い場合0
             $totalOvertimeSeconds = $monthRecords->sum(function ($record) {
                 if (!$record->clock_in || !$record->clock_out) {
                     return 0;
                 }
-                // 出退勤時刻をcarbonに変換し、秒単位で計算
+                // 出退勤時刻を秒単位で計算
                 $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
-                // 休憩開始時刻または休憩終了時刻が無い場合、0を返す
+                // 休憩開始時刻または休憩終了時刻が無い場合0
                 $breakSeconds = $record->breaks->sum(function ($break) {
                     if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
-                    // 休憩時間をcarbon形式に変換し、秒単位で計算して返す
+                    // 休憩開始時刻と休憩終了時刻をcarbon形式に変換し、差を秒単位で計算
                     return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
-                // 休憩時間を差し引いた労働時間を0未満にならないようにして秒で取得
+                // 休憩時間を差し引いた労働時間を0未満にならないようにする
                 $workSeconds= max(0, $staySeconds - $breakSeconds);
-                // 8時間を超えた分を残業時間として返す
+                // 8時間を超えた分を残業時間とする
                 return max(0, $workSeconds - 28800);
             });
 
-            // 月ごとの勤務時間・残業時間・勤務秒数を保存
+            // 月ごとの集計結果を保存
             $monthlyData->put($monthStr, [
                 'work_hours' => (int)floor($totalWorkSeconds / 3600),
                 'work_minutes' => (int)floor(($totalWorkSeconds % 3600) / 60),
@@ -456,7 +420,7 @@ class AttendanceController extends Controller
             ]);
         });
 
-        // 6か月分の総勤務時間を秒で集計
+        // 6か月分の総勤務時間を集計
         $grandTotalWorkSeconds = $monthlyData->sum('raw_work_seconds');
 
         // 出勤時刻または退勤時刻が無い場合、0を返す
@@ -464,28 +428,29 @@ class AttendanceController extends Controller
             if (!$record->clock_in || !$record->clock_out) {
                 return 0;
             }
-            // 出勤時刻と退勤時刻をcarbonに変換し、秒計算
+            // 出勤時刻と退勤時刻を秒単位で計算
             $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
-            // 休憩時間を秒で取得
+            // 休憩時間を秒単位で取得
             $breakSeconds = $record->breaks->sum(function ($break) {
-                // 休憩開始時刻または休憩終了時刻が無い場合、0で返す
+                // 休憩開始時刻または休憩終了時刻が無い場合0
                 if (!$break->break_in || !$break->break_out) {
                     return 0;
                 }
-                // 休憩開始時刻と休憩終了時刻をcarbon形式で取得し、秒計算
+                // 休憩開始時刻と休憩終了時刻をcarbon形式に変換し、差を秒単位で計算
                 return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
             });
             // 休憩時間を差し引いた労働時間を0未満にならないようにして秒単位で返す
             $workSeconds = max(0, $staySeconds - $breakSeconds);
+            // 8時間を超えた分を残業時間として秒単位で返す
             return max(0, $workSeconds - 28800);
         });
 
-        // 総勤務日数を数える
+        // 総勤務日数を取得
         $totalDays = $records->count();
-        // 勤務日数が0より多い場合は平均勤務時間を計算し、それ以外は0を設定
+        // 平均勤務時間を秒単位で計算、勤務日が無い場合0
         $averageWorkSeconds = $totalDays > 0 ? (int)round($grandTotalWorkSeconds / $totalDays) : 0;
 
-        // 総勤務時間・総残業時間・平均勤務時間を計算
+        // 総勤務時間・総残業時間・平均勤務時間を時分形式へ変換
         $summary = [
             'total_work' => ['h' => (int)floor($grandTotalWorkSeconds / 3600), 'm' => (int)floor(($grandTotalWorkSeconds % 3600) / 60)],
             'total_overtime' => ['h' => (int)floor($grandTotalOvertimeSeconds / 3600), 'm' => (int)floor(($grandTotalOvertimeSeconds % 3600) / 60)],
@@ -494,36 +459,37 @@ class AttendanceController extends Controller
 
         // 現在年月を取得
         $currentMonthStr = $now->format('Y-m');
-        // 日付をcarbonに変換し、年月に変換して当月の勤怠データを抽出
+        // 当月の勤怠データを抽出
         $currentMonthRecords = $records->filter(fn($record) => Carbon::parse($record->date)->format('Y-m') === $currentMonthStr);
 
         $anomaly = [
-            // 出勤時間をcarbonに変換し、9時より遅い場合は遅刻で数える
+            // 出勤時間が9時より遅い場合は遅刻で集計
             'lateness' => $currentMonthRecords->filter(fn($record) => Carbon::parse($record->clock_in)->format('H:i:s') > '09:00:00')->count(),
-            // 退勤時間をcarbonに変換し、18時より早い場合は早退で数える
+            // 退勤時間が18時より早い場合は早退で集計
             'early_leave' => $currentMonthRecords->filter(fn($record) => $record->clock_out && Carbon::parse($record->clock_out)->format('H:i:s') < '18:00:00')->count(),
-            // 長時間労働の勤怠を数える
+            // 長時間労働の勤怠を集計
             'long_working' => $currentMonthRecords->filter(function ($record) {
                 // 出勤時刻または退勤時刻が無い場合、除外する
                 if (!$record->clock_in || !$record->clock_out) {
                     return false;
                 }
-                // 出勤時刻と退勤時刻をcarbonに変換し秒計算
+                // 出勤から退勤までの経過時間を秒単位で計算
                 $staySeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out));
-                // 休憩時間を秒計算
+                // 休憩時間を秒単位で計算
                 $breakSeconds = $record->breaks->sum(function ($break) {
-                    // 休憩開始または休憩終了時刻が無い場合、0を返す
+                    // 休憩開始または休憩終了時刻が無い場合0
                     if (!$break->break_in || !$break->break_out) {
                         return 0;
                     }
-                    // 休憩時刻をcarobnに変換して秒で返す
+                    // 休憩開始と休憩終了時刻をcarbonに変換して、差を秒単位で返す
                     return Carbon::parse($break->break_in)->diffInSeconds(Carbon::parse($break->break_out));
                 });
-                // 勤務時間が10時間を超えるか判定して数える
+                // 勤務時間が10時間を超える勤怠を抽出
                 return ($staySeconds - $breakSeconds) > 36000;
             })->count(),
         ];
-        //  総勤務時間・総残業時間・平均勤務時間・遅刻回数。早退回数・長時間労働の件数・月ごとの総勤務集計をビューへ返す
+
+        // 集計結果をマイ勤怠レポート画面へ渡す
         return view('attendance_report', compact('summary', 'monthlyData', 'anomaly'));
     }
 }

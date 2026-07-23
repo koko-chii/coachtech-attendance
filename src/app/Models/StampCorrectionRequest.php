@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// データーベーステーブルとPHPを結びつけ操作する機能の読み込み
 use Illuminate\Database\Eloquent\Model;
 // 1対多のつながりで子から親データーを紐づけるリレーション機能の読み込み
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

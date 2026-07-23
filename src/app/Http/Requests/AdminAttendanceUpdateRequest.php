@@ -4,10 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
-// 日付・時刻操作(打刻時間や勤務時間計算)をするための読み込み
 use Carbon\Carbon;
 
-// laravel標準のバリデーション機能を継承したクラス
 class AdminAttendanceUpdateRequest extends FormRequest
 {
     /**
@@ -46,7 +44,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
     }
 
     /**
-     * バリデーション後の追加チェックを設定（出退勤時間と休憩時間の不整合をチェック）
+     * バリデーション後に出退勤時間と休憩時間の不整合をチェック）
      *
      * @param mixed $validator バリデータインスタンス
      * @return void
@@ -58,7 +56,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
             $clockIn  = $this->filled('clock_in') ? Carbon::parse($this->input('clock_in'))->format('H:i') : null;
             $clockOut = $this->filled('clock_out') ? Carbon::parse($this->input('clock_out'))->format('H:i') : null;
 
-            // もし出勤時刻が退勤時刻より遅い場合はエラー
+            // 出勤時刻が退勤時刻より遅い場合はエラー
             if (filled($clockIn) && filled($clockOut)) {
                 if ($clockIn > $clockOut) {
                     $validator->errors()->add('clock_in', '出勤時間もしくは退勤時間が不適切な値です');
@@ -67,12 +65,12 @@ class AdminAttendanceUpdateRequest extends FormRequest
 
             // 複数の休憩入力データを時刻形式(H:i)に変換
             if ($this->has('breaks') && is_array($this->input('breaks'))) {
-                // ★規約徹底：foreachを避け、Collectionのeachメソッドを活用して休憩データを1件ずつチェックします
+                // 各休憩時間の入力内容をチェック
                 collect($this->input('breaks'))->each(function ($breakData, $index) use ($validator, $clockIn, $clockOut) {
                     $breakIn  = filled($breakData['break_in'] ?? null) ? Carbon::parse($breakData['break_in'])->format('H:i') : null;
                     $breakOut = filled($breakData['break_out'] ?? null) ? Carbon::parse($breakData['break_out'])->format('H:i') : null;
 
-                    // もし休憩開始時刻が出勤前、退勤後の場合はエラー
+                    // 休憩開始時刻が勤務時間外の場合はエラー
                     if (filled($breakIn)) {
                         if ((filled($clockIn) && $breakIn < $clockIn) ||
                             (filled($clockOut) && $breakIn > $clockOut)) {
@@ -87,7 +85,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
                         }
                     }
 
-                    // もし休憩終了時刻が出勤前、退勤後の場合はエラー
+                    // 休憩終了時刻が勤務時間外の場合はエラー
                     if (filled($breakOut)) {
                         if ((filled($clockIn) && $breakOut < $clockIn) ||
                             (filled($clockOut) && $breakOut > $clockOut)) {
@@ -98,7 +96,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
                             );
                         }
 
-                        // 休憩終了時刻が、休憩開始より前の場合エラー
+                        // 休憩終了時刻が、休憩開始時刻より前の場合エラー
                         if (filled($breakIn) && $breakOut < $breakIn) {
 
                             $validator->errors()->add(
@@ -114,7 +112,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
             $newBreakIn  = $this->filled('new_break_in') ? Carbon::parse($this->input('new_break_in'))->format('H:i') : null;
             $newBreakOut = $this->filled('new_break_out') ? Carbon::parse($this->input('new_break_out'))->format('H:i') : null;
 
-            // 追加休憩開始時刻が出勤前、又は退勤後の場合はエラー
+            // 追加休憩開始時刻が勤務時間外の場合はエラー
             if (filled($newBreakIn)) {
                 if ((filled($clockIn) && $newBreakIn < $clockIn) ||
                     (filled($clockOut) && $newBreakIn > $clockOut)) {
@@ -126,7 +124,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
                 }
             }
 
-            // 追加休憩終了時刻が出勤前、退勤後の場合エラー
+            // 追加休憩終了時刻が勤務時間外の場合エラー
             if (filled($newBreakOut)) {
                 if ((filled($clockIn) && $newBreakOut < $clockIn) ||
                     (filled($clockOut) && $newBreakOut > $clockOut)) {
@@ -138,7 +136,7 @@ class AdminAttendanceUpdateRequest extends FormRequest
                 }
             }
 
-            // 追加休憩開始 > 終了 の場合はエラー
+            // 追加休憩終了時刻が休憩開始時刻より前の場合はエラー
             if (filled($newBreakIn) &&
                 filled($newBreakOut) &&
                 $newBreakOut < $newBreakIn) {

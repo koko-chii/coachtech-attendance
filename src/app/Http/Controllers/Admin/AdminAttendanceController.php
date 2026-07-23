@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-// 別のURLへ移動するようブラウザへ返す
 use Illuminate\Http\RedirectResponse;
 use Carbon\Carbon;
 use App\Models\AttendanceRecord;
@@ -21,8 +20,8 @@ class AdminAttendanceController extends Controller
     /**
      * 管理者用勤怠一覧画面を表示する
      *
-     * @param Request $request 画面からのリクエストデータが入った箱
-     * @return View 管理者用勤怠一覧画面の表示
+     * @param Request $request リクエスト情報
+     * @return View 管理者用勤怠一覧画面のビュー
      */
     public function showDailyList(Request $request): View
     {
@@ -30,13 +29,12 @@ class AdminAttendanceController extends Controller
         $dateStr = $request->query('date', Carbon::now()->format('Y-m-d'));
         $date = Carbon::parse($dateStr);
 
-        // 当日の勤怠データを、従業員ユーザー情報と休憩データも一緒に取得
-        // ユーザーが登録されていて打刻がない場合も考慮し、データが存在するもののみ取得
+        // 従業員ユーザー情報と一緒に休憩データも取得
         $attendanceRecords = AttendanceRecord::with(['user', 'breaks'])
             ->where('date', $dateStr)
             ->get();
 
-        // 管理者用勤怠一覧画面へ日付データと当日の勤怠データを渡して表示
+        // 管理者用勤怠一覧画面と日付データを渡す
         return view('admin.admin_attendance_list', [
             'date' => $date,
             'attendanceRecords' => $attendanceRecords,
@@ -46,22 +44,22 @@ class AdminAttendanceController extends Controller
     /**
      * 管理者用勤怠詳細画面を表示する
      *
-     * @param int $id 勤怠レコードのID
-     * @return View 管理者用勤怠詳細画面の表示
+     * @param int $id 勤怠データID
+     * @return View 管理者用勤怠詳細画面のビュー
      */
     public function showDetail(int $id): View
     {
-        // 指定した従業員ユーザーの勤怠データと休憩データを一緒に取得
+        // 詳細画面の表示に必要な関連データを合わせて取得
         $attendance = AttendanceRecord::with(['user', 'breaks', 'applications'])->findOrFail($id);
 
         // 承認待ち状態の申請データがあるか調べる
         $isPending = $attendance->applications ? $attendance->applications->contains('status', 'pending') : false;
 
-        // もし承認待ち状態の申請データが存在すれば、管理者詳細画面の表示データを修正申請の値に書き換える
+        // 承認待ちの修正申請がある場合、申請内容を管理者詳細画面に反映する
         if ($isPending) {
             $pendingData = $attendance->applications->where('status', 'pending')->first();
 
-            // 承認待ちの修正申請データがある場合、修正値の出勤時刻・退勤時刻・備考を勤怠データに入れる
+            // 修正申請の内容を画面表示用の勤怠データへ反映
             if ($pendingData) {
                 $attendance->setAttribute('clock_in', $pendingData->requested_clock_in);
                 $attendance->setAttribute('clock_out', $pendingData->requested_clock_out);
@@ -83,7 +81,7 @@ class AdminAttendanceController extends Controller
             }
         }
 
-        // 管理者用勤怠詳細画面を返す
+        // 管理者用勤怠詳細画面へ表示データを渡す
         return view('admin.admin_attendance_detail', [
             'attendance' => $attendance,
             'isPending' => $isPending,
@@ -91,15 +89,15 @@ class AdminAttendanceController extends Controller
     }
 
     /**
-     * 管理者が勤怠修正を行った際の更新処理
+     * 管理者による勤怠修正の更新
      *
-     * @param AdminAttendanceUpdateRequest $request 画面からの入力データが入った箱
-     * @param int $id 勤怠レコードのID
-     * @return RedirectResponse 修正後のリダイレクト先
+     * @param AdminAttendanceUpdateRequest $request
+     * @param int $id 勤怠データID
+     * @return RedirectResponse 勤怠詳細画面へリダイレクト
      */
     public function updateDetail(AdminAttendanceUpdateRequest $request, int $id): RedirectResponse
     {
-        // 勤怠データと一緒に休憩データを取得
+        // 更新対象の勤怠データと休憩データを取得
         $attendance = AttendanceRecord::with('breaks')->findOrFail($id);
 
         // 承認待ちの場合、修正不可のメッセージを画面へ返す
@@ -107,14 +105,14 @@ class AdminAttendanceController extends Controller
             return redirect()->back()->with('alert_message', '承認待ちのため修正はできません。');
         }
 
-        // 出勤時刻・退勤時刻・備考を更新して保存
+        // 勤怠情報の更新
         $attendance->update([
             'clock_in'  => $request->input('clock_in'),
             'clock_out' => $request->input('clock_out'),
             'comment'   => $request->input('comment'),
         ]);
 
-        // 修正申請で送られら休憩データを取得
+        // フォームから送られた休憩データを取得
         $breaks = $request->input('breaks', []);
 
         // 休憩開始時刻または休憩終了時刻が入力されていた場合、休憩データに追加
@@ -128,7 +126,7 @@ class AdminAttendanceController extends Controller
             ];
         }
 
-        // 休憩データがある場合、既存の休憩データをIDごとに更新
+        // 既存の休憩データを削除し、入力内容で登録し直す
         if (!empty($breaks)) {
             $attendance->breaks()->delete();
             collect($breaks)->each(function ($breakData) use ($attendance) {
@@ -141,7 +139,7 @@ class AdminAttendanceController extends Controller
             });
         }
 
-        // 修正完了メッセージと一緒にスタッフ別勤怠一覧画面へ遷移を返す
+        // 修正完了メッセージをつけてスタッフ別勤怠一覧画面へ戻る
         return redirect()->route('admin.attendance.staff', ['id' => $attendance->user_id])
             ->with('success_message', '勤怠情報を修正しました。');
     }
@@ -149,7 +147,7 @@ class AdminAttendanceController extends Controller
     /**
      * スタッフ一覧画面を表示する
      *
-     * @return View 管理者用スタッフ一覧画面
+     * @return View 管理者用スタッフ一覧画面のビュー
      */
     public function showStaffList(): View
     {
@@ -163,26 +161,25 @@ class AdminAttendanceController extends Controller
     /**
      * 指定したスタッフの勤怠一覧画面を表示する
      *
-     * @param Request $request 画面からのリクエストデータが入った箱
-     * @param int $id スタッフ（ユーザー）のID
-     * @return View スタッフの勤怠一覧画面
+     * @param Request $request リクエスト情報
+     * @param int $id スタッフID
+     * @return View スタッフ別勤怠一覧画面のビュー
      */
     public function showStaffAttendance(Request $request, int $id): View
     {
-        // URLで指定したIDのスタッフデータを取得
-        // 存在しないIDの場合は404エラーになる
+        // 対象スタッフデータを取得(存在しない場合は404)
         $targetUser = User::findOrFail($id);
 
-        // 対象年月をY－m形式で取得 指定が無い場合は現在の年月を使用
+        // 対象年月を取得(未指定の場合は当月）
         $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
-        // 取得した年月の月初(1日)を生成
+        // 取得した年月の1日を基準日として生成
         $currentMonth = Carbon::parse($currentMonthStr . '-01');
 
-        // 前月と翌月をY－m形式で取得
+        // 月切り替え用の前月・翌月を取得
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
-        // 勤怠データと一緒に休憩データを取得
+        // 対象スタッフ・対象月勤怠データを休憩情報とあわせて取得
         $attendances = AttendanceRecord::with('breaks')
             // 指定したIDのスタッフデータを検索
             ->where('user_id', $targetUser->id)
@@ -191,7 +188,7 @@ class AdminAttendanceController extends Controller
             ->whereMonth('date', $currentMonth->month)
             ->get()
 
-            // 取得した勤怠データに表示用の出勤・退勤時刻を追加する
+            // 一覧表示用の勤務・休憩時間を追加
             ->map(function (AttendanceRecord $record): AttendanceRecord {
                 $record->display_clock_in = $record->clock_in;
                 $record->display_clock_out = $record->clock_out;
@@ -204,11 +201,11 @@ class AdminAttendanceController extends Controller
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
                 });
 
-                // 休憩時刻を秒から時間を計算(3600秒は1時間)
+                // 表示用に休憩時間を時分形式へ変換
                 $breakHours = floor($totalBreakSeconds / 3600);
                 // 3600秒を60分に計算
                 $breakMinutes = floor(($totalBreakSeconds % 3600) / 60);
-                // 休憩時刻がある場合 時：分 形式で表示し、無い場合は 00:00 を表示
+                // 休憩時刻が無い場合は 00:00 を表示
                 $record->display_break_time = $totalBreakSeconds > 0 ? sprintf('%02d:%02d', $breakHours, $breakMinutes) : '00:00';
 
                 // 退勤時刻－出勤時刻で勤務時間(秒)を計算
@@ -218,15 +215,15 @@ class AdminAttendanceController extends Controller
                     $end = Carbon::parse($record->clock_out);
                     $totalWorkSeconds = $start->diffInSeconds($end) - $totalBreakSeconds;
 
-                // 勤務時間がマイナスになった場合は0秒にする
+                // 勤務時間がマイナスにならないよう補正(0秒)
                 if ($totalWorkSeconds < 0) { $totalWorkSeconds = 0; }
-                    // 秒を時間に変換し、勤務時間を計算
+                    // 時分形式に変換し、勤務時間を計算
                     $workHours = floor($totalWorkSeconds / 3600);
                     $workMinutes = floor(($totalWorkSeconds % 3600) / 60);
                     $record->display_work_time = sprintf('%02d:%02d', $workHours, $workMinutes);
                 }
 
-            // 加工した勤務データを返す
+            // 加工した勤怠データを返す
             return $record;
             })
 
@@ -241,7 +238,7 @@ class AdminAttendanceController extends Controller
                 $daysInMonth[] = $currentMonth->copy()->day($i);
             }
 
-        // 指定したスタッフデータ・対象月の日付一覧・勤怠データ・年月データ形式変換・前月・翌月データをビューへ渡す
+        // 一覧表示に必要なデータをビューへ渡す
         return view('admin.admin_staff_attendance', [
             'targetUser'   => $targetUser,
             'daysInMonth'  => $daysInMonth,
@@ -255,20 +252,20 @@ class AdminAttendanceController extends Controller
     /**
      * 指定したスタッフの月間勤怠データをCSVファイルとして出力・ダウンロードする
      *
-     * @param Request $request 画面からのリクエストデータが入った箱
-     * @param int $id スタッフ（ユーザー）のID
-     * @return StreamedResponse CSVファイルのダウンロードレスポンス
+     * @param Request $request リクエスト情報
+     * @param int $id スタッフID
+     * @return StreamedResponse csvファイルのダウンロードレスポンス
      */
     public function downloadCsv(Request $request, int $id): StreamedResponse
     {
-        // 指定したスタッフデータを取得
+        // csv出力対象スタッフデータを取得
         $targetUser = User::findOrFail($id);
-        // URLで指定が無い場合、現在の年月を設定
+        // 出力対象の年月を取得(未指定の場合は当月)
         $currentMonthStr = $request->query('month', Carbon::now()->format('Y-m'));
         // 指定月の月初の日付を生成
         $currentMonth = Carbon::parse($currentMonthStr . '-01');
 
-        // 指定したスタッフ・年月日の勤怠データと一緒に休憩データを取得
+        // 指定したスタッフ・対象月の勤怠データを休憩データとあわせて取得
         $records = AttendanceRecord::with('breaks')
             ->where('user_id', $targetUser->id)
             ->whereYear('date', $currentMonth->year)
@@ -281,7 +278,7 @@ class AdminAttendanceController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $targetUser->name . '_' . $currentMonthStr . '_attendance.csv"',
         ];
 
-        // Csvに出力するデータを作成
+        // Csvに出力処理を定義
         $callback = function () use ($records) {
             // 出力先を準備
             $stream = fopen('php://output', 'w');
@@ -294,19 +291,21 @@ class AdminAttendanceController extends Controller
                 mb_convert_encoding('労働時間', 'SJIS-win', 'UTF-8')
             ]);
 
-            // 計勤怠データごとに休憩時間の計算
+            // 勤怠データごとに休憩時間の計算
             collect($records)->each(function (AttendanceRecord $record) use ($stream) {
                 $totalBreakSeconds = $record->breaks->sum(function ($b): int {
                     if (!$b->break_in || !$b->break_out) return 0;
-                    // carbon形式に変換して(文字列を日時を扱えるよう変換)csv出力
+                    // 休憩時間を秒単位で計算
                     return Carbon::parse($b->break_in)->diffInSeconds(Carbon::parse($b->break_out));
                 });
+                // csv出力用に休憩時間を時分形式へ変換
                 $breakTime = sprintf('%02d:%02d', floor($totalBreakSeconds / 3600), floor(($totalBreakSeconds % 3600) / 60));
 
-                // 労働時間の計算し、秒から時：分形式へ変換（労働時間がマイナスの場合は00:00）
+                // 勤務時間を時分形式へ変換
                 $workTime = '';
                 if ($record->clock_in && $record->clock_out) {
                     $totalWorkSeconds = Carbon::parse($record->clock_in)->diffInSeconds(Carbon::parse($record->clock_out)) - $totalBreakSeconds;
+                    // 労働時間がマイナスにならないよう補正00:00
                     if ($totalWorkSeconds < 0) $totalWorkSeconds = 0;
                     $workTime = sprintf('%02d:%02d', floor($totalWorkSeconds / 3600), floor(($totalWorkSeconds % 3600) / 60));
                 }
@@ -324,21 +323,21 @@ class AdminAttendanceController extends Controller
             fclose($stream);
         };
 
-        // csvファイルを正常に返す(ダウンロード)
+        // csvファイルをダウンロードとして返す
         return response()->stream($callback, 200, $headers);
     }
 
     /**
      * 修正申請の一覧画面を表示する
      *
-     * @return View 申請一覧画面
+     * @return View 修正申請一覧画面のビュー
      */
     public function showRequestList(): View
     {
         // 修正申請データと一緒にスタッフデータと勤怠データを取得
         $allRequests = StampCorrectionRequest::with(['user', 'attendanceRecord'])->get();
 
-        // 承認待ちと承認済みデータを振り分け、部屋番号を0から詰め直す
+        // 承認待ちと承認済みに振り分け、キーを0から振り直す
         $pendingRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'pending')->values();
         $approvedRequests = $allRequests->filter(fn(StampCorrectionRequest $req): bool => $req->status === 'approved')->values();
 
@@ -349,12 +348,12 @@ class AdminAttendanceController extends Controller
     /**
      * 修正申請の承認画面を表示する
      *
-     * @param int $id 修正申請レコードのID
-     * @return View 修正申請の承認画面
+     * @param int $id 修正申請のID
+     * @return View 修正申請の承認画面のビュー
      */
     public function showApproveView(int $id): View
     {
-        // 修正申請データと一緒にスタッフデータと勤怠データを1件だけ取得
+        // 修正申請データと一緒にスタッフデータと勤怠データを取得
         $requestData = StampCorrectionRequest::with(['user', 'attendanceRecord'])->findOrFail($id);
         // 承認待ちかを判定
         $isPending = $requestData->status === 'pending';
@@ -366,15 +365,15 @@ class AdminAttendanceController extends Controller
     /**
      * 修正申請を承認する
      *
-     * @param Request $request 画面からの入力データが入った箱
-     * @param int $id 修正申請レコードのID
-     * @return RedirectResponse 承認完了後のリダイレクト先
+     * @param Request $request リクエスト情報
+     * @param int $id 修正申請ID
+     * @return RedirectResponse 承認完了後の修正申請一覧画面へリダイレクト
      */
     public function approveRequest(Request $request, int $id): RedirectResponse
     {
         // 修正申請データを1件だけ取得
         $requestData = StampCorrectionRequest::findOrFail($id);
-        // 勤怠データから修正データを取得
+        // 更新対象の勤怠データを取得
         $attendance = AttendanceRecord::findOrFail($requestData->attendance_record_id);
 
         // 承認ボタンを押したら承認済みにし、データを更新する
@@ -394,7 +393,7 @@ class AdminAttendanceController extends Controller
                     if (empty($breakData['break_in']) || empty($breakData['break_out'])) {
                         return;
                     }
-                    // データベースの休憩データを新しく作る
+                    // 修正後の休憩データを新しく作る
                     $attendance->breaks()->create([
                         'break_in'  => $breakData['break_in'],
                         'break_out' => $breakData['break_out'],
@@ -404,10 +403,10 @@ class AdminAttendanceController extends Controller
 
             // ステータスを承認済みに更新
             $requestData->update(['status' => 'approved']);
-            // 管理者用申請一覧の「承認済み」タブへ遷移と一緒に、メッセージを返す
+            // 承認完了メッセージをつけて申請一覧へ戻る
             return redirect()->route('attendance_correction_request.index')->with('success_message', '申請を承認しました。');
 
-        }// 安全なリダイレクト
+        }// 承認処理以外の場合は一覧画面へ戻る
         return redirect()->route('attendance_correction_request.index');
     }
 }

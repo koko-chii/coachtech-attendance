@@ -2,13 +2,9 @@
 
 namespace App\Models;
 
-// 大量のテストデーターを作成するための呼び出し
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// 勤怠管理画面に認証機能をするための呼出し
 use Illuminate\Foundation\Auth\User as Authenticatable;
-// ユーザー（従業員）にメールや画面で通知(ノティファイアブル)を送るための機能を呼び出し
 use Illuminate\Notifications\Notifiable;
-// メール認証機能の呼び出し
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 // laravel標準の沢山のエロクワントリレーション機能(1対多)を使うための読み込み
 use Illuminate\Database\Eloquent\Relations\HasMany;

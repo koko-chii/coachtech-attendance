@@ -4,14 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
-// 日付・時刻操作(打刻時間や勤務時間計算)をするための読み込み
 use Carbon\Carbon;
 
-// laravel標準のバリデーション機能を継承したクラス
 class UpdateAttendanceRequest extends FormRequest
 {
     /**
-     * リクエストの実行権限をチェック
+     * バリデーションを実行できるよう許可する
      */
     public function authorize(): bool
     {
@@ -24,7 +22,7 @@ class UpdateAttendanceRequest extends FormRequest
      */
     public function rules(): array
     {
-        // 出勤時刻・退勤時刻・備考は必須、休憩時刻は空欄可、時刻形式チェック
+        // 勤怠修正時の入力ルール
         return [
             'clock_in'           => ['required', 'date_format:H:i'],
             'clock_out'          => ['required', 'date_format:H:i'],
@@ -32,7 +30,7 @@ class UpdateAttendanceRequest extends FormRequest
             'breaks'             => ['nullable', 'array'],
             'breaks.*.break_in'  => ['nullable', 'date_format:H:i'],
             'breaks.*.break_out' => ['nullable', 'date_format:H:i'],
-            
+
             // 新規追加の休憩時間チェック
             'new_break_in'       => ['nullable', 'date_format:H:i'],
             'new_break_out'      => ['nullable', 'date_format:H:i'],
@@ -66,10 +64,10 @@ class UpdateAttendanceRequest extends FormRequest
      */
     protected function withValidator($validator): void
     {
-        // 出勤時刻と退勤時刻、休憩時間の前後関係を追加チェック
+        // 通常のバリデーション完了後に追加チェックを実行
         $validator->after(function (Validator $validator): void {
 
-            // 出勤時刻と退勤時刻を時刻形式（H:i）に変換
+            // 入力された出退勤時刻をCarbon形式に変換
             $clockIn = $this->filled('clock_in')
                 ? Carbon::parse($this->input('clock_in'))->format('H:i')
                 : null;
@@ -78,7 +76,7 @@ class UpdateAttendanceRequest extends FormRequest
                 ? Carbon::parse($this->input('clock_out'))->format('H:i')
                 : null;
 
-            // もし出勤時刻が退勤時刻より遅い場合はエラー
+            // 出勤時刻が退勤時刻より遅い場合はエラー
             if (filled($clockIn) && filled($clockOut)) {
                 if ($clockIn > $clockOut) {
                     $validator->errors()->add(
@@ -88,19 +86,19 @@ class UpdateAttendanceRequest extends FormRequest
                 }
             }
 
-            // 複数の休憩入力データを時刻形式(H:i)に変換
+            // 既存の休憩データがある場合1件ずつチェック
             if ($this->has('breaks') && is_array($this->input('breaks'))) {
+                // 休憩データを順番に1件ずつチェック
                 collect($this->input('breaks'))->each(function ($breakData, $index) use ($validator, $clockIn, $clockOut) {
 
-                    // 未入力チェック
+                    // 休憩開始・終了が入力されているか確認
                     $hasBreakIn  = filled($breakData['break_in'] ?? null);
                     $hasBreakOut = filled($breakData['break_out'] ?? null);
 
-                    // 入力がある場合の時刻形式チェック、未入力の場合は空
+                    // 入力がある場合のCarbon形式に変換、未入力の場合は空
                     $breakIn = $hasBreakIn
                         ? Carbon::parse($breakData['break_in'])->format('H:i')
                         : null;
-
                     $breakOut = $hasBreakOut
                         ? Carbon::parse($breakData['break_out'])->format('H:i')
                         : null;
@@ -108,10 +106,10 @@ class UpdateAttendanceRequest extends FormRequest
                     // 1つでも休憩エラーが発生した場合は重複表示を防ぐ
                     $hasError = false;
 
-                    // 休憩開始時刻が出勤前、または退勤後ならエラー
+                    // 休憩開始時刻勤務時間外ならエラー
                     if (filled($breakIn)) {
                         if ((filled($clockIn) && $breakIn < $clockIn) ||
-                            (filled($clockOut) && $breakIn > $clockOut)) {
+                        (filled($clockOut) && $breakIn > $clockOut)) {
 
                             $validator->errors()->add(
                                 'breaks.' . $index . '.break_in',
@@ -125,7 +123,7 @@ class UpdateAttendanceRequest extends FormRequest
                         }
                     }
 
-                    // 休憩終了時刻が出勤前、退勤後ならエラー（開始時刻側でエラーがない場合のみチェック）
+                    // 休憩終了時刻が勤務時間外ならエラー
                     if (!$hasError && filled($breakOut)) {
                         if ((filled($clockIn) && $breakOut < $clockIn) ||
                             (filled($clockOut) && $breakOut > $clockOut)) {
@@ -139,7 +137,7 @@ class UpdateAttendanceRequest extends FormRequest
                         }
                     }
 
-                    // 休憩開始 > 休憩終了 の場合エラー（開始・終了時刻側でエラーがない場合のみチェック）
+                    // 休憩終了時刻が休憩開始時刻より前ならエラー
                     if (!$hasError && filled($breakIn) && filled($breakOut) && $breakOut < $breakIn) {
                         $validator->errors()->add(
                             'breaks.' . $index . '.break_out',
@@ -149,7 +147,7 @@ class UpdateAttendanceRequest extends FormRequest
                         $hasError = true;
                     }
 
-                    // 他のエラーが一切ない場合のみ、片方未入力をチェックする
+                    // 他にエラーが無く、休憩開始だけ入力されている場合はエラー
                     if (!$hasError && $validator->errors()->isEmpty()) {
                         if ($hasBreakIn && !$hasBreakOut) {
                             $validator->errors()->add('breaks.' . $index . '.break_in', '休憩時間が不適切な値です');
@@ -158,10 +156,11 @@ class UpdateAttendanceRequest extends FormRequest
                 });
             }
 
-            // 追加の休憩入力データを時刻形式(H:i)に変換
+            //新しく追加した休憩開始・休憩終了時刻が入力されている確認
             $hasNewBreakIn  = $this->filled('new_break_in');
             $hasNewBreakOut = $this->filled('new_break_out');
 
+            // 入力されている場合はCarbon形式に変換し、未入力なら空
             $newBreakIn = $hasNewBreakIn
                 ? Carbon::parse($this->input('new_break_in'))->format('H:i')
                 : null;
@@ -173,7 +172,7 @@ class UpdateAttendanceRequest extends FormRequest
             // 新規の休憩重複エラー防止フラグ
             $hasNewError = false;
 
-            // 休憩開始時刻が出勤前、または退勤後ならエラー
+            // 休憩開始時刻が、勤務時間外ならエラー
             if (filled($newBreakIn)) {
                 if ((filled($clockIn) && $newBreakIn < $clockIn) ||
                     (filled($clockOut) && $newBreakIn > $clockOut)) {
@@ -189,7 +188,7 @@ class UpdateAttendanceRequest extends FormRequest
                 }
             }
 
-            // 休憩終了時刻が出勤前、退勤後ならエラー（新規開始側でエラーがない場合のみチェック）
+            // 休憩終了時刻が勤務時間外ならエラー
             if (!$hasNewError && filled($newBreakOut)) {
                 if ((filled($clockIn) && $newBreakOut < $clockIn) ||
                     (filled($clockOut) && $newBreakOut > $clockOut)) {
@@ -205,7 +204,7 @@ class UpdateAttendanceRequest extends FormRequest
                 }
             }
 
-            // 休憩開始 > 休憩終了 の場合エラー（新規開始・終了側でエラーがない場合のみチェック）
+            // 休憩終了時刻が休憩開始時刻より前ならエラー
             if (!$hasNewError && filled($newBreakIn) &&
                 filled($newBreakOut) &&
                 $newBreakOut < $newBreakIn) {
@@ -218,7 +217,7 @@ class UpdateAttendanceRequest extends FormRequest
                 $hasNewError = true;
             }
 
-            // 他のエラーが一切ない場合のみ、新規の片方未入力をチェックする
+            // 他にエラーがなく、休憩開始だけ入力されている場合はエラー
             if (!$hasNewError && $validator->errors()->isEmpty()) {
                 if ($hasNewBreakIn && !$hasNewBreakOut) {
                     $validator->errors()->add('new_break_in', '休憩時間が不適切な値です');

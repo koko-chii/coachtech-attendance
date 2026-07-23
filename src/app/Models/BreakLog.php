@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-// モデル機能を継承した休憩モデルクラス
 class BreakLog extends Model
 {
     // テスト用ダミーデータを作成
